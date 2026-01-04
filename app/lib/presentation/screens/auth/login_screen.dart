@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../main.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -11,23 +13,47 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
 
   void _login() async {
+    // Validate form
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
     setState(() => _isLoading = true);
-    // Simulate network request
-    await Future.delayed(const Duration(milliseconds: 1500)); 
+
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    final success = await authProvider.signIn(
+      email: _emailController.text.trim(),
+      password: _passwordController.text,
+    );
 
     if (mounted) {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => const MainLayout(),
-          transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
-          transitionDuration: const Duration(milliseconds: 400),
-        ),
-      );
+      setState(() => _isLoading = false);
+
+      if (success) {
+        // Navigate to main layout on successful login
+        Navigator.of(context).pushReplacement(
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const MainLayout(),
+            transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
+            transitionDuration: const Duration(milliseconds: 400),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authProvider.errorMessage ?? 'Login failed'),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     }
   }
 
@@ -43,11 +69,13 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
     
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight, // Whitish grey background
+      backgroundColor: AppColors.backgroundLight, 
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
-          child: Column(
+          child: Form(
+            key: _formKey,
+            child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -65,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Title
               Text(
-                'Welcome, Geda',
+                'Welcome Back',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -155,6 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ).animate().fadeIn(delay: 700.ms),
             ],
           ),
+          ),
         ),
       ),
     );
@@ -168,7 +197,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }) {
     final theme = Theme.of(context);
     
-    return TextField(
+    return TextFormField(
       controller: controller,
       obscureText: isObscure,
       style: theme.textTheme.bodyMedium?.copyWith(
@@ -177,7 +206,26 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       cursorColor: AppColors.primary,
       textInputAction: isLast ? TextInputAction.done : TextInputAction.next,
-      onSubmitted: isLast ? (_) => _login() : null,
+      onFieldSubmitted: isLast ? (_) => _login() : null,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return 'This field is required';
+        }
+        // Email validation
+        if (label == 'Email') {
+          final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+          if (!emailRegex.hasMatch(value.trim())) {
+            return 'Please enter a valid email';
+          }
+        }
+        // Password validation
+        if (label == 'Password') {
+          if (value.length < 6) {
+            return 'Password must be at least 6 characters';
+          }
+        }
+        return null;
+      },
       decoration: InputDecoration(
         labelText: label,
         labelStyle: theme.textTheme.bodyMedium?.copyWith(
@@ -191,12 +239,19 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 0),
         isDense: true,
+        errorStyle: const TextStyle(fontSize: 11, height: 0.8),
         // Underline border style for minimalism
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: Colors.black.withOpacity(0.2)),
         ),
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: AppColors.primary, width: 2),
+        ),
+        errorBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.red.shade300),
+        ),
+        focusedErrorBorder: const UnderlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 2),
         ),
       ),
     );
