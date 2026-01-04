@@ -38,6 +38,17 @@ dependencies:
   google_fonts: ^6.3.0
   percent_indicator: ^4.2.5
   flutter_animate: ^4.5.2
+  
+  # Firebase
+  firebase_core: ^2.24.0
+  firebase_auth: ^4.15.0
+  cloud_firestore: ^4.13.0
+  
+  # State Management
+  provider: ^6.1.1
+  
+  # Local Storage
+  shared_preferences: ^2.2.2
 
 dev_dependencies:
   flutter_test:
