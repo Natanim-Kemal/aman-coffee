@@ -34,4 +34,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancel => 'Cancel';
+
+  @override
+  String get todaysActivity => 'Today\'s Activity';
+
+  @override
+  String get distributed => 'Distributed';
+
+  @override
+  String get returned => 'Returned';
+
+  @override
+  String get netBalance => 'Net Balance';
+
+  @override
+  String get activeWorkers => 'Active Workers';
+
+  @override
+  String get viewAll => 'View All';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get active => 'Active';
+
+  @override
+  String get perf => 'Perf';
+
+  @override
+  String get sales => 'Sales';
+
+  @override
+  String get noWorkersYet => 'No workers yet';
+
+  @override
+  String get addWorkersToGetStarted => 'Add workers to get started';
 }

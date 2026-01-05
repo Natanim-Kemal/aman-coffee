@@ -34,4 +34,40 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get cancel => 'ይቅር';
+
+  @override
+  String get todaysActivity => 'የዛሬ እንቅስቃሴ';
+
+  @override
+  String get distributed => 'የተከፋፈለ';
+
+  @override
+  String get returned => 'የተመለሰ';
+
+  @override
+  String get netBalance => 'የተጣራ ሂሳብ';
+
+  @override
+  String get activeWorkers => 'ንቁ ሰራተኞች';
+
+  @override
+  String get viewAll => 'ሁሉንም ይመልከቱ';
+
+  @override
+  String get total => 'ጠቅላላ';
+
+  @override
+  String get active => 'ንቁ';
+
+  @override
+  String get perf => 'ብቃት';
+
+  @override
+  String get sales => 'ሽያጭ';
+
+  @override
+  String get noWorkersYet => 'ምንም ሰራተኞች የሉም';
+
+  @override
+  String get addWorkersToGetStarted => 'ለመጀመር ሰራተኞችን ይጨምሩ';
 }

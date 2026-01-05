@@ -17,5 +17,7 @@
   "total": "Total",
   "active": "Active",
   "perf": "Perf",
-  "sales": "Sales"
+  "sales": "Sales",
+  "noWorkersYet": "No workers yet",
+  "addWorkersToGetStarted": "Add workers to get started"
 }

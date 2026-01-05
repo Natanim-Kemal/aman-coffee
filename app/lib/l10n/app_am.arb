@@ -17,5 +17,7 @@
   "total": "ጠቅላላ",
   "active": "ንቁ",
   "perf": "ብቃት",
-  "sales": "ሽያጭ"
+  "sales": "ሽያጭ",
+  "noWorkersYet": "ምንም ሰራተኞች የሉም",
+  "addWorkersToGetStarted": "ለመጀመር ሰራተኞችን ይጨምሩ"
 }

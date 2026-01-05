@@ -151,6 +151,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get cancel;
+
+  /// No description provided for @todaysActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Activity'**
+  String get todaysActivity;
+
+  /// No description provided for @distributed.
+  ///
+  /// In en, this message translates to:
+  /// **'Distributed'**
+  String get distributed;
+
+  /// No description provided for @returned.
+  ///
+  /// In en, this message translates to:
+  /// **'Returned'**
+  String get returned;
+
+  /// No description provided for @netBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Net Balance'**
+  String get netBalance;
+
+  /// No description provided for @activeWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Workers'**
+  String get activeWorkers;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View All'**
+  String get viewAll;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
+
+  /// No description provided for @perf.
+  ///
+  /// In en, this message translates to:
+  /// **'Perf'**
+  String get perf;
+
+  /// No description provided for @sales.
+  ///
+  /// In en, this message translates to:
+  /// **'Sales'**
+  String get sales;
+
+  /// No description provided for @noWorkersYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No workers yet'**
+  String get noWorkersYet;
+
+  /// No description provided for @addWorkersToGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Add workers to get started'**
+  String get addWorkersToGetStarted;
 }
 
 class _AppLocalizationsDelegate
