@@ -14,6 +14,8 @@ import 'presentation/widgets/custom_bottom_nav.dart';
 import 'presentation/screens/auth/login_screen.dart';
 import 'presentation/screens/settings/settings_screen.dart';
 import 'presentation/screens/reports/reports_screen.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +55,16 @@ class StitchWorkerApp extends StatelessWidget {
             darkTheme: AppTheme.darkTheme,
             themeMode: themeProvider.themeMode,
             debugShowCheckedModeBanner: false,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en'), 
+              Locale('am'),
+            ],
             home: const AuthGate(),
           );
         },
