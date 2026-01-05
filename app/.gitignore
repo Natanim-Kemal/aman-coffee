@@ -15,7 +15,6 @@ migrate_working_dir/
 *.ipr
 *.iws
 .idea/
-*.md
 
 # Firebase config files
 **/google-services.json

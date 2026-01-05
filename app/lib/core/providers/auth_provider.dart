@@ -133,4 +133,16 @@ class AuthProvider with ChangeNotifier {
   Future<bool> isSessionValid() async {
     return await _authService.isSessionValid();
   }
+
+  /// Reset password
+  Future<bool> resetPassword({required String email}) async {
+    try {
+      await _authService.resetPassword(email: email);
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      notifyListeners();
+      return false;
+    }
+  }
 }
