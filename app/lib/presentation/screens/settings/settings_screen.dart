@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/theme_provider.dart';
+import 'profile_edit_screen.dart';
+import 'notification_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -9,13 +12,15 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final themeProvider = Provider.of<ThemeProvider>(context);
+    final isDark = themeProvider.isDarkMode;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Settings'),
-        backgroundColor: Colors.transparent,
+        title: const Text('Settings', style: TextStyle(color: Colors.white)),
+        backgroundColor: AppColors.primary,
         elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -26,13 +31,25 @@ class SettingsScreen extends StatelessWidget {
             icon: Icons.person_outline,
             title: 'Profile',
             subtitle: 'Manage your account',
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileEditScreen()),
+              );
+            },
           ),
           _buildSettingsTile(
             context,
             icon: Icons.notifications_outlined,
             title: 'Notifications',
             subtitle: 'Customize alerts',
-            trailing: Switch(value: true, onChanged: (val) {}, activeColor: AppColors.primary),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
+              );
+            },
+            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
           ),
           
           const SizedBox(height: 24),
@@ -41,8 +58,12 @@ class SettingsScreen extends StatelessWidget {
             context,
             icon: Icons.dark_mode_outlined,
             title: 'Dark Mode',
-            subtitle: 'System default',
-            trailing: Switch(value: isDark, onChanged: (val) {}, activeColor: AppColors.primary),
+            subtitle: 'System default', 
+            trailing: Switch(
+              value: isDark, 
+              onChanged: (val) => themeProvider.toggleTheme(val), 
+              activeColor: AppColors.primary
+            ),
           ),
           _buildSettingsTile(
             context,
@@ -53,10 +74,11 @@ class SettingsScreen extends StatelessWidget {
 
           const SizedBox(height: 24),
           _buildSectionHeader(theme, 'Security'),
-           _buildSettingsTile(
+          _buildSettingsTile(
             context,
             icon: Icons.lock_outline,
             title: 'Change Password',
+            onTap: () => _showChangePasswordDialog(context),
           ),
            _buildSettingsTile(
             context,
@@ -122,6 +144,7 @@ class SettingsScreen extends StatelessWidget {
     required String title,
     String? subtitle,
     Widget? trailing,
+    VoidCallback? onTap,
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -136,6 +159,7 @@ class SettingsScreen extends StatelessWidget {
         ),
       ),
       child: ListTile(
+        onTap: onTap,
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
@@ -152,6 +176,46 @@ class SettingsScreen extends StatelessWidget {
         ),
         subtitle: subtitle != null ? Text(subtitle, style: const TextStyle(color: AppColors.textMutedDark, fontSize: 12)) : null,
         trailing: trailing,
+      ),
+    );
+  }
+
+  void _showChangePasswordDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Change Password'),
+        content: const Text(
+          'To change your password, we will send a password reset link to your email address. Do you want to proceed?'
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              final authProvider = Provider.of<AuthProvider>(context, listen: false);
+              final email = authProvider.user?.email;
+              
+              if (email != null) {
+                final success = await authProvider.resetPassword(email: email);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(success 
+                        ? 'Password reset email sent to $email' 
+                        : 'Failed to send reset email: ${authProvider.errorMessage}'
+                      ),
+                    ),
+                  );
+                }
+              }
+            },
+            child: const Text('Send Email'),
+          ),
+        ],
       ),
     );
   }

@@ -5,7 +5,9 @@ import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/providers/worker_provider.dart';
-import 'core/providers/transaction_provider.dart'; // Added this import
+import 'core/providers/transaction_provider.dart';
+import 'core/providers/theme_provider.dart';
+import 'core/providers/settings_provider.dart';
 import 'presentation/screens/dashboard/dashboard_screen.dart';
 import 'presentation/screens/worker_list/worker_list_screen.dart';
 import 'presentation/widgets/custom_bottom_nav.dart';
@@ -16,7 +18,6 @@ import 'presentation/screens/reports/reports_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize Firebase (only if not already initialized)
   try {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
@@ -40,15 +41,21 @@ class StitchWorkerApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WorkerProvider()),
-        ChangeNotifierProvider(create: (_) => TransactionProvider()), // Added this provider
+        ChangeNotifierProvider(create: (_) => TransactionProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => SettingsProvider()),
       ],
-      child: MaterialApp(
-        title: 'Stitch Worker List',
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.light,
-        debugShowCheckedModeBanner: false,
-        home: const AuthGate(),
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, _) {
+          return MaterialApp(
+            title: 'Cofiz',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            debugShowCheckedModeBanner: false,
+            home: const AuthGate(),
+          );
+        },
       ),
     );
   }
