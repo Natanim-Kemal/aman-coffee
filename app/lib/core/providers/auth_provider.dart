@@ -145,4 +145,25 @@ class AuthProvider with ChangeNotifier {
       return false;
     }
   }
+
+  /// Update user profile
+  Future<bool> updateUserProfile({String? displayName, String? photoUrl}) async {
+    try {
+      _status = AuthStatus.loading;
+      notifyListeners();
+
+      await _authService.updateProfile(displayName: displayName, photoUrl: photoUrl);
+      
+      // Refresh user data
+      _user = _authService.currentUser; // Should be updated now
+      _status = AuthStatus.authenticated;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _status = AuthStatus.authenticated;
+      notifyListeners();
+      return false;
+    }
+  }
 }

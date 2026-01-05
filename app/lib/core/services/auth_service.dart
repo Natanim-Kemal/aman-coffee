@@ -138,5 +138,21 @@ class AuthService {
     } catch (e) {
       throw 'Failed to send reset email. Please try again.';
     }
+
+  }
+
+  Future<void> updateProfile({String? displayName, String? photoUrl}) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      try {
+        if (displayName != null) await user.updateDisplayName(displayName);
+        if (photoUrl != null) await user.updatePhotoURL(photoUrl);
+        await user.reload();
+      } catch (e) {
+        throw 'Failed to update profile: $e';
+      }
+    } else {
+      throw 'User not logged in';
+    }
   }
 }
