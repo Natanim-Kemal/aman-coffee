@@ -17,8 +17,11 @@ class WorkerDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      // backgroundColor: AppColors.backgroundLight, // Removed for theme support
       body: FutureBuilder<Worker?>(
         future: Provider.of<WorkerProvider>(context, listen: false).getWorkerById(workerId),
         builder: (context, snapshot) {
@@ -156,7 +159,7 @@ class WorkerDetailScreen extends StatelessWidget {
                       const SizedBox(height: 24),
 
                       // Statistics
-                      _buildStatistics(worker),
+                      _buildStatistics(context, worker),
 
                       const SizedBox(height: 24),
 
@@ -164,12 +167,12 @@ class WorkerDetailScreen extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Transaction History',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: isDark ? Colors.white : Colors.black87,
                             ),
                           ),
                           TextButton(
@@ -208,11 +211,11 @@ class WorkerDetailScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -246,10 +249,10 @@ class WorkerDetailScreen extends StatelessWidget {
           // Name
           Text(
             worker.name,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
 
@@ -260,7 +263,7 @@ class WorkerDetailScreen extends StatelessWidget {
             worker.role,
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.textMutedLight,
+              color: Theme.of(context).brightness == Brightness.dark ? AppColors.textMutedDark : AppColors.textMutedLight,
             ),
           ),
 
@@ -611,11 +614,11 @@ class WorkerDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatistics(Worker worker) {
+  Widget _buildStatistics(BuildContext context, Worker worker) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -628,12 +631,12 @@ class WorkerDetailScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             'Statistics',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
           ),
           const SizedBox(height: 16),

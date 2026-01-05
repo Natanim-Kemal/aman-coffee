@@ -48,10 +48,12 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: SafeArea(
-        child: Consumer<WorkerProvider>(
+      // backgroundColor: AppColors.backgroundLight, // Removed for theme support
+      body: Consumer<WorkerProvider>(
           builder: (context, workerProvider, _) {
             return RefreshIndicator(
               onRefresh: _onRefresh,
@@ -59,8 +61,9 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                 slivers: [
                   // Header
                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+                    child: Container(
+                      color: AppColors.primary,
+                      padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 20, 20, 30),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -68,7 +71,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                             'Workers',
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                                  color: Colors.white,
                                 ),
                           ),
                           const SizedBox(height: 20),
@@ -76,7 +79,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                           // Search Bar
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: theme.colorScheme.surface,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
@@ -92,12 +95,12 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                               decoration: InputDecoration(
                                 hintText: 'Search workers...',
                                 hintStyle: TextStyle(
-                                  color: AppColors.textMutedLight,
+                                  color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                                   fontSize: 14,
                                 ),
                                 prefixIcon: Icon(
                                   Icons.search,
-                                  color: AppColors.textMutedLight,
+                                  color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                                   size: 20,
                                 ),
                                 suffixIcon: _searchController.text.isNotEmpty
@@ -283,7 +286,6 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
             );
           },
         ),
-      ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: 70),
         child: FloatingActionButton(

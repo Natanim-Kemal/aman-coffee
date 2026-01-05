@@ -23,16 +23,19 @@ class WorkerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.03),
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
               blurRadius: 10,
               offset: const Offset(0, 2),
             ),
@@ -41,7 +44,7 @@ class WorkerItem extends StatelessWidget {
         child: Row(
           children: [
             // Avatar
-            _buildAvatar(),
+            _buildAvatar(theme),
             const SizedBox(width: 16),
 
             // Info
@@ -51,10 +54,10 @@ class WorkerItem extends StatelessWidget {
                 children: [
                   Text(
                     name,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: theme.textTheme.bodyLarge?.color,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -66,19 +69,19 @@ class WorkerItem extends StatelessWidget {
                         role,
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppColors.textMutedLight,
+                          color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                         ),
                       ),
                       if (yearsOfExperience > 0) ...[
                         Text(
                           ' • ',
-                          style: TextStyle(color: AppColors.textMutedLight),
+                          style: TextStyle(color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
                         ),
                         Text(
                           '$yearsOfExperience yrs',
                           style: TextStyle(
                             fontSize: 13,
-                            color: AppColors.textMutedLight,
+                            color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                           ),
                         ),
                       ],
@@ -89,7 +92,7 @@ class WorkerItem extends StatelessWidget {
                     children: [
                       _buildStatusBadge(),
                       const SizedBox(width: 12),
-                      if (rating > 0) _buildRating(),
+                      if (rating > 0) _buildRating(context),
                     ],
                   ),
                 ],
@@ -108,7 +111,7 @@ class WorkerItem extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(ThemeData theme) {
     final hasPhoto = photoUrl != null && photoUrl!.isNotEmpty;
     
     return Stack(
@@ -150,7 +153,7 @@ class WorkerItem extends StatelessWidget {
                 color: Colors.green,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: Colors.white,
+                  color: theme.colorScheme.surface,
                   width: 2,
                 ),
               ),
@@ -193,7 +196,7 @@ class WorkerItem extends StatelessWidget {
     );
   }
 
-  Widget _buildRating() {
+  Widget _buildRating(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -205,10 +208,10 @@ class WorkerItem extends StatelessWidget {
         const SizedBox(width: 4),
         Text(
           rating.toStringAsFixed(1),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.w600,
-            color: Colors.black87,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
           ),
         ),
       ],

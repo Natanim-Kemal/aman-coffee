@@ -49,12 +49,15 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
   }
 
   Widget _buildEmptyState() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
       ),
       child: Center(
         child: Column(
@@ -62,14 +65,14 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
             Icon(
               Icons.receipt_long_outlined,
               size: 48,
-              color: Colors.grey.shade400,
+              color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
             ),
             const SizedBox(height: 12),
             Text(
               'No transactions yet',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey.shade600,
+                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
               ),
             ),
             const SizedBox(height: 4),
@@ -113,9 +116,9 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: Theme.of(context).brightness == Brightness.dark ? Colors.grey.shade800 : Colors.grey.shade200),
       ),
       child: Row(
         children: [
@@ -138,10 +141,10 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
               children: [
                 Text(
                   transaction.typeDisplay,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -149,7 +152,7 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
                   DateFormat('MMM d, yyyy • h:mm a').format(transaction.createdAt),
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textMutedLight,
+                    color: Theme.of(context).brightness == Brightness.dark ? AppColors.textMutedDark : AppColors.textMutedLight,
                   ),
                 ),
                 if (transaction.notes != null && transaction.notes!.isNotEmpty) ...[
@@ -158,7 +161,7 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
                     transaction.notes!,
                     style: TextStyle(
                       fontSize: 11,
-                      color: AppColors.textMutedLight,
+                      color: Theme.of(context).brightness == Brightness.dark ? AppColors.textMutedDark : AppColors.textMutedLight,
                       fontStyle: FontStyle.italic,
                     ),
                     maxLines: 1,

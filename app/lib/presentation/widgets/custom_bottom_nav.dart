@@ -18,9 +18,9 @@ class CustomBottomNav extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor.withOpacity(0.9),
+        color: theme.scaffoldBackgroundColor,
         border: Border(
-          top: BorderSide(
+           top: BorderSide(
             color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade200,
           ),
         ),

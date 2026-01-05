@@ -33,6 +33,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final authProvider = Provider.of<AuthProvider>(context);
     final workerProvider = Provider.of<WorkerProvider>(context);
     final transactionProvider = Provider.of<TransactionProvider>(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     // Get chart data
     final distributedData = _getLast7DaysData('distribution');
@@ -40,7 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final labels = _getLast7DaysLabels();
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      // backgroundColor: AppColors.backgroundLight, // Removed to use Theme background
       body: RefreshIndicator(
         onRefresh: () async {
           await workerProvider.refresh();
@@ -64,16 +66,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           'Welcome back,',
                           style: TextStyle(
                             fontSize: 14,
-                            color: AppColors.textMutedLight,
+                            color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          authProvider.user?.email?.split('@').first.toUpperCase() ?? 'Admin',
-                          style: const TextStyle(
+                           authProvider.user?.displayName ?? 'User',
+                          style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: theme.textTheme.bodyLarge?.color,
                           ),
                         ),
                       ],
@@ -85,7 +87,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.person,
+                        Icons.notifications_outlined,
                         color: AppColors.primary,
                         size: 24,
                       ),
@@ -100,7 +102,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   DateFormat('EEEE, MMMM d, yyyy').format(DateTime.now()),
                   style: TextStyle(
                     fontSize: 13,
-                    color: AppColors.textMutedLight,
+                    color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -209,53 +211,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
 
+
                 const SizedBox(height: 24),
 
-                // Statistics Grid
-                Row(
-                  children: [
-                    Expanded(
-                      child: StatsCard(
-                        title: 'Total Workers',
-                        value: '${workerProvider.totalWorkers}',
-                        icon: Icons.people,
-                        color: Colors.blue,
+                // Compact Stats
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: theme.cardColor,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: StatsCard(
-                        title: 'Active Today',
-                        value: '${workerProvider.activeToday}',
-                        icon: Icons.check_circle,
-                        color: Colors.green,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 12),
-
-                Row(
-                  children: [
-                    Expanded(
-                      child: StatsCard(
-                        title: 'Avg Performance',
-                        value: '${workerProvider.avgPerformance.toStringAsFixed(0)}%',
-                        icon: Icons.star,
-                        color: Colors.amber,
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: StatsCard(
-                        title: 'Coffee Sales',
-                        value: 'ETB ${transactionProvider.todayPurchased.toStringAsFixed(0)}',
-                        icon: Icons.local_cafe,
-                        color: Colors.brown,
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildCompactStat(context, Icons.people, '${workerProvider.totalWorkers}', 'Total', Colors.blue),
+                      _buildContainerDivider(isDark),
+                      _buildCompactStat(context, Icons.check_circle, '${workerProvider.activeToday}', 'Active', Colors.green),
+                      _buildContainerDivider(isDark),
+                      _buildCompactStat(context, Icons.star, '${workerProvider.avgPerformance.toStringAsFixed(0)}%', 'Perf', Colors.amber),
+                      _buildContainerDivider(isDark),
+                      _buildCompactStat(context, Icons.local_cafe, '${transactionProvider.todayPurchased.toStringAsFixed(0)}', 'Sales', Colors.brown),
+                    ],
+                  ),
                 ),
 
                 const SizedBox(height: 24),
@@ -274,12 +258,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
+                      Text(
                         'Active Workers',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: theme.textTheme.bodyLarge?.color,
                         ),
                       ),
                       TextButton(
@@ -305,11 +289,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: theme.cardColor,
                               borderRadius: BorderRadius.circular(12),
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black.withOpacity(0.03),
+                                  color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
                                   blurRadius: 10,
                                   offset: const Offset(0, 2),
                                 ),
@@ -520,6 +504,47 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ],
+    );
+  }
+
+
+  Widget _buildCompactStat(BuildContext context, IconData icon, String value, String label, Color color) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+          ),
+        ),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 12,
+            color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.7),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildContainerDivider(bool isDark) {
+    return Container(
+      width: 1,
+      height: 40,
+      color: isDark ? Colors.grey.shade800 : Colors.grey.shade200,
     );
   }
 }

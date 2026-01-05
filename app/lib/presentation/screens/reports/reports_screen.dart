@@ -59,30 +59,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
   @override
   Widget build(BuildContext context) {
     final transactionProvider = Provider.of<TransactionProvider>(context);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final filteredTransactions = _getFilteredTransactions(transactionProvider.allTransactions);
     
     // Calculate summary
     double totalAmount = filteredTransactions.fold(0, (sum, t) => sum + t.amount);
     int count = filteredTransactions.length;
-    double avgAmount = count > 0 ? totalAmount / count : 0;
+
 
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
-      body: SafeArea(
-        child: Column(
+      body: Column(
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 20, 20, 20),
               decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.05),
-                    spreadRadius: 1,
-                    blurRadius: 10,
-                  ),
-                ],
+                color: AppColors.primary,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -95,7 +88,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Colors.white,
                         ),
                       ),
                       IconButton(
@@ -125,7 +118,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             }
                           }
                         },
-                        icon: const Icon(Icons.picture_as_pdf, color: AppColors.primary),
+                        icon: const Icon(Icons.picture_as_pdf, color: Colors.white),
                       ),
                     ],
                   ),
@@ -183,13 +176,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-                    StatsCard(
-                      title: 'Average Transaction',
-                      value: 'ETB ${avgAmount.toStringAsFixed(2)}',
-                      icon: Icons.show_chart,
-                      color: Colors.purple,
-                    ),
+
 
                     const SizedBox(height: 24),
 
@@ -197,19 +184,19 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
+                        Text(
                           'Transactions',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: theme.textTheme.bodyLarge?.color,
                           ),
                         ),
                         Text(
                           '${filteredTransactions.length} records',
                           style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.textMutedLight,
+                            color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                           ),
                         ),
                       ],
@@ -243,14 +230,13 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         },
                       ),
                       
-                    const SizedBox(height: 80), // Bottom padding for nav bar
+                    const SizedBox(height: 80), 
                   ],
                 ),
               ),
             ),
           ],
         ),
-      ),
     );
   }
 
@@ -260,25 +246,29 @@ class _ReportsScreenState extends State<ReportsScreen> {
     required Function(String?) onChanged,
     required IconData icon,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: Colors.grey.shade700),
+          Icon(icon, size: 16, color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
           const SizedBox(width: 8),
           DropdownButton<String>(
             value: value,
             underline: const SizedBox(),
-            icon: const Icon(Icons.arrow_drop_down, color: Colors.black54),
-            style: const TextStyle(
+            icon: Icon(Icons.arrow_drop_down, color: isDark ? Colors.grey.shade400 : Colors.black54),
+            dropdownColor: theme.cardColor,
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.black87,
+              color: theme.textTheme.bodyMedium?.color,
               fontWeight: FontWeight.w500,
             ),
             items: items.map((String item) {
@@ -327,15 +317,18 @@ class _ReportsScreenState extends State<ReportsScreen> {
       return '';
     }
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -361,16 +354,17 @@ class _ReportsScreenState extends State<ReportsScreen> {
               children: [
                 Text(
                   transaction.workerName,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 15,
+                    color: theme.textTheme.bodyLarge?.color,
                   ),
                 ),
                 Text(
                   DateFormat('MMM d, h:mm a').format(transaction.createdAt),
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textMutedLight,
+                    color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                   ),
                 ),
               ],
@@ -391,7 +385,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 transaction.typeDisplay,
                 style: TextStyle(
                   fontSize: 11,
-                  color: AppColors.textMutedLight,
+                  color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                 ),
               ),
             ],
