@@ -4,5 +4,18 @@
   "workers": "Workers",
   "reports": "Reports",
   "settings": "Settings",
-  "welcomeBack": "Welcome back,"
+  "welcomeBack": "Welcome back,",
+  "changeLanguage": "Change Language",
+  "selectLanguage": "Select Language",
+  "cancel": "Cancel",
+  "todaysActivity": "Today's Activity",
+  "distributed": "Distributed",
+  "returned": "Returned",
+  "netBalance": "Net Balance",
+  "activeWorkers": "Active Workers",
+  "viewAll": "View All",
+  "total": "Total",
+  "active": "Active",
+  "perf": "Perf",
+  "sales": "Sales"
 }

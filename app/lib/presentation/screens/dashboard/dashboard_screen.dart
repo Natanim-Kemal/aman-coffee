@@ -7,7 +7,9 @@ import '../../../core/providers/transaction_provider.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../widgets/stats_card.dart';
 import '../../widgets/activity_chart.dart';
+import '../../widgets/worker_item.dart';
 import '../worker_detail/worker_detail_screen.dart';
+import '../../../l10n/app_localizations.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -20,11 +22,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    // Load data when dashboard loads
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final transactionProvider = Provider.of<TransactionProvider>(context, listen: false);
       transactionProvider.loadTodayTotals();
-      transactionProvider.loadAllTransactions(); // Load for chart
+      transactionProvider.loadAllTransactions();
     });
   }
 
@@ -35,14 +36,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final transactionProvider = Provider.of<TransactionProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final localizations = AppLocalizations.of(context)!;
 
-    // Get chart data
     final distributedData = _getLast7DaysData('distribution');
     final returnedData = _getLast7DaysData('return');
     final labels = _getLast7DaysLabels();
 
     return Scaffold(
-      // backgroundColor: AppColors.backgroundLight, // Removed to use Theme background
       body: RefreshIndicator(
         onRefresh: () async {
           await workerProvider.refresh();
@@ -63,7 +63,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Welcome back,',
+                          localizations.welcomeBack,
                           style: TextStyle(
                             fontSize: 14,
                             color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
@@ -148,9 +148,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                           ),
                           const SizedBox(width: 12),
-                          const Text(
-                            "Today's Activity",
-                            style: TextStyle(
+                          Text(
+                            localizations.todaysActivity,
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -163,7 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         children: [
                           Expanded(
                             child: _buildTodayStatItem(
-                              'Distributed',
+                              localizations.distributed,
                               'ETB ${transactionProvider.todayDistributed.toStringAsFixed(0)}',
                               Icons.arrow_downward,
                               Colors.white,
@@ -176,7 +176,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           Expanded(
                             child: _buildTodayStatItem(
-                              'Returned',
+                              localizations.returned,
                               'ETB ${transactionProvider.todayReturned.toStringAsFixed(0)}',
                               Icons.arrow_upward,
                               Colors.white,
@@ -190,9 +190,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Net Balance',
-                            style: TextStyle(
+                          Text(
+                            localizations.netBalance,
+                            style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 14,
                             ),
@@ -210,7 +210,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ],
                   ),
                 ),
-
 
                 const SizedBox(height: 24),
 
@@ -231,13 +230,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      _buildCompactStat(context, Icons.people, '${workerProvider.totalWorkers}', 'Total', Colors.blue),
+                      _buildCompactStat(context, Icons.people, '${workerProvider.totalWorkers}', localizations.total, Colors.blue),
                       _buildContainerDivider(isDark),
-                      _buildCompactStat(context, Icons.check_circle, '${workerProvider.activeToday}', 'Active', Colors.green),
+                      _buildCompactStat(context, Icons.check_circle, '${workerProvider.activeToday}', localizations.active, Colors.green),
                       _buildContainerDivider(isDark),
-                      _buildCompactStat(context, Icons.star, '${workerProvider.avgPerformance.toStringAsFixed(0)}%', 'Perf', Colors.amber),
+                      _buildCompactStat(context, Icons.star, '${workerProvider.avgPerformance.toStringAsFixed(0)}%', localizations.perf, Colors.amber),
                       _buildContainerDivider(isDark),
-                      _buildCompactStat(context, Icons.local_cafe, '${transactionProvider.todayPurchased.toStringAsFixed(0)}', 'Sales', Colors.brown),
+                      _buildCompactStat(context, Icons.local_cafe, '${transactionProvider.todayPurchased.toStringAsFixed(0)}', localizations.sales, Colors.brown),
                     ],
                   ),
                 ),
@@ -259,7 +258,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Active Workers',
+                        localizations.activeWorkers,
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -272,8 +271,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           DefaultTabController.of(context)?.animateTo(1);
                         },
                         child: Text(
-                          'View All',
-                          style: TextStyle(
+                          localizations.viewAll,
+                          style: const TextStyle(
                             color: AppColors.primary,
                             fontWeight: FontWeight.w600,
                           ),
@@ -330,7 +329,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       ),
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
+                                  const SizedBox(width: 16),
                                   // Info
                                   Expanded(
                                     child: Column(
@@ -338,99 +337,70 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                       children: [
                                         Text(
                                           worker.name,
-                                          style: const TextStyle(
-                                            fontSize: 15,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.black87,
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.textTheme.bodyLarge?.color,
                                           ),
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
                                           worker.role,
                                           style: TextStyle(
-                                            fontSize: 12,
-                                            color: AppColors.textMutedLight,
+                                            color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                                            fontSize: 14,
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                  // Balance
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Text(
-                                        'ETB ${worker.currentBalance.toStringAsFixed(0)}',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: AppColors.primary,
-                                        ),
+                                  // Status Badge
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 12, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: const Text(
+                                      'Active',
+                                      style: TextStyle(
+                                        color: Colors.green,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      const SizedBox(height: 4),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                          vertical: 2,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.green.withOpacity(0.1),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: Text(
-                                          worker.statusDisplay,
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            color: Colors.green,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
                                 ],
                               ),
                             ),
                           )),
                 ] else ...[
-                  Container(
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          Icon(
-                            Icons.person_add_outlined,
-                            size: 48,
+                  Center(
+                    child: Column(
+                      children: [
+                        Icon(Icons.people_outline,
+                            size: 48, color: Colors.grey.shade400),
+                        const SizedBox(height: 12),
+                        Text(
+                          'No workers yet',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Add workers to get started',
+                          style: TextStyle(
+                            fontSize: 12,
                             color: Colors.grey.shade400,
                           ),
-                          const SizedBox(height: 12),
-                          Text(
-                            'No workers yet',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Add workers to get started',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade400,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
-
-                const SizedBox(height: 80),
               ],
             ),
           ),
@@ -444,19 +414,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final transactions = transactionProvider.allTransactions;
     final now = DateTime.now();
     List<double> data = [];
-
-    // Map the string type to what we have in the database/model
-    // 'distribution' matches DB
-    // 'return' matches DB
     
     for (int i = 6; i >= 0; i--) {
       final day = now.subtract(Duration(days: i));
       final startOfDay = DateTime(day.year, day.month, day.day);
-      final endOfDay = startOfDay.add(const Duration(days: 1));
-
-      final dailySum = transactions
+      final endOfDay = DateTime(day.year, day.month, day.day, 23, 59, 59);
+      
+      double dailySum = transactions
           .where((t) =>
-              t.type.toLowerCase() == type.toLowerCase() &&
+              t.type == type &&
               t.createdAt.isAfter(startOfDay) &&
               t.createdAt.isBefore(endOfDay))
           .fold(0.0, (sum, t) => sum + t.amount);
@@ -506,7 +472,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ],
     );
   }
-
 
   Widget _buildCompactStat(BuildContext context, IconData icon, String value, String label, Color color) {
     return Column(

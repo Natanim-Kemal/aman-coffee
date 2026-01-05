@@ -5,10 +5,12 @@ class SettingsProvider with ChangeNotifier {
   bool _emailNotifications = true;
   bool _pushNotifications = true;
   bool _smsNotifications = false;
+  Locale _locale = const Locale('en');
 
   bool get emailNotifications => _emailNotifications;
   bool get pushNotifications => _pushNotifications;
   bool get smsNotifications => _smsNotifications;
+  Locale get locale => _locale;
 
   SettingsProvider() {
     _loadPreferences();
@@ -19,6 +21,10 @@ class SettingsProvider with ChangeNotifier {
     _emailNotifications = prefs.getBool('email_notifications') ?? true;
     _pushNotifications = prefs.getBool('push_notifications') ?? true;
     _smsNotifications = prefs.getBool('sms_notifications') ?? false;
+    final languageCode = prefs.getString('language_code');
+    if (languageCode != null) {
+      _locale = Locale(languageCode);
+    }
     notifyListeners();
   }
 
@@ -41,5 +47,13 @@ class SettingsProvider with ChangeNotifier {
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('sms_notifications', value);
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    if (_locale == locale) return;
+    _locale = locale;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('language_code', locale.languageCode);
   }
 }

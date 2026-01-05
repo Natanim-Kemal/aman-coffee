@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/settings_provider.dart';
 import '../../../core/providers/theme_provider.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'profile_edit_screen.dart';
 import 'notification_settings_screen.dart';
 
@@ -13,7 +15,9 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
-    final isDark = themeProvider.isDarkMode;
+    final settingsProvider = Provider.of<SettingsProvider>(context);
+    final isDark = themeProvider.themeMode == ThemeMode.dark;
+    final localizations = AppLocalizations.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +58,7 @@ class SettingsScreen extends StatelessWidget {
           
           const SizedBox(height: 24),
           _buildSectionHeader(theme, 'Preferences'),
-           _buildSettingsTile(
+          _buildSettingsTile(
             context,
             icon: Icons.dark_mode_outlined,
             title: 'Dark Mode',
@@ -68,8 +72,9 @@ class SettingsScreen extends StatelessWidget {
           _buildSettingsTile(
             context,
             icon: Icons.language,
-            title: 'Language',
-            subtitle: 'English (US)',
+            title: localizations?.changeLanguage ?? 'Change Language',
+            subtitle: settingsProvider.locale.languageCode == 'am' ? 'Amharic (አማርኛ)' : 'English',
+            onTap: () => _showLanguageBottomSheet(context),
           ),
 
           const SizedBox(height: 24),
@@ -80,7 +85,7 @@ class SettingsScreen extends StatelessWidget {
             title: 'Change Password',
             onTap: () => _showChangePasswordDialog(context),
           ),
-           _buildSettingsTile(
+          _buildSettingsTile(
             context,
             icon: Icons.security,
             title: 'Two-Factor Authentication',
@@ -217,6 +222,47 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  void _showLanguageBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+               Text(
+                 AppLocalizations.of(context)?.selectLanguage ?? 'Select Language',
+                 style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+               ),
+               const SizedBox(height: 16),
+               _buildLanguageOption(context, 'English', const Locale('en')),
+               _buildLanguageOption(context, 'Amharic (አማርኛ)', const Locale('am')),
+            ],
+          ),
+        );
+      }
+    );
+  }
+
+  Widget _buildLanguageOption(BuildContext context, String name, Locale locale) {
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    final isSelected = settings.locale.languageCode == locale.languageCode;
+    
+    return ListTile(
+      title: Text(name),
+      trailing: isSelected ? const Icon(Icons.check, color: AppColors.primary) : null,
+      onTap: () {
+        settings.setLocale(locale);
+        Navigator.pop(context);
+      },
     );
   }
 }

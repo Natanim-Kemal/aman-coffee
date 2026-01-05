@@ -25,4 +25,13 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get welcomeBack => 'እንኳን ደህና መጡ፣';
+
+  @override
+  String get changeLanguage => 'ቋንቋ ቀይር';
+
+  @override
+  String get selectLanguage => 'ቋንቋ ይምረጡ';
+
+  @override
+  String get cancel => 'ይቅር';
 }

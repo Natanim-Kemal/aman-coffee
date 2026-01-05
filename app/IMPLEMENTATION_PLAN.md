@@ -398,7 +398,7 @@ dependencies:
 - [x] Save preferences
 
 #### 4.1.3 App Settings
-- [ ] Language selection (Amharic, English)
+- [x] Language selection (Amharic, English)
 - [ ] Currency display (Birr)
 - [x] Theme switcher (Light/Dark)
 - [x] Save to local storage

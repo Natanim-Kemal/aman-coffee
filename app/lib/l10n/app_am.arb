@@ -4,5 +4,18 @@
   "workers": "ሰራተኞች",
   "reports": "ሪፖርቶች",
   "settings": "ቅንብሮች",
-  "welcomeBack": "እንኳን ደህና መጡ፣"
+  "welcomeBack": "እንኳን ደህና መጡ፣",
+  "changeLanguage": "ቋንቋ ቀይር",
+  "selectLanguage": "ቋንቋ ይምረጡ",
+  "cancel": "ይቅር",
+  "todaysActivity": "የዛሬ እንቅስቃሴ",
+  "distributed": "የተከፋፈለ",
+  "returned": "የተመለሰ",
+  "netBalance": "የተጣራ ሂሳብ",
+  "activeWorkers": "ንቁ ሰራተኞች",
+  "viewAll": "ሁሉንም ይመልከቱ",
+  "total": "ጠቅላላ",
+  "active": "ንቁ",
+  "perf": "ብቃት",
+  "sales": "ሽያጭ"
 }
