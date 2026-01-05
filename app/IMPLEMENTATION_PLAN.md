@@ -340,29 +340,29 @@ dependencies:
 ### ✅ **3.1 Reports Page (flutter_03.png)**
 
 #### 3.1.1 Filters
-- [ ] Date range picker (From/To)
-- [ ] Transaction type filter (All, Distributed, Returned, Purchased)
+- [x] Date range picker (From/To) - *Implemented as specific ranges*
+- [x] Transaction type filter (All, Distributed, Returned, Purchased)
 - [ ] Worker filter (All or specific worker)
 - [ ] Status filter
 
 #### 3.1.2 Summary Cards
-- [ ] Calculate total distributed in date range
-- [ ] Calculate total returned in date range
-- [ ] Calculate net amount
-- [ ] Count number of transactions
+- [x] Calculate total distributed in date range
+- [x] Calculate total returned in date range
+- [x] Calculate net amount
+- [x] Count number of transactions
 
 #### 3.1.3 Transaction List
-- [ ] Fetch transactions based on filters
-- [ ] Display in list format
+- [x] Fetch transactions based on filters
+- [x] Display in list format
 - [ ] Pagination or infinite scroll
 - [ ] Tap to view details
 
 #### 3.1.4 Export Functionality
-- [ ] **Export to PDF:**
-  - Generate PDF with company header
-  - Include summary statistics
-  - Include transaction table
-  - Save to device
+- [x] **Export to PDF:**
+  - [x] Generate PDF with company header
+  - [x] Include summary statistics
+  - [x] Include transaction table
+  - [x] Save to device
 ### ✅ **3.1 Reports Screen**
 - [x] Create dedicated reports page
 - [x] Date range filter (Daily, Weekly, Monthly)
@@ -377,7 +377,7 @@ dependencies:
 - [ ] Worker performance ranking
 - [ ] Automated weekly email reports
 - [ ] Offline support improvements
-- [ ] Dark mode toggle (Settings)
+- [x] Dark mode toggle (Settings)
 
 ---
 
@@ -386,22 +386,22 @@ dependencies:
 ### ✅ **4.1 Settings Page (flutter_04.png)**
 
 #### 4.1.1 Profile Management
-- [ ] Display current user info
-- [ ] Edit profile (name, email, photo)
-- [ ] Change password
+- [x] Display current user info
+- [x] Edit profile (name, email, photo)
+- [x] Change password
 - [ ] Update user in database
 
 #### 4.1.2 Notification Settings
-- [ ] Toggle email notifications
-- [ ] Toggle SMS notifications
-- [ ] Toggle push notifications
-- [ ] Save preferences
+- [x] Toggle email notifications
+- [x] Toggle SMS notifications
+- [x] Toggle push notifications
+- [x] Save preferences
 
 #### 4.1.3 App Settings
 - [ ] Language selection (Amharic, English)
 - [ ] Currency display (Birr)
-- [ ] Theme switcher (Light/Dark)
-- [ ] Save to local storage
+- [x] Theme switcher (Light/Dark)
+- [x] Save to local storage
 
 #### 4.1.4 Business Settings
 - [ ] Edit company information
