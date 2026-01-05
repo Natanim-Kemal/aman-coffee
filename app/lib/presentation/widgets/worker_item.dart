@@ -1,202 +1,216 @@
 import 'package:flutter/material.dart';
-import '../../core/data/mock_data.dart';
 import '../../core/theme/app_theme.dart';
 
 class WorkerItem extends StatelessWidget {
-  final Worker worker;
-  final bool isDashboardMode; // Compact mode for dashboard
+  final String name;
+  final String role;
+  final int yearsOfExperience;
+  final String status;
+  final double rating; // 0-5 stars
+  final String? photoUrl;
+  final VoidCallback? onTap;
 
   const WorkerItem({
     super.key,
-    required this.worker,
-    this.isDashboardMode = false,
+    required this.name,
+    required this.role,
+    this.yearsOfExperience = 0,
+    this.status = 'active',
+    this.rating = 0.0,
+    this.photoUrl,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    if (isDashboardMode) {
-      // Dashboard compact view
-      return Container(
-        padding: const EdgeInsets.all(12),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: theme.colorScheme.surface,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
-          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: Row(
           children: [
+            // Avatar
             _buildAvatar(),
-            const SizedBox(width: 12),
+            const SizedBox(width: 16),
+
+            // Info
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    worker.name,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    name,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
                     ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  Text(
-                    '${worker.role} • ${worker.location}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.textMutedDark,
-                    ),
+                  const SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text(
+                        role,
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: AppColors.textMutedLight,
+                        ),
+                      ),
+                      if (yearsOfExperience > 0) ...[
+                        Text(
+                          ' • ',
+                          style: TextStyle(color: AppColors.textMutedLight),
+                        ),
+                        Text(
+                          '$yearsOfExperience yrs',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: AppColors.textMutedLight,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      _buildStatusBadge(),
+                      const SizedBox(width: 12),
+                      if (rating > 0) _buildRating(),
+                    ],
                   ),
                 ],
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  '-\$${(worker.balance * 0.8).toStringAsFixed(2)}', // Mock deduction
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  '10m ago',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: Colors.grey,
-                  ),
-                ),
-              ],
+
+            // Arrow
+            Icon(
+              Icons.chevron_right,
+              color: Colors.grey.shade400,
+              size: 20,
             ),
           ],
         ),
-      );
-    }
-
-    // Full List Item View
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDark ? Colors.white.withOpacity(0.05) : Colors.grey.shade100,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.02),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          _buildAvatar(),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  worker.name,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  worker.role,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: AppColors.textMutedDark,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                '\$${worker.balance.toStringAsFixed(2)}',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: worker.isLowBalance ? AppColors.error : AppColors.primary,
-                  fontFamily: 'Manrope', // Monospace if possible, but Manrope is fine
-                ),
-              ),
-              if (worker.isLowBalance)
-                Text(
-                  'LOW BALANCE',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppColors.error,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
-                )
-              else
-                 Icon(
-                  Icons.chevron_right,
-                  color: Colors.grey.shade400,
-                  size: 20,
-                 )
-            ],
-          ),
-        ],
       ),
     );
   }
 
   Widget _buildAvatar() {
-    final hasImage = worker.avatarUrl.isNotEmpty;
+    final hasPhoto = photoUrl != null && photoUrl!.isNotEmpty;
+    
     return Stack(
       children: [
         Container(
-          width: 48,
-          height: 48,
+          width: 56,
+          height: 56,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: hasImage ? Colors.grey.shade200 : AppColors.primary,
-            border: Border.all(color: Colors.white.withOpacity(0.1)),
-            image: hasImage
+            color: AppColors.primary.withOpacity(0.1),
+            image: hasPhoto
                 ? DecorationImage(
-                    image: NetworkImage(worker.avatarUrl),
+                    image: NetworkImage(photoUrl!),
                     fit: BoxFit.cover,
                   )
                 : null,
           ),
-          child: !hasImage
+          child: !hasPhoto
               ? Center(
                   child: Text(
-                    worker.name.substring(0, 2).toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    name.substring(0, 2).toUpperCase(),
+                    style: TextStyle(
+                      color: AppColors.primary,
                       fontWeight: FontWeight.bold,
+                      fontSize: 18,
                     ),
                   ),
                 )
               : null,
         ),
-        if (worker.isOnline)
+        if (status.toLowerCase() == 'active')
           Positioned(
             bottom: 0,
             right: 0,
             child: Container(
-              width: 12,
-              height: 12,
+              width: 14,
+              height: 14,
               decoration: BoxDecoration(
-                color: AppColors.success,
+                color: Colors.green,
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: AppColors.surfaceDark,
+                  color: Colors.white,
                   width: 2,
                 ),
               ),
             ),
           ),
+      ],
+    );
+  }
+
+  Widget _buildStatusBadge() {
+    Color badgeColor;
+    switch (status.toLowerCase()) {
+      case 'active':
+        badgeColor = Colors.green;
+        break;
+      case 'busy':
+        badgeColor = Colors.orange;
+        break;
+      case 'offline':
+        badgeColor = Colors.grey;
+        break;
+      default:
+        badgeColor = Colors.grey;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: badgeColor.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          fontSize: 11,
+          color: badgeColor,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRating() {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.star,
+          size: 14,
+          color: Colors.amber.shade600,
+        ),
+        const SizedBox(width: 4),
+        Text(
+          rating.toStringAsFixed(1),
+          style: const TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
       ],
     );
   }

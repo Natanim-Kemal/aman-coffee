@@ -21,18 +21,23 @@ class AuthService {
     required String password,
   }) async {
     try {
+      print('DEBUG AUTH: Signing in with Firebase...');
       final credential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
 
+      print('DEBUG AUTH: Firebase auth success, saving timestamp...');
       await _saveLoginTimestamp();
+      print('DEBUG AUTH: Timestamp saved successfully');
 
       return credential;
     } on FirebaseAuthException catch (e) {
+      print('DEBUG AUTH: Firebase exception: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     } catch (e) {
-      throw 'An unexpected error occurred. Please try again.';
+      print('DEBUG AUTH: Unexpected error: $e');
+      throw 'Unexpected error: $e';
     }
   }
 
@@ -122,5 +127,16 @@ class AuthService {
   /// Get user ID
   String? getUserId() {
     return _auth.currentUser?.uid;
+  }
+
+  /// Reset password - send reset email
+  Future<void> resetPassword({required String email}) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      throw _handleAuthException(e);
+    } catch (e) {
+      throw 'Failed to send reset email. Please try again.';
+    }
   }
 }

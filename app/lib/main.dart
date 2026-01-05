@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'core/providers/auth_provider.dart';
+import 'core/providers/worker_provider.dart';
+import 'core/providers/transaction_provider.dart'; // Added this import
 import 'presentation/screens/dashboard/dashboard_screen.dart';
 import 'presentation/screens/worker_list/worker_list_screen.dart';
 import 'presentation/widgets/custom_bottom_nav.dart';
@@ -37,6 +39,8 @@ class StitchWorkerApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => WorkerProvider()),
+        ChangeNotifierProvider(create: (_) => TransactionProvider()), // Added this provider
       ],
       child: MaterialApp(
         title: 'Stitch Worker List',
@@ -87,6 +91,7 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
+  late PageController _pageController;
 
   final List<Widget> _screens = [
     const DashboardScreen(),
@@ -96,11 +101,41 @@ class _MainLayoutState extends State<MainLayout> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: _currentIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  void _onNavTap(int index) {
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          _screens[_currentIndex],
+          PageView(
+            controller: _pageController,
+            onPageChanged: _onPageChanged,
+            children: _screens,
+          ),
           
           // Fixed Bottom Nav
           Positioned(
@@ -109,11 +144,7 @@ class _MainLayoutState extends State<MainLayout> {
             bottom: 0,
             child: CustomBottomNav(
               currentIndex: _currentIndex,
-              onTap: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
+              onTap: _onNavTap,
             ),
           ),
         ],

@@ -28,11 +28,11 @@ class CustomBottomNav extends StatelessWidget {
       padding: EdgeInsets.only(
         bottom: MediaQuery.of(context).padding.bottom + 12,
         top: 12,
-        left: 24,
-        right: 24,
+        // left: 10,
+        // right: 10,
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           _NavItem(
             icon: Icons.grid_view_rounded,
