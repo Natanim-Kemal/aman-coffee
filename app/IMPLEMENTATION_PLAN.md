@@ -373,7 +373,7 @@ dependencies:
 **Create:** `lib/presentation/screens/reports/reports_screen.dart`
 **Create:** `lib/core/services/report_service.dart`
 
-### ⬜ **3.2 Advanced Features (Bonus)**
+### ✅ **3.2 Advanced Features (Bonus)**
 - [ ] Worker performance ranking
 - [ ] Automated weekly email reports
 - [ ] Offline support improvements
@@ -404,27 +404,27 @@ dependencies:
 - [x] Save to local storage
 
 #### 4.1.4 Business Settings
-- [ ] Edit company information
-- [ ] Set distribution limits (max amount per worker)
-- [ ] Default coffee prices
-- [ ] Save to database
+- [x] Edit company information
+- [x] Set distribution limits (max amount per worker)
+- [x] Default coffee prices
+- [x] Save to database
 
 #### 4.1.5 Data Management
-- [ ] **Backup Data:** Export all data to JSON file
-- [ ] **Export All Data:** Generate comprehensive report
-- [ ] **Clear Cache:** Clear local storage
-- [ ] Warning dialogs for destructive actions
+- [x] **Backup Data:** Export all data to JSON file
+- [x] **Export All Data:** Generate comprehensive report
+- [x] **Clear Cache:** Clear local storage
+- [x] Warning dialogs for destructive actions
 
 #### 4.1.6 About Section
-- [ ] Display app version
-- [ ] Terms & Conditions page
-- [ ] Privacy Policy page
-- [ ] Contact support
+- [x] Display app version
+- [x] Terms & Conditions page
+- [x] Privacy Policy page
+- [x] Contact support
 
 #### 4.1.7 Logout
-- [ ] Confirm logout dialog
-- [ ] Clear session
-- [ ] Navigate to login screen
+- [x] Confirm logout dialog
+- [x] Clear session
+- [x] Navigate to login screen
 
 **Files to modify:**
 - `lib/presentation/screens/settings/settings_screen.dart`
@@ -437,16 +437,16 @@ dependencies:
 ## **Phase 5: Advanced Features (Week 6+)**
 
 ### ✅ **5.1 Notifications**
-- [ ] Push notifications for new distributions
-- [ ] Reminders for pending returns
-- [ ] Low balance alerts
-- [ ] Daily/weekly summary notifications
+- [x] Push notifications for new distributions
+- [x] Reminders for pending returns
+- [x] Low balance alerts
+- [x] Daily/weekly summary notifications
 
 ### ✅ **5.2 Offline Mode**
-- [ ] Cache all data locally with Hive
-- [ ] Queue transactions when offline
-- [ ] Sync when connection restored
-- [ ] Show offline indicator
+- [x] Cache all data locally with Hive
+- [x] Queue transactions when offline
+- [x] Sync when connection restored
+- [x] Show offline indicator
 
 ### ✅ **5.3 Multi-user Support**
 - [ ] Role-based access control

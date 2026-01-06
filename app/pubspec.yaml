@@ -70,6 +70,11 @@ dependencies:
   printing: ^5.14.2
   path_provider: ^2.1.5
   open_filex: ^4.7.0
+  flutter_local_notifications: ^19.5.0
+  timezone: ^0.10.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  connectivity_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:

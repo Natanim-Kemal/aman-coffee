@@ -70,4 +70,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addWorkersToGetStarted => 'Add workers to get started';
+
+  @override
+  String get currency => 'ETB';
+
+  @override
+  String get searchWorkers => 'Search workers...';
+
+  @override
+  String get noWorkersFound => 'No workers found';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get twoFactorAuth => 'Two-Factor Authentication';
+
+  @override
+  String get signOut => 'Sign Out';
+
+  @override
+  String get areYouSureSignOut => 'Are you sure you want to sign out?';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get export => 'Export';
+
+  @override
+  String get noDataToExport => 'No data to export';
+
+  @override
+  String get manageYourAccount => 'Manage your account';
+
+  @override
+  String get customizeAlerts => 'Customize alerts';
+
+  @override
+  String get systemDefault => 'System default';
+
+  @override
+  String get weeklyActivity => 'Weekly Activity';
 }
