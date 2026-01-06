@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
+import '../models/user_model.dart';
 
 enum AuthStatus {
   uninitialized,
@@ -11,15 +13,24 @@ enum AuthStatus {
 
 class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
   AuthStatus _status = AuthStatus.uninitialized;
   String? _errorMessage;
   User? _user;
+  AppUser? _appUser; // User data from Firestore
+  UserRole? _userRole;
+  String? _workerId; // If user is a worker
 
   AuthStatus get status => _status;
   String? get errorMessage => _errorMessage;
   User? get user => _user;
+  AppUser? get appUser => _appUser;
+  UserRole? get userRole => _userRole;
+  String? get workerId => _workerId;
   bool get isAuthenticated => _status == AuthStatus.authenticated;
   bool get isLoading => _status == AuthStatus.loading;
+  bool get isWorker => _userRole == UserRole.worker && _workerId != null;
 
   AuthProvider() {
     _initializeAuth();
@@ -36,16 +47,50 @@ class AuthProvider with ChangeNotifier {
     }
 
     // Listen to auth state changes
-    _authService.authStateChanges.listen((User? user) {
+    _authService.authStateChanges.listen((User? user) async {
       if (user != null) {
         _user = user;
+        // Fetch user role and data from Firestore
+        await _fetchUserData(user.uid);
         _status = AuthStatus.authenticated;
       } else {
         _user = null;
+        _appUser = null;
+        _userRole = null;
+        _workerId = null;
         _status = AuthStatus.unauthenticated;
       }
       notifyListeners();
     });
+  }
+
+  /// Fetch user data from Firestore
+  Future<void> _fetchUserData(String uid) async {
+    try {
+      print('DEBUG: Fetching user data for uid: $uid');
+      final doc = await _firestore.collection('users').doc(uid).get();
+      print('DEBUG: Document exists: ${doc.exists}');
+      
+      if (doc.exists) {
+        print('DEBUG: Document data: ${doc.data()}');
+        _appUser = AppUser.fromFirestore(doc.data()!, uid);
+        _userRole = _appUser!.role;
+        _workerId = _appUser!.workerId;
+        print('DEBUG: Parsed role: $_userRole');
+        print('DEBUG: Parsed workerId: $_workerId');
+      } else {
+        // User document doesn't exist - must be manually created by admin
+        debugPrint('ERROR: User document not found for uid: $uid');
+        debugPrint('This user must be manually created in Firestore');
+        _userRole = null;
+        _appUser = null;
+        _workerId = null;
+      }
+    } catch (e) {
+      debugPrint('Error fetching user data: $e');
+      _userRole = null;
+      _appUser = null;
+    }
   }
 
   /// Sign in with email and password
@@ -69,6 +114,13 @@ class AuthProvider with ChangeNotifier {
 
       if (credential != null && credential.user != null) {
         _user = credential.user;
+        
+        // Fetch user role and data from Firestore
+        await _fetchUserData(credential.user!.uid);
+        
+        print('DEBUG: User role: $_userRole');
+        print('DEBUG: Worker ID: $_workerId');
+        
         _status = AuthStatus.authenticated;
         _errorMessage = null;
         print('DEBUG: Sign in SUCCESS - returning true');

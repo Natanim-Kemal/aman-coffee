@@ -1,21 +1,27 @@
-import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
+import 'l10n/app_localizations.dart';
+import 'core/models/user_model.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'core/providers/auth_provider.dart';
-import 'core/providers/worker_provider.dart';
-import 'core/providers/transaction_provider.dart';
 import 'core/providers/theme_provider.dart';
+import 'core/providers/audit_provider.dart';
+import 'core/providers/worker_provider.dart';
 import 'core/providers/settings_provider.dart';
+import 'core/services/offline_sync_service.dart';
+import 'core/services/notification_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'core/providers/transaction_provider.dart';
+import 'presentation/widgets/custom_bottom_nav.dart';
+import 'presentation/widgets/offline_indicator.dart';
+import 'presentation/screens/auth/login_screen.dart';
+import 'presentation/screens/reports/reports_screen.dart';
+import 'presentation/screens/settings/settings_screen.dart';
 import 'presentation/screens/dashboard/dashboard_screen.dart';
 import 'presentation/screens/worker_list/worker_list_screen.dart';
-import 'presentation/widgets/custom_bottom_nav.dart';
-import 'presentation/screens/auth/login_screen.dart';
-import 'presentation/screens/settings/settings_screen.dart';
-import 'presentation/screens/reports/reports_screen.dart';
+import 'presentation/screens/worker/worker_dashboard_screen.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,22 +36,42 @@ void main() async {
       rethrow;
     }
   }
+
+  // Initialize notifications
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+
+  // Initialize offline services
+  final offlineSyncService = OfflineSyncService();
+  await offlineSyncService.initialize();
   
-  runApp(const StitchWorkerApp());
+  runApp(StitchWorkerApp(
+    notificationService: notificationService,
+    offlineSyncService: offlineSyncService,
+  ));
 }
 
 class StitchWorkerApp extends StatelessWidget {
-  const StitchWorkerApp({super.key});
+  final NotificationService notificationService;
+  final OfflineSyncService offlineSyncService;
+  
+  const StitchWorkerApp({
+    super.key,
+    required this.notificationService,
+    required this.offlineSyncService,
+  });
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        Provider.value(value: notificationService),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => WorkerProvider()),
         ChangeNotifierProvider(create: (_) => TransactionProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => AuditProvider()),
       ],
       child: Consumer2<ThemeProvider, SettingsProvider>(
         builder: (context, themeProvider, settingsProvider, _) {
@@ -93,12 +119,80 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        // Navigate based on auth status
+        // Navigate based on auth status AND user role
         if (authProvider.isAuthenticated) {
-          return const MainLayout();
-        } else {
-          return const LoginScreen();
+          // Check if user role is loaded
+          if (authProvider.userRole == null) {
+            // User authenticated but no Firestore document found
+            // This means user was not manually created by admin
+            return Scaffold(
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Colors.red,
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Account Not Set Up',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Your account has not been configured yet. Please contact an administrator to set up your account.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          await authProvider.signOut();
+                        },
+                        icon: const Icon(Icons.logout),
+                        label: const Text('Sign Out'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+
+          // Route based on role
+          switch (authProvider.userRole!) {
+            case UserRole.admin:
+            case UserRole.viewer:
+              // Admin and Viewer use MainLayout (full app)
+              // Viewer will have read-only restrictions in UI
+              return const MainLayout();
+              
+            case UserRole.worker:
+              // Workers go to their own dashboard
+              if (authProvider.workerId != null) {
+                return WorkerDashboardScreen(
+                  workerId: authProvider.workerId!,
+                );
+              } else {
+                // Worker but no workerId - error
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Error: Worker account not properly configured'),
+                  ),
+                );
+              }
+          }
         }
+
+        // Not authenticated - show login
+        return const LoginScreen();
       },
     );
   }
@@ -157,6 +251,14 @@ class _MainLayoutState extends State<MainLayout> {
             controller: _pageController,
             onPageChanged: _onPageChanged,
             children: _screens,
+          ),
+          
+          // Offline Indicator
+          const Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: OfflineIndicator(),
           ),
           
           // Fixed Bottom Nav

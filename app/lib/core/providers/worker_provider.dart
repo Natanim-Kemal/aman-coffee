@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import '../models/worker_model.dart';
 import '../services/worker_service.dart';
+import '../services/notification_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class WorkerProvider with ChangeNotifier {
   final WorkerService _workerService = WorkerService();
@@ -11,6 +13,7 @@ class WorkerProvider with ChangeNotifier {
   String? _errorMessage;
   String _searchQuery = '';
   String _statusFilter = 'all'; // 'all', 'active', 'busy', 'offline'
+  final Map<String, double> _previousBalances = {};
 
   // Statistics
   int _totalWorkers = 0;
@@ -40,6 +43,7 @@ class WorkerProvider with ChangeNotifier {
 
     _workerService.getWorkersStream().listen(
       (workersList) {
+        _checkLowBalances(workersList);
         _workers = workersList;
         _applyFilters();
         _updateStatistics();
@@ -205,5 +209,26 @@ class WorkerProvider with ChangeNotifier {
   /// Refresh data
   Future<void> refresh() async {
     _initializeWorkers();
+  }
+
+  void _checkLowBalances(List<Worker> newWorkers) async {
+    final prefs = await SharedPreferences.getInstance();
+    final enabled = prefs.getBool('push_notifications') ?? true;
+    if (!enabled) return;
+
+    for (var worker in newWorkers) {
+       if (_previousBalances.containsKey(worker.id)) {
+          final double prev = _previousBalances[worker.id]!;
+          // Trigger if dropped below 500 and was previously >= 500
+          if (prev >= 500 && worker.currentBalance < 500 && worker.isActive) {
+             NotificationService().showNotification(
+               id: worker.id.hashCode,
+               title: 'Low Balance Alert',
+               body: '${worker.name} is running low on funds (${worker.currentBalance.toStringAsFixed(0)}).',
+             );
+          }
+       }
+       _previousBalances[worker.id] = worker.currentBalance;
+    }
   }
 }
