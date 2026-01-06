@@ -4,9 +4,14 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/settings_provider.dart';
 import '../../../core/providers/theme_provider.dart';
-import '../../../../l10n/app_localizations.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../widgets/custom_header.dart';
 import 'profile_edit_screen.dart';
 import 'notification_settings_screen.dart';
+import 'business_settings_screen.dart';
+import 'data_management_screen.dart';
+import 'about_screen.dart';
+import '../audit/audit_log_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -17,111 +22,205 @@ class SettingsScreen extends StatelessWidget {
     final themeProvider = Provider.of<ThemeProvider>(context);
     final settingsProvider = Provider.of<SettingsProvider>(context);
     final isDark = themeProvider.themeMode == ThemeMode.dark;
-    final localizations = AppLocalizations.of(context);
+    final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(color: Colors.white)),
-        backgroundColor: AppColors.primary,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Column(
         children: [
-          _buildSectionHeader(theme, 'General'),
-          _buildSettingsTile(
-            context,
-            icon: Icons.person_outline,
-            title: 'Profile',
-            subtitle: 'Manage your account',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileEditScreen()),
-              );
-            },
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.notifications_outlined,
-            title: 'Notifications',
-            subtitle: 'Customize alerts',
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
-              );
-            },
-            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-          ),
-          
-          const SizedBox(height: 24),
-          _buildSectionHeader(theme, 'Preferences'),
-          _buildSettingsTile(
-            context,
-            icon: Icons.dark_mode_outlined,
-            title: 'Dark Mode',
-            subtitle: 'System default', 
-            trailing: Switch(
-              value: isDark, 
-              onChanged: (val) => themeProvider.toggleTheme(val), 
-              activeColor: AppColors.primary
-            ),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.language,
-            title: localizations?.changeLanguage ?? 'Change Language',
-            subtitle: settingsProvider.locale.languageCode == 'am' ? 'Amharic (አማርኛ)' : 'English',
-            onTap: () => _showLanguageBottomSheet(context),
-          ),
-
-          const SizedBox(height: 24),
-          _buildSectionHeader(theme, 'Security'),
-          _buildSettingsTile(
-            context,
-            icon: Icons.lock_outline,
-            title: 'Change Password',
-            onTap: () => _showChangePasswordDialog(context),
-          ),
-          _buildSettingsTile(
-            context,
-            icon: Icons.security,
-            title: 'Two-Factor Authentication',
-            trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-          ),
-          
-          const SizedBox(height: 32),
-          TextButton(
-            onPressed: () async {
-              // Show confirmation dialog
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Sign Out'),
-                  content: const Text('Are you sure you want to sign out?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      child: const Text('Sign Out', style: TextStyle(color: Colors.red)),
-                    ),
-                  ],
+          CustomHeader(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  localizations.settings,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              );
-
-              if (confirmed == true && context.mounted) {
-                await Provider.of<AuthProvider>(context, listen: false).signOut();
-              }
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: AppColors.error,
+                const SizedBox(height: 8),
+                Text(
+                  localizations.manageYourAccount,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white70,
+                  ),
+                ),
+              ],
             ),
-            child: const Text('Sign Out'),
+          ),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
+              children: [
+                _buildSectionHeader(theme, 'Business'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.store,
+                  title: 'Business Information',
+                  subtitle: settingsProvider.companyName,
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const BusinessSettingsScreen()),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 24),
+                _buildSectionHeader(theme, 'General'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.person_outline,
+                  title: localizations.profile,
+                  subtitle: localizations.manageYourAccount,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const ProfileEditScreen()),
+                    );
+                  },
+                ),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.notifications_outlined,
+                  title: localizations.notifications,
+                  subtitle: localizations.customizeAlerts,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NotificationSettingsScreen()),
+                    );
+                  },
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                ),
+                
+                const SizedBox(height: 24),
+                _buildSectionHeader(theme, 'Preferences'),
+                 _buildSettingsTile(
+                  context,
+                  icon: Icons.dark_mode_outlined,
+                  title: localizations.darkMode,
+                  subtitle: localizations.systemDefault, 
+                  trailing: Switch(
+                    value: isDark, 
+                    onChanged: (val) => themeProvider.toggleTheme(val), 
+                    activeColor: AppColors.primary
+                  ),
+                ),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.language,
+                  title: localizations.changeLanguage,
+                  subtitle: settingsProvider.locale.languageCode == 'am' ? 'Amharic (አማርኛ)' : 'English',
+                  onTap: () => _showLanguageBottomSheet(context),
+                ),
+
+                const SizedBox(height: 24),
+                _buildSectionHeader(theme, 'Security'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.lock_outline,
+                  title: localizations.changePassword,
+                  onTap: () => _showChangePasswordDialog(context),
+                ),
+                 _buildSettingsTile(
+                  context,
+                  icon: Icons.security,
+                  title: localizations.twoFactorAuth,
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                ),
+
+                const SizedBox(height: 24),
+                _buildSectionHeader(theme, 'Data'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.backup_outlined,
+                  title: 'Data Management',
+                  subtitle: 'Backup, Export, Clear Cache',
+                   onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const DataManagementScreen()),
+                    );
+                  },
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                ),
+                
+                // Audit Logs - Admin only
+                Consumer<AuthProvider>(
+                  builder: (context, authProvider, _) {
+                    if (authProvider.userRole?.canManageUsers != true) {
+                      return const SizedBox.shrink();
+                    }
+                    return _buildSettingsTile(
+                      context,
+                      icon: Icons.history,
+                      title: 'Audit Logs',
+                      subtitle: 'View system activity logs',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const AuditLogScreen()),
+                        );
+                      },
+                      trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                    );
+                  },
+                ),
+                
+                const SizedBox(height: 24),
+                _buildSectionHeader(theme, 'App'),
+                _buildSettingsTile(
+                  context,
+                  icon: Icons.info_outline,
+                  title: 'About Cofiz',
+                  subtitle: 'Version 1.0.0',
+                   onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AboutScreen()),
+                    );
+                  },
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                ),
+
+                const SizedBox(height: 32),
+                TextButton(
+                  onPressed: () async {
+                    // Show confirmation dialog
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text(localizations.signOut),
+                        content: Text(localizations.areYouSureSignOut),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text(localizations.cancel),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: Text(localizations.signOut, style: const TextStyle(color: Colors.red)),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirmed == true && context.mounted) {
+                      await Provider.of<AuthProvider>(context, listen: false).signOut();
+                    }
+                  },
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppColors.error,
+                  ),
+                  child: Text(localizations.signOut),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -151,6 +250,7 @@ class SettingsScreen extends StatelessWidget {
     Widget? trailing,
     VoidCallback? onTap,
   }) {
+    // ... same implementation ...
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
@@ -185,18 +285,22 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
+  // ... helper methods (language bottom sheet, change password) ...
+  // Coping logic from previous file or rewriting
+  
   void _showChangePasswordDialog(BuildContext context) {
-    showDialog(
+    // ...
+     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Change Password'),
+        title: const Text('Change Password'), // String literal for now? Or localize 'Change Password' (done)
         content: const Text(
           'To change your password, we will send a password reset link to your email address. Do you want to proceed?'
-        ),
+        ), // Should localize this too, but for now literal is okay if not in ARB
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)?.cancel ?? 'Cancel'),
           ),
           TextButton(
             onPressed: () async {

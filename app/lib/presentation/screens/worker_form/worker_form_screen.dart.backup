@@ -5,8 +5,6 @@ import '../../../core/providers/worker_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/worker_account_service.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../../dialogs/worker_credentials_dialog.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class WorkerFormScreen extends StatefulWidget {
   final Worker? worker; // null for add, Worker for edit
@@ -22,6 +20,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+  final _roleController = TextEditingController();
   
   int _yearsOfExperience = 0;
   String _status = 'active';
@@ -42,6 +41,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
       _nameController.text = widget.worker!.name;
       _phoneController.text = widget.worker!.phone;
       _emailController.text = widget.worker!.email ?? '';
+      _roleController.text = widget.worker!.role;
       _yearsOfExperience = widget.worker!.yearsOfExperience;
       _status = widget.worker!.status;
       _performanceRating = widget.worker!.performanceRating;
@@ -53,23 +53,12 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
+    _roleController.dispose();
     super.dispose();
   }
 
   Future<void> _saveWorker() async {
     if (!_formKey.currentState!.validate()) {
-      return;
-    }
-
-    // Validate email is provided if creating login account
-    if (_createLoginAccount && _emailController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email is required to create a login account'),
-          backgroundColor: Colors.orange,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
       return;
     }
 
@@ -80,7 +69,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
       name: _nameController.text.trim(),
       phone: _phoneController.text.trim(),
       email: _emailController.text.trim().isEmpty ? null : _emailController.text.trim(),
-      role: widget.worker?.role ?? 'Worker', // Default role for workers
+      role: _roleController.text.trim(),
       yearsOfExperience: _yearsOfExperience,
       status: _status,
       performanceRating: _performanceRating,
@@ -95,69 +84,26 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
 
     final workerProvider = Provider.of<WorkerProvider>(context, listen: false);
     bool success;
-    String? newWorkerId;
 
     if (isEditMode) {
       success = await workerProvider.updateWorker(widget.worker!.id, worker);
     } else {
       success = await workerProvider.addWorker(worker);
-      // Get the ID of the newly created worker
-      if (success && workerProvider.workers.isNotEmpty) {
-        newWorkerId = workerProvider.workers.last.id;
-      }
     }
 
     if (mounted) {
+      setState(() => _isLoading = false);
+
       if (success) {
-        // If creating login account for new worker
-        if (!isEditMode && _createLoginAccount && newWorkerId != null) {
-          final accountService = WorkerAccountService();
-          final result = await accountService.createWorkerAccount(
-            workerId: newWorkerId,
-            email: _emailController.text.trim(),
-            workerName: _nameController.text.trim(),
-          );
-
-          setState(() => _isLoading = false);
-
-          if (result['success'] == true) {
-            // Show credentials dialog
-            if (mounted) {
-              await showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => WorkerCredentialsDialog(
-                  workerName: _nameController.text.trim(),
-                  email: _emailController.text.trim(),
-                  password: result['password'] as String,
-                  phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-                ),
-              );
-            }
-          } else {
-            // Account creation failed, show error but worker was still created
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Worker saved, but login account failed: ${result['error']}'),
-                backgroundColor: Colors.orange,
-                behavior: SnackBarBehavior.floating,
-                duration: const Duration(seconds: 4),
-              ),
-            );
-          }
-        } else {
-          setState(() => _isLoading = false);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(isEditMode ? 'Worker updated successfully' : 'Worker added successfully'),
-              backgroundColor: Colors.green,
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
-        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(isEditMode ? 'Worker updated successfully' : 'Worker added successfully'),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
         Navigator.pop(context);
       } else {
-        setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(workerProvider.errorMessage ?? 'Failed to save worker'),
@@ -257,94 +203,30 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
 
             const SizedBox(height: 16),
 
-            // Email Field (Required for login account)
+            // Email Field (Optional)
             _buildTextField(
               controller: _emailController,
-              label: _createLoginAccount ? 'Email (Required for login)' : 'Email (Optional)',
+              label: 'Email (Optional)',
               icon: Icons.email,
               keyboardType: TextInputType.emailAddress,
               isDark: isDark,
-              validator: (value) {
-                if (_createLoginAccount) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Email is required to create a login account';
-                  }
-                  // Email format validation
-                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                  if (!emailRegex.hasMatch(value.trim())) {
-                    return 'Please enter a valid email address';
-                  }
-                } else if (value != null && value.trim().isNotEmpty) {
-                  // If email is optional but provided, still validate format
-                  final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                  if (!emailRegex.hasMatch(value.trim())) {
-                    return 'Please enter a valid email address';
-                  }
-                }
-                return null;
-              },
             ),
 
             const SizedBox(height: 16),
 
-            // Create Login Account Toggle (only for new workers)
-            if (!isEditMode)
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: _createLoginAccount 
-                        ? AppColors.primary.withOpacity(0.5)
-                        : Colors.grey.shade300,
-                    width: 2,
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.login,
-                      color: _createLoginAccount 
-                          ? AppColors.primary 
-                          : Colors.grey,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Create Login Account',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: textColor,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Allow this worker to login to the app',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Switch(
-                      value: _createLoginAccount,
-                      onChanged: (value) {
-                        setState(() => _createLoginAccount = value);
-                      },
-                      activeColor: AppColors.primary,
-                    ),
-                  ],
-                ),
-              ),
-
-            if (!isEditMode) const SizedBox(height: 16),
+            // Role Field
+            _buildTextField(
+              controller: _roleController,
+              label: 'Role/Position',
+              icon: Icons.work,
+              isDark: isDark,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Role is required';
+                }
+                return null;
+              },
+            ),
 
             const SizedBox(height: 24),
 

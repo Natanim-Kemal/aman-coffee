@@ -6,6 +6,8 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/models/transaction_model.dart';
 import '../../widgets/stats_card.dart';
 import '../../../core/services/report_service.dart';
+import '../../widgets/custom_header.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -71,26 +73,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return Scaffold(
       body: Column(
           children: [
-            // Header
-            Container(
-              padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 20, 20, 20),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Reports',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+              // Header
+              CustomHeader(
+                height: 200, // Match WorkerListScreen header height
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)?.reports ?? 'Reports',
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
                         ),
-                      ),
                       IconButton(
                         onPressed: () async {
                            if (filteredTransactions.isEmpty) {
@@ -124,26 +123,27 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   ),
                   const SizedBox(height: 20),
                   
-                  // Filters
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: [
-                        _buildFilterDropdown(
+                  // Filters matching Search Box style
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildFilterDropdown(
                           value: _dateFilter,
                           items: _dateOptions,
                           onChanged: (val) => setState(() => _dateFilter = val!),
                           icon: Icons.calendar_today,
                         ),
-                        const SizedBox(width: 12),
-                        _buildFilterDropdown(
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildFilterDropdown(
                           value: _typeFilter,
                           items: _typeOptions,
                           onChanged: (val) => setState(() => _typeFilter = val!),
                           icon: Icons.filter_list,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -159,8 +159,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       children: [
                         Expanded(
                           child: StatsCard(
-                            title: 'Total Volume',
-                            value: 'ETB ${totalAmount.toStringAsFixed(0)}',
+                            title: AppLocalizations.of(context)?.total ?? 'Total',
+                            value: '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${totalAmount.toStringAsFixed(0)}',
                             icon: Icons.attach_money,
                             color: Colors.blue,
                           ),
@@ -201,7 +201,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     
                     if (filteredTransactions.isEmpty)
                       Padding(
@@ -250,34 +250,48 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: isDark ? Colors.grey.shade400 : Colors.grey.shade700),
+          Icon(icon, size: 18, color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
           const SizedBox(width: 8),
-          DropdownButton<String>(
-            value: value,
-            underline: const SizedBox(),
-            icon: Icon(Icons.arrow_drop_down, color: isDark ? Colors.grey.shade400 : Colors.black54),
-            dropdownColor: theme.cardColor,
-            style: TextStyle(
-              fontSize: 14,
-              color: theme.textTheme.bodyMedium?.color,
-              fontWeight: FontWeight.w500,
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: value,
+                isDense: true,
+                isExpanded: true,
+                icon: Icon(Icons.arrow_drop_down, color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
+                dropdownColor: theme.cardColor,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+                items: items.map((String item) {
+                  return DropdownMenuItem<String>(
+                    value: item,
+                    child: Text(
+                      item, 
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  );
+                }).toList(),
+                onChanged: onChanged,
+              ),
             ),
-            items: items.map((String item) {
-              return DropdownMenuItem<String>(
-                value: item,
-                child: Text(item),
-              );
-            }).toList(),
-            onChanged: onChanged,
           ),
         ],
       ),
@@ -294,27 +308,13 @@ class _ReportsScreenState extends State<ReportsScreen> {
       }
     }
 
-    String getSign() {
-       switch (transaction.type.toLowerCase()) {
-        case 'distribution': return '+'; // Or maybe just normal? Distribution increases worker balance (debt) or wallet? Actually distribution is MONEY GIVEN TO WORKER.
-        // Wait, logic:
-        // Distribute: Money goes OUT of company.
-        // Return: Money comes IN to company.
-        // But for Worker Balance: Distribute INCREASES debt. Return DECREASES debt.
-        
-        // Let's stick to simple logic:
-        // Distribution: Green (Positive flow to worker)
-        // Return: Red (Negative flow from worker)
-        // Purchase: Orange (Expense)
-        
-        // Actually, typically:
-        // Money OUT (Distribution) = Red
-        // Money IN (Return) = Green
-        // But here it tracks "Worker's Held Money". So Distribution = +Balance.
-        
-        return '';
+    IconData getIcon() {
+      switch (transaction.type.toLowerCase()) {
+        case 'distribution': return Icons.arrow_upward;
+        case 'return': return Icons.arrow_downward;
+        case 'purchase': return Icons.local_cafe;
+        default: return Icons.article;
       }
-      return '';
     }
 
     final theme = Theme.of(context);
@@ -342,9 +342,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
               color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Text(
-              transaction.typeIcon,
-              style: const TextStyle(fontSize: 20),
+            child: Icon(
+              getIcon(),
+              color: getAmountColor(),
+              size: 20,
             ),
           ),
           const SizedBox(width: 12),
@@ -374,7 +375,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                'ETB ${transaction.amount.toStringAsFixed(0)}',
+                '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${transaction.amount.toStringAsFixed(0)}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,

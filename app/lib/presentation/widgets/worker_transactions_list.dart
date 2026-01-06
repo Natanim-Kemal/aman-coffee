@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../core/models/transaction_model.dart';
-import '../../../core/providers/transaction_provider.dart';
+import '../../core/providers/transaction_provider.dart';
+import '../../core/models/transaction_model.dart';
+import '../../l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 
 class WorkerTransactionsList extends StatefulWidget {
@@ -126,7 +128,7 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: typeColor.withOpacity(0.1),
+              color: typeColor.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(typeIcon, color: typeColor, size: 20),
@@ -176,7 +178,7 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
 
           // Amount
           Text(
-            '${isPositive ? '+' : '-'}ETB ${transaction.amount.toStringAsFixed(2)}',
+            '${isPositive ? '+' : '-'}${AppLocalizations.of(context)?.currency ?? 'ETB'} ${transaction.amount.toStringAsFixed(2)}',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
