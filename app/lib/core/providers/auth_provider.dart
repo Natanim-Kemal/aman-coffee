@@ -145,16 +145,30 @@ class AuthProvider with ChangeNotifier {
   /// Sign out
   Future<void> signOut() async {
     try {
+      print('DEBUG: Starting sign out...');
       _status = AuthStatus.loading;
       notifyListeners();
 
       await _authService.signOut();
 
+      // Clear ALL user state
       _user = null;
+      _appUser = null;
+      _userRole = null;
+      _workerId = null;
       _status = AuthStatus.unauthenticated;
       _errorMessage = null;
+      
+      print('DEBUG: Sign out complete, status = $_status');
       notifyListeners();
     } catch (e) {
+      print('DEBUG: Sign out ERROR: $e');
+      // Even on error, try to clear state
+      _user = null;
+      _appUser = null;
+      _userRole = null;
+      _workerId = null;
+      _status = AuthStatus.unauthenticated;
       _errorMessage = e.toString();
       notifyListeners();
     }

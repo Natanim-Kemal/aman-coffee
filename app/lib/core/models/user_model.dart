@@ -64,14 +64,17 @@ class AppUser {
 
   /// Create from Firestore
   factory AppUser.fromFirestore(Map<String, dynamic> data, String uid) {
+    final roleString = (data['role'] as String?)?.toLowerCase() ?? 'viewer';
+    final parsedRole = UserRole.values.firstWhere(
+      (r) => r.name.toLowerCase() == roleString,
+      orElse: () => UserRole.viewer,
+    );
+    
     return AppUser(
       uid: uid,
       email: data['email'] ?? '',
       displayName: data['displayName'] ?? '',
-      role: UserRole.values.firstWhere(
-        (r) => r.name == data['role'],
-        orElse: () => UserRole.viewer,
-      ),
+      role: parsedRole,
       photoUrl: data['photoUrl'],
       createdAt: data['createdAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(data['createdAt'])

@@ -110,8 +110,11 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
-        // Show loading while checking auth state
-        if (authProvider.status == AuthStatus.uninitialized) {
+        print('DEBUG AuthGate: status = ${authProvider.status}, isAuthenticated = ${authProvider.isAuthenticated}');
+        
+        // Show loading while checking auth state or during sign out
+        if (authProvider.status == AuthStatus.uninitialized || 
+            authProvider.status == AuthStatus.loading) {
           return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
@@ -119,80 +122,85 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        // Navigate based on auth status AND user role
-        if (authProvider.isAuthenticated) {
-          // Check if user role is loaded
-          if (authProvider.userRole == null) {
-            // User authenticated but no Firestore document found
-            // This means user was not manually created by admin
-            return Scaffold(
-              body: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.error_outline,
-                        size: 64,
-                        color: Colors.red,
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Account Not Set Up',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'Your account has not been configured yet. Please contact an administrator to set up your account.',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      const SizedBox(height: 32),
-                      ElevatedButton.icon(
-                        onPressed: () async {
-                          await authProvider.signOut();
-                        },
-                        icon: const Icon(Icons.logout),
-                        label: const Text('Sign Out'),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-
-          // Route based on role
-          switch (authProvider.userRole!) {
-            case UserRole.admin:
-            case UserRole.viewer:
-              // Admin and Viewer use MainLayout (full app)
-              // Viewer will have read-only restrictions in UI
-              return const MainLayout();
-              
-            case UserRole.worker:
-              // Workers go to their own dashboard
-              if (authProvider.workerId != null) {
-                return WorkerDashboardScreen(
-                  workerId: authProvider.workerId!,
-                );
-              } else {
-                // Worker but no workerId - error
-                return const Scaffold(
-                  body: Center(
-                    child: Text('Error: Worker account not properly configured'),
-                  ),
-                );
-              }
-          }
+        // Not authenticated - show login
+        if (!authProvider.isAuthenticated) {
+          print('DEBUG AuthGate: Not authenticated, showing LoginScreen');
+          return const LoginScreen();
         }
 
-        // Not authenticated - show login
-        return const LoginScreen();
+        // Check if user role is loaded
+        if (authProvider.userRole == null) {
+          // User authenticated but no Firestore document found
+          // This means user was not manually created by admin
+          return Scaffold(
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 64,
+                      color: Colors.red,
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'Account Not Set Up',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Your account has not been configured yet. Please contact an administrator to set up your account.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    const SizedBox(height: 32),
+                    ElevatedButton.icon(
+                      onPressed: () async {
+                        await authProvider.signOut();
+                      },
+                      icon: const Icon(Icons.logout),
+                      label: const Text('Sign Out'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        // Route based on role
+        print('DEBUG ROUTING: userRole = ${authProvider.userRole}');
+        print('DEBUG ROUTING: workerId = ${authProvider.workerId}');
+        
+        switch (authProvider.userRole!) {
+          case UserRole.admin:
+            print('DEBUG ROUTING: Routing to MainLayout (admin)');
+            return const MainLayout();
+          case UserRole.viewer:
+            print('DEBUG ROUTING: Routing to MainLayout (viewer)');
+            return const MainLayout();
+            
+          case UserRole.worker:
+            print('DEBUG ROUTING: Routing to WorkerDashboardScreen');
+            // Workers go to their own dashboard
+            if (authProvider.workerId != null) {
+              return WorkerDashboardScreen(
+                workerId: authProvider.workerId!,
+              );
+            } else {
+              print('DEBUG ROUTING: ERROR - Worker has no workerId!');
+              return const Scaffold(
+                body: Center(
+                  child: Text('Error: Worker account not properly configured'),
+                ),
+              );
+            }
+        }
       },
     );
   }
