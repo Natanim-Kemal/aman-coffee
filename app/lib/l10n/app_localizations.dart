@@ -223,6 +223,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add workers to get started'**
   String get addWorkersToGetStarted;
+
+  /// No description provided for @currency.
+  ///
+  /// In en, this message translates to:
+  /// **'ETB'**
+  String get currency;
+
+  /// No description provided for @searchWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search workers...'**
+  String get searchWorkers;
+
+  /// No description provided for @noWorkersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No workers found'**
+  String get noWorkersFound;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @security.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePassword;
+
+  /// No description provided for @twoFactorAuth.
+  ///
+  /// In en, this message translates to:
+  /// **'Two-Factor Authentication'**
+  String get twoFactorAuth;
+
+  /// No description provided for @signOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Out'**
+  String get signOut;
+
+  /// No description provided for @areYouSureSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to sign out?'**
+  String get areYouSureSignOut;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get export;
+
+  /// No description provided for @noDataToExport.
+  ///
+  /// In en, this message translates to:
+  /// **'No data to export'**
+  String get noDataToExport;
+
+  /// No description provided for @manageYourAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your account'**
+  String get manageYourAccount;
+
+  /// No description provided for @customizeAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize alerts'**
+  String get customizeAlerts;
+
+  /// No description provided for @systemDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'System default'**
+  String get systemDefault;
+
+  /// No description provided for @weeklyActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Activity'**
+  String get weeklyActivity;
 }
 
 class _AppLocalizationsDelegate

@@ -8,6 +8,7 @@ class WorkerItem extends StatelessWidget {
   final String status;
   final double rating; // 0-5 stars
   final String? photoUrl;
+  final double? currentBalance; // Optional balance to display
   final VoidCallback? onTap;
 
   const WorkerItem({
@@ -18,6 +19,7 @@ class WorkerItem extends StatelessWidget {
     this.status = 'active',
     this.rating = 0.0,
     this.photoUrl,
+    this.currentBalance,
     this.onTap,
   });
 
@@ -90,7 +92,7 @@ class WorkerItem extends StatelessWidget {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      _buildStatusBadge(),
+                      _buildStatusBadge(context),
                       const SizedBox(width: 12),
                       if (rating > 0) _buildRating(context),
                     ],
@@ -98,6 +100,12 @@ class WorkerItem extends StatelessWidget {
                 ],
               ),
             ),
+
+            // Balance display
+            if (currentBalance != null) ...[
+              _buildBalanceDisplay(context),
+              const SizedBox(width: 8),
+            ],
 
             // Arrow
             Icon(
@@ -107,6 +115,42 @@ class WorkerItem extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBalanceDisplay(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isLowBalance = currentBalance! < 500;
+    final balanceColor = isLowBalance ? Colors.red : Colors.green;
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: balanceColor.withOpacity(isDark ? 0.2 : 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'ETB ${currentBalance!.toStringAsFixed(0)}',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: balanceColor,
+            ),
+          ),
+          if (isLowBalance)
+            Text(
+              'Low',
+              style: TextStyle(
+                fontSize: 10,
+                color: balanceColor,
+              ),
+            ),
+        ],
       ),
     );
   }
@@ -163,7 +207,8 @@ class WorkerItem extends StatelessWidget {
     );
   }
 
-  Widget _buildStatusBadge() {
+  Widget _buildStatusBadge(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     Color badgeColor;
     switch (status.toLowerCase()) {
       case 'active':
@@ -182,7 +227,7 @@ class WorkerItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: badgeColor.withOpacity(0.1),
+        color: badgeColor.withOpacity(isDark ? 0.2 : 0.1),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(

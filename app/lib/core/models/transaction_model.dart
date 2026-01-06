@@ -52,6 +52,31 @@ class MoneyTransaction {
     };
   }
 
+  /// Convert to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      ...toFirestore(),
+    };
+  }
+
+  /// Create MoneyTransaction from JSON
+  factory MoneyTransaction.fromJson(Map<String, dynamic> json) {
+    return MoneyTransaction(
+      id: json['id'] ?? '',
+      workerId: json['workerId'] ?? '',
+      workerName: json['workerName'] ?? '',
+      type: json['type'] ?? '',
+      amount: (json['amount'] ?? 0.0).toDouble(),
+      notes: json['notes'],
+      receiptUrl: json['receiptUrl'],
+      createdAt: json['createdAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
+          : DateTime.now(),
+      createdBy: json['createdBy'] ?? '',
+    );
+  }
+
   /// Get display type
   String get typeDisplay {
     switch (type.toLowerCase()) {

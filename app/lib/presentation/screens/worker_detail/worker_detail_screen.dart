@@ -4,11 +4,13 @@ import '../../../core/models/worker_model.dart';
 import '../../../core/models/transaction_model.dart';
 import '../../../core/providers/worker_provider.dart';
 import '../../../core/providers/transaction_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/worker_actions.dart';
 import '../worker_form/worker_form_screen.dart';
 import '../transaction/transaction_dialog.dart';
 import '../../widgets/worker_transactions_list.dart';
+import '../../../l10n/app_localizations.dart';
 
 class WorkerDetailScreen extends StatelessWidget {
   final String workerId;
@@ -62,53 +64,67 @@ class WorkerDetailScreen extends StatelessWidget {
                   onPressed: () => Navigator.pop(context),
                 ),
                 actions: [
-                  IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.white),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WorkerFormScreen(worker: worker),
-                        ),
-                      );
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.white),
-                    onPressed: () async {
-                      final confirmed = await WorkerActions.showDeleteConfirmation(
-                        context,
-                        worker.name,
-                      );
+                  Consumer<AuthProvider>(
+                    builder: (context, authProvider, _) {
+                      final canEdit = authProvider.userRole?.canEditWorkers ?? false;
+                      final canDelete = authProvider.userRole?.canDeleteWorkers ?? false;
                       
-                      if (confirmed == true && context.mounted) {
-                        final workerProvider = Provider.of<WorkerProvider>(
-                          context,
-                          listen: false,
-                        );
-                        final success = await workerProvider.deleteWorker(worker.id);
-                        
-                        if (context.mounted) {
-                          if (success) {
-                            Navigator.pop(context);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Worker deleted successfully'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  workerProvider.errorMessage ?? 'Failed to delete worker',
-                                ),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
-                        }
-                      }
+                      return Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (canEdit)
+                            IconButton(
+                              icon: const Icon(Icons.edit, color: Colors.white),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => WorkerFormScreen(worker: worker),
+                                  ),
+                                );
+                              },
+                            ),
+                          if (canDelete)
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.white),
+                              onPressed: () async {
+                                final confirmed = await WorkerActions.showDeleteConfirmation(
+                                  context,
+                                  worker.name,
+                                );
+                                
+                                if (confirmed == true && context.mounted) {
+                                  final workerProvider = Provider.of<WorkerProvider>(
+                                    context,
+                                    listen: false,
+                                  );
+                                  final success = await workerProvider.deleteWorker(worker.id);
+                                  
+                                  if (context.mounted) {
+                                    if (success) {
+                                      Navigator.pop(context);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                          content: Text('Worker deleted successfully'),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            workerProvider.errorMessage ?? 'Failed to delete worker',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                }
+                              },
+                            ),
+                        ],
+                      );
                     },
                   ),
                 ],
@@ -149,7 +165,7 @@ class WorkerDetailScreen extends StatelessWidget {
                       const SizedBox(height: 20),
 
                       // Balance Card
-                      _buildBalanceCard(worker),
+                      _buildBalanceCard(context, worker),
 
                       const SizedBox(height: 20),
 
@@ -273,7 +289,7 @@ class WorkerDetailScreen extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: _getStatusColor(worker.status).withOpacity(0.1),
+              color: _getStatusColor(worker.status).withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.1),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Row(
@@ -307,15 +323,15 @@ class WorkerDetailScreen extends StatelessWidget {
           const SizedBox(height: 12),
 
           if (worker.phone.isNotEmpty)
-            _buildInfoRow(Icons.phone, worker.phone),
+            _buildInfoRow(context, Icons.phone, worker.phone),
           
           if (worker.email != null && worker.email!.isNotEmpty) ...[
             const SizedBox(height: 12),
-            _buildInfoRow(Icons.email, worker.email!),
+            _buildInfoRow(context, Icons.email, worker.email!),
           ],
 
           const SizedBox(height: 12),
-          _buildInfoRow(Icons.work_history, '${worker.yearsOfExperience} years experience'),
+          _buildInfoRow(context, Icons.work_history, '${worker.yearsOfExperience} years experience'),
           
           // Call/SMS Actions
           if (worker.phone.isNotEmpty) ...[
@@ -396,17 +412,17 @@ class WorkerDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String text) {
+  Widget _buildInfoRow(BuildContext context, IconData icon, String text) {
     return Row(
       children: [
-        Icon(icon, size: 18, color: AppColors.textMutedLight),
+        Icon(icon, size: 18, color: Theme.of(context).brightness == Brightness.dark ? AppColors.textMutedDark : AppColors.textMutedLight),
         const SizedBox(width: 12),
         Expanded(
           child: Text(
             text,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Colors.black87,
+              color: Theme.of(context).textTheme.bodyMedium?.color,
             ),
           ),
         ),
@@ -414,7 +430,7 @@ class WorkerDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildBalanceCard(Worker worker) {
+  Widget _buildBalanceCard(BuildContext context, Worker worker) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -448,7 +464,7 @@ class WorkerDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'ETB ${worker.currentBalance.toStringAsFixed(2)}',
+            '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.currentBalance.toStringAsFixed(2)}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -462,7 +478,7 @@ class WorkerDetailScreen extends StatelessWidget {
               Expanded(
                 child: _buildBalanceItem(
                   'Distributed',
-                  'ETB ${worker.totalDistributed.toStringAsFixed(0)}',
+                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalDistributed.toStringAsFixed(0)}',
                   Icons.arrow_downward,
                 ),
               ),
@@ -474,7 +490,7 @@ class WorkerDetailScreen extends StatelessWidget {
               Expanded(
                 child: _buildBalanceItem(
                   'Returned',
-                  'ETB ${worker.totalReturned.toStringAsFixed(0)}',
+                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalReturned.toStringAsFixed(0)}',
                   Icons.arrow_upward,
                 ),
               ),
@@ -511,71 +527,82 @@ class WorkerDetailScreen extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context, Worker worker) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildActionButton(
-            context,
-            'Distribute',
-            Icons.add_circle,
-            Colors.green,
-            () async {
-              final result = await showDialog<bool>(
-                context: context,
-                builder: (context) => TransactionDialog(
-                  worker: worker,
-                  type: 'distribution',
-                ),
-              );
-              if (result == true) {
-                // Refresh worker data
-              }
-            },
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildActionButton(
-            context,
-            'Record Purchase',
-            Icons.shopping_cart,
-            Colors.orange,
-            () async {
-              final result = await showDialog<bool>(
-                context: context,
-                builder: (context) => TransactionDialog(
-                  worker: worker,
-                  type: 'purchase',
-                ),
-              );
-              if (result == true) {
-                // Refresh worker data
-              }
-            },
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildActionButton(
-            context,
-            'Return',
-            Icons.remove_circle,
-            Colors.red,
-            () async {
-              final result = await showDialog<bool>(
-                context: context,
-                builder: (context) => TransactionDialog(
-                  worker: worker,
-                  type: 'return',
-                ),
-              );
-              if (result == true) {
-                // Refresh worker data
-              }
-            },
-          ),
-        ),
-      ],
+    return Consumer<AuthProvider>(
+      builder: (context, authProvider, _) {
+        final canCreateTransactions = authProvider.userRole?.canCreateTransactions ?? false;
+        
+        // Don't show action buttons if user can't create transactions (viewers)
+        if (!canCreateTransactions) {
+          return const SizedBox.shrink();
+        }
+        
+        return Row(
+          children: [
+            Expanded(
+              child: _buildActionButton(
+                context,
+                'Distribute',
+                Icons.add_circle,
+                Colors.green,
+                () async {
+                  final result = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => TransactionDialog(
+                      worker: worker,
+                      type: 'distribution',
+                    ),
+                  );
+                  if (result == true) {
+                    // Refresh worker data
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionButton(
+                context,
+                'Record Purchase',
+                Icons.shopping_cart,
+                Colors.orange,
+                () async {
+                  final result = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => TransactionDialog(
+                      worker: worker,
+                      type: 'purchase',
+                    ),
+                  );
+                  if (result == true) {
+                    // Refresh worker data
+                  }
+                },
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: _buildActionButton(
+                context,
+                'Return',
+                Icons.remove_circle,
+                Colors.red,
+                () async {
+                  final result = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => TransactionDialog(
+                      worker: worker,
+                      type: 'return',
+                    ),
+                  );
+                  if (result == true) {
+                    // Refresh worker data
+                  }
+                },
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -589,7 +616,7 @@ class WorkerDetailScreen extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: color.withOpacity(0.1),
+        backgroundColor: color.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.1),
         foregroundColor: color,
         padding: const EdgeInsets.symmetric(vertical: 16),
         elevation: 0,
@@ -644,8 +671,9 @@ class WorkerDetailScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildStatItem(
+                  context,
                   'Coffee Purchased',
-                  'ETB ${worker.totalCoffeePurchased.toStringAsFixed(0)}',
+                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalCoffeePurchased.toStringAsFixed(0)}',
                   Icons.local_cafe,
                   Colors.brown,
                 ),
@@ -653,6 +681,7 @@ class WorkerDetailScreen extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: _buildStatItem(
+                  context,
                   'Performance',
                   '${worker.ratingPercentage}%',
                   Icons.star,
@@ -666,11 +695,11 @@ class WorkerDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(BuildContext context, String label, String value, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withOpacity(Theme.of(context).brightness == Brightness.dark ? 0.2 : 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -699,13 +728,16 @@ class WorkerDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildEmptyTransactions() {
+  Widget _buildEmptyTransactions(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
+        border: Border.all(color: isDark ? Colors.grey.shade800 : Colors.grey.shade200),
       ),
       child: Center(
         child: Column(
@@ -713,14 +745,14 @@ class WorkerDetailScreen extends StatelessWidget {
             Icon(
               Icons.receipt_long_outlined,
               size: 48,
-              color: Colors.grey.shade400,
+              color: isDark ? Colors.grey.shade600 : Colors.grey.shade400,
             ),
             const SizedBox(height: 12),
             Text(
               'No transactions yet',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey.shade600,
+                color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
               ),
             ),
             const SizedBox(height: 4),

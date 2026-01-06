@@ -70,4 +70,58 @@ class AppLocalizationsAm extends AppLocalizations {
 
   @override
   String get addWorkersToGetStarted => 'ለመጀመር ሰራተኞችን ይጨምሩ';
+
+  @override
+  String get currency => 'ብር';
+
+  @override
+  String get searchWorkers => 'ሰራተኞችን ይፈልጉ...';
+
+  @override
+  String get noWorkersFound => 'ምንም ሰራተኞች አልተገኙም';
+
+  @override
+  String get profile => 'መገለጫ';
+
+  @override
+  String get notifications => 'ማሳወቂያዎች';
+
+  @override
+  String get darkMode => 'ጨለማ ሁነታ';
+
+  @override
+  String get security => 'ደህንነት';
+
+  @override
+  String get changePassword => 'የይለፍ ቃል ቀይር';
+
+  @override
+  String get twoFactorAuth => 'ባለ ሁለት ደረጃ ማረጋገጫ';
+
+  @override
+  String get signOut => 'ውጣ';
+
+  @override
+  String get areYouSureSignOut => 'እርግጠኛ ነዎት መውጣት ይፈልጋሉ?';
+
+  @override
+  String get confirm => 'አረጋግጥ';
+
+  @override
+  String get export => 'ወደ ውጪ ላክ';
+
+  @override
+  String get noDataToExport => 'ለመላክ ምንም ውሂብ የለም';
+
+  @override
+  String get manageYourAccount => 'መለያዎን ያስተዳድሩ';
+
+  @override
+  String get customizeAlerts => 'ማሳወቂያዎችን ያብጁ';
+
+  @override
+  String get systemDefault => 'የስርዓት ነባሪ';
+
+  @override
+  String get weeklyActivity => 'የሳምንት እንቅስቃሴ';
 }

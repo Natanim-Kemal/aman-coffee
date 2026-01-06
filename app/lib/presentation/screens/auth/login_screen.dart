@@ -60,6 +60,8 @@ class _LoginScreenState extends State<LoginScreen> {
   void _showForgotPasswordDialog(BuildContext context) {
     final emailController = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     showDialog(
       context: context,
@@ -79,6 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
               TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
+                style: TextStyle(color: isDark ? Colors.white : Colors.black87),
                 decoration: const InputDecoration(
                   labelText: 'Email',
                   border: OutlineInputBorder(),
@@ -146,9 +149,10 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight, 
+      backgroundColor: theme.scaffoldBackgroundColor, 
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 40.0),
@@ -176,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w600,
-                  color: Colors.black87,
+                  color: isDark ? Colors.white : Colors.black87,
                   letterSpacing: -0.5,
                 ),
               ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1, end: 0),
@@ -187,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 'Sign in to your workspace.',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textMutedLight,
+                  color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                 ),
               ).animate().fadeIn(delay: 300.ms).slideY(begin: 0.1, end: 0),
 
@@ -198,6 +202,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 controller: _emailController,
                 label: 'Email',
                 isLast: false,
+                isDark: isDark,
               ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1, end: 0),
               
               const SizedBox(height: 24),
@@ -207,6 +212,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 label: 'Password',
                 isObscure: true,
                 isLast: true,
+                isDark: isDark,
               ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.1, end: 0),
 
               const SizedBox(height: 60),
@@ -252,12 +258,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     _showForgotPasswordDialog(context);
                   },
                   style: TextButton.styleFrom(
-                    foregroundColor: AppColors.textMutedLight,
+                    foregroundColor: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                   ),
                   child: Text(
                     'Forgot Password?',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppColors.textMutedLight,
+                      color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                     ),
                   ),
                 ),
@@ -275,6 +281,7 @@ class _LoginScreenState extends State<LoginScreen> {
     required String label,
     bool isObscure = false,
     bool isLast = false,
+    required bool isDark,
   }) {
     final theme = Theme.of(context);
     
@@ -282,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
       controller: controller,
       obscureText: isObscure,
       style: theme.textTheme.bodyMedium?.copyWith(
-        color: Colors.black87,
+        color: isDark ? Colors.white : Colors.black87,
         fontSize: 15,
       ),
       cursorColor: AppColors.primary,
@@ -310,7 +317,7 @@ class _LoginScreenState extends State<LoginScreen> {
       decoration: InputDecoration(
         labelText: label,
         labelStyle: theme.textTheme.bodyMedium?.copyWith(
-          color: AppColors.textMutedLight,
+          color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
           fontSize: 14,
         ),
         floatingLabelStyle: theme.textTheme.bodySmall?.copyWith(
@@ -323,7 +330,7 @@ class _LoginScreenState extends State<LoginScreen> {
         errorStyle: const TextStyle(fontSize: 11, height: 0.8),
         // Underline border style for minimalism
         enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.black.withOpacity(0.2)),
+          borderSide: BorderSide(color: isDark ? Colors.white24 : Colors.black.withOpacity(0.2)),
         ),
         focusedBorder: const UnderlineInputBorder(
           borderSide: BorderSide(color: AppColors.primary, width: 2),

@@ -54,14 +54,17 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final authProvider = Provider.of<AuthProvider>(context);
     
     return Scaffold(
-      backgroundColor: AppColors.backgroundLight,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Edit Profile'),
+        title: Text('Edit Profile', style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        iconTheme: IconThemeData(color: theme.iconTheme.color ?? (isDark ? Colors.white : Colors.black)),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -108,27 +111,30 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 ),
                 const SizedBox(height: 32),
                 
-                const Text(
+                Text(
                   'Full Name',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
+                    color: theme.textTheme.bodyLarge?.color,
                   ),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _nameController,
+                  style: TextStyle(color: theme.textTheme.bodyMedium?.color),
                   decoration: InputDecoration(
                     hintText: 'Enter your name',
+                    hintStyle: TextStyle(color: theme.hintColor),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: isDark ? theme.cardColor : Colors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: Colors.transparent),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.transparent),
+                      borderSide: BorderSide(color: isDark ? Colors.white10 : Colors.transparent),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -145,20 +151,22 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 
                 const SizedBox(height: 24),
                 
-                const Text(
+                Text(
                   'Email Address',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
+                    color: theme.textTheme.bodyLarge?.color,
                   ),
                 ),
                 const SizedBox(height: 8),
                 TextFormField(
                   controller: _emailController,
                   readOnly: true,
+                  style: TextStyle(color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7)),
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: Colors.grey.shade100,
+                    fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade100,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: Colors.transparent),
@@ -173,12 +181,12 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                     ),
                   ),
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 8, left: 4),
+                Padding(
+                  padding: const EdgeInsets.only(top: 8, left: 4),
                   child: Text(
                     'Email cannot be changed',
                     style: TextStyle(
-                      color: AppColors.textMutedLight,
+                      color: isDark ? Colors.grey.shade400 : AppColors.textMutedLight,
                       fontSize: 12,
                     ),
                   ),

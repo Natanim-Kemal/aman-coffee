@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../core/theme/app_theme.dart';
+import '../../l10n/app_localizations.dart';
 
 class ActivityChart extends StatelessWidget {
   final List<double> distributedData;
@@ -18,6 +19,7 @@ class ActivityChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final localizations = AppLocalizations.of(context);
 
     return Container(
       height: 220,
@@ -40,7 +42,7 @@ class ActivityChart extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Weekly Activity',
+                localizations?.weeklyActivity ?? 'Weekly Activity',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -49,9 +51,9 @@ class ActivityChart extends StatelessWidget {
               ),
               Row(
                 children: [
-                  _buildLegend(Colors.green, 'Distributed'),
+                  _buildLegend(Colors.green, localizations?.distributed ?? 'Distributed'),
                   const SizedBox(width: 12),
-                  _buildLegend(Colors.red, 'Returned'),
+                  _buildLegend(Colors.red, localizations?.returned ?? 'Returned'),
                 ],
               ),
             ],
@@ -68,7 +70,7 @@ class ActivityChart extends StatelessWidget {
                     tooltipBgColor: isDark ? Colors.grey.shade800 : Colors.black87,
                     getTooltipItem: (group, groupIndex, rod, rodIndex) {
                       return BarTooltipItem(
-                        'ETB ${rod.toY.toStringAsFixed(0)}',
+                        '${localizations?.currency ?? 'ETB'} ${rod.toY.toStringAsFixed(0)}',
                         const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -171,7 +173,7 @@ class ActivityChart extends StatelessWidget {
     final allValues = [...distributedData, ...returnedData];
     if (allValues.isEmpty) return 10000;
     final max = allValues.reduce((a, b) => a > b ? a : b);
-    return (max * 1.2).ceilToDouble();
+    return max == 0 ? 100 : (max * 1.2).ceilToDouble();
   }
 
   List<BarChartGroupData> _buildBarGroups() {

@@ -7,6 +7,7 @@ import '../../../core/models/worker_model.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/transaction_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class TransactionDialog extends StatefulWidget {
   final Worker worker;
@@ -185,8 +186,12 @@ class _TransactionDialogState extends State<TransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      backgroundColor: theme.dialogBackgroundColor,
       child: Container(
         padding: const EdgeInsets.all(24),
         child: Form(
@@ -210,10 +215,10 @@ class _TransactionDialogState extends State<TransactionDialog> {
                 // Title
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    color: theme.textTheme.headlineMedium?.color,
                   ),
                 ),
 
@@ -224,7 +229,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                   widget.worker.name,
                   style: TextStyle(
                     fontSize: 14,
-                    color: AppColors.textMutedLight,
+                    color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                   ),
                 ),
 
@@ -238,13 +243,13 @@ class _TransactionDialogState extends State<TransactionDialog> {
                     FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                   ],
                   decoration: InputDecoration(
-                    labelText: 'Amount (ETB)',
+                    labelText: 'Amount (${AppLocalizations.of(context)?.currency ?? 'ETB'})',
                     prefixIcon: const Icon(Icons.attach_money),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
@@ -276,7 +281,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.grey.shade50,
+                    fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
                   ),
                 ),
 
@@ -288,19 +293,19 @@ class _TransactionDialogState extends State<TransactionDialog> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
+                      border: Border.all(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(12),
-                      color: Colors.grey.shade50,
+                      color: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
                     ),
                     child: Row(
                       children: [
-                        Icon(Icons.camera_alt, color: Colors.grey.shade600),
+                        Icon(Icons.camera_alt, color: isDark ? Colors.grey.shade400 : Colors.grey.shade600),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             _receiptImage != null ? 'Receipt Selected' : 'Add Receipt Photo',
                             style: TextStyle(
-                              color: _receiptImage != null ? Colors.green : Colors.grey.shade600,
+                              color: _receiptImage != null ? Colors.green : (isDark ? Colors.grey.shade400 : Colors.grey.shade600),
                               fontWeight: _receiptImage != null ? FontWeight.bold : FontWeight.normal,
                             ),
                           ),

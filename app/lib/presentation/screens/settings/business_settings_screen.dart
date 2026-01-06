@@ -1,0 +1,212 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../core/providers/settings_provider.dart';
+import '../../../core/theme/app_theme.dart';
+
+class BusinessSettingsScreen extends StatefulWidget {
+  const BusinessSettingsScreen({super.key});
+
+  @override
+  State<BusinessSettingsScreen> createState() => _BusinessSettingsScreenState();
+}
+
+class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
+  final _formKey = GlobalKey<FormState>();
+  late TextEditingController _nameController;
+  late TextEditingController _addressController;
+  late TextEditingController _phoneController;
+  late TextEditingController _limitController;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final settings = Provider.of<SettingsProvider>(context, listen: false);
+    _nameController = TextEditingController(text: settings.companyName);
+    _addressController = TextEditingController(text: settings.companyAddress);
+    _phoneController = TextEditingController(text: settings.companyPhone);
+    _limitController = TextEditingController(text: settings.distributionLimit.toString());
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _addressController.dispose();
+    _phoneController.dispose();
+    _limitController.dispose();
+    super.dispose();
+  }
+
+  void _saveSettings() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
+      
+      try {
+        final settings = Provider.of<SettingsProvider>(context, listen: false);
+        
+        await settings.updateCompanyInfo(
+          name: _nameController.text,
+          address: _addressController.text,
+          phone: _phoneController.text,
+        );
+        
+        await settings.updateDistributionLimit(
+          double.tryParse(_limitController.text) ?? 5000.0,
+        );
+
+        if (mounted) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Business settings saved successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error saving settings: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } finally {
+        if (mounted) setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Business Settings'),
+        backgroundColor: theme.appBarTheme.backgroundColor ?? AppColors.primary,
+        foregroundColor: Colors.white,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildSectionHeader(context, 'Company Information'),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: _nameController,
+                label: 'Company Name',
+                icon: Icons.business,
+                validator: (v) => v?.isNotEmpty == true ? null : 'Required',
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: _addressController,
+                label: 'Address',
+                icon: Icons.location_on,
+              ),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: _phoneController,
+                label: 'Phone',
+                icon: Icons.phone,
+                keyboardType: TextInputType.phone,
+              ),
+
+              const SizedBox(height: 32),
+              
+              _buildSectionHeader(context, 'Business Limits'),
+              const SizedBox(height: 16),
+              _buildTextField(
+                controller: _limitController,
+                label: 'Max Distribution Limit (ETB)',
+                icon: Icons.attach_money,
+                keyboardType: TextInputType.number,
+                 validator: (v) {
+                  if (v == null || v.isEmpty) return 'Required';
+                  if (double.tryParse(v) == null) return 'Invalid number';
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 40),
+
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _saveSettings,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  child: _isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
+                          'Save Changes',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Text(
+      title,
+      style: TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: AppColors.primary,
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    TextInputType? keyboardType,
+    String? Function(String?)? validator,
+  }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator: validator,
+      style: TextStyle(
+        color: isDark ? Colors.white : Colors.black87,
+      ),
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: Colors.grey),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+        ),
+        filled: true,
+        fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+      ),
+    );
+  }
+}

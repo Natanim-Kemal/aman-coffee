@@ -15,6 +15,8 @@ class Worker {
   final DateTime createdAt;
   final DateTime? lastActiveAt;
   final bool isActive;
+  final String? userId; // Link to User account (null if no login)
+  final bool hasLoginAccess; // Can this worker login?
 
   Worker({
     required this.id,
@@ -33,6 +35,8 @@ class Worker {
     required this.createdAt,
     this.lastActiveAt,
     this.isActive = true,
+    this.userId,
+    this.hasLoginAccess = false,
   });
 
   /// Create Worker from Firestore document
@@ -58,6 +62,8 @@ class Worker {
           ? DateTime.fromMillisecondsSinceEpoch(data['lastActiveAt'])
           : null,
       isActive: data['isActive'] ?? true,
+      userId: data['userId'],
+      hasLoginAccess: data['hasLoginAccess'] ?? false,
     );
   }
 
@@ -79,7 +85,45 @@ class Worker {
       'createdAt': createdAt.millisecondsSinceEpoch,
       'lastActiveAt': lastActiveAt?.millisecondsSinceEpoch,
       'isActive': isActive,
+      'userId': userId,
+      'hasLoginAccess': hasLoginAccess,
     };
+  }
+
+  /// Convert to JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      ...toFirestore(),
+    };
+  }
+
+  /// Create Worker from JSON
+  factory Worker.fromJson(Map<String, dynamic> json) {
+    return Worker(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      phone: json['phone'] ?? '',
+      email: json['email'],
+      role: json['role'] ?? 'Worker',
+      yearsOfExperience: json['yearsOfExperience'] ?? 0,
+      status: json['status'] ?? 'active',
+      performanceRating: (json['performanceRating'] ?? 0.0).toDouble(),
+      photoUrl: json['photoUrl'],
+      currentBalance: (json['currentBalance'] ?? 0.0).toDouble(),
+      totalDistributed: (json['totalDistributed'] ?? 0.0).toDouble(),
+      totalReturned: (json['totalReturned'] ?? 0.0).toDouble(),
+      totalCoffeePurchased: (json['totalCoffeePurchased'] ?? 0.0).toDouble(),
+      createdAt: json['createdAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
+          : DateTime.now(),
+      lastActiveAt: json['lastActiveAt'] != null
+          ? DateTime.fromMillisecondsSinceEpoch(json['lastActiveAt'])
+          : null,
+      isActive: json['isActive'] ?? true,
+      userId: json['userId'],
+      hasLoginAccess: json['hasLoginAccess'] ?? false,
+    );
   }
 
   /// Create a copy of Worker with updated fields
@@ -100,6 +144,8 @@ class Worker {
     DateTime? createdAt,
     DateTime? lastActiveAt,
     bool? isActive,
+    String? userId,
+    bool? hasLoginAccess,
   }) {
     return Worker(
       id: id ?? this.id,
@@ -118,6 +164,8 @@ class Worker {
       createdAt: createdAt ?? this.createdAt,
       lastActiveAt: lastActiveAt ?? this.lastActiveAt,
       isActive: isActive ?? this.isActive,
+      userId: userId ?? this.userId,
+      hasLoginAccess: hasLoginAccess ?? this.hasLoginAccess,
     );
   }
 

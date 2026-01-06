@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/worker_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../widgets/worker_item.dart';
 import '../../widgets/stats_card.dart';
+import '../../widgets/custom_header.dart';
+import '../../../l10n/app_localizations.dart';
 import '../worker_form/worker_form_screen.dart';
 import '../worker_detail/worker_detail_screen.dart';
 
@@ -52,7 +55,6 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      // backgroundColor: AppColors.backgroundLight, // Removed for theme support
       body: Consumer<WorkerProvider>(
           builder: (context, workerProvider, _) {
             return RefreshIndicator(
@@ -61,14 +63,13 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                 slivers: [
                   // Header
                   SliverToBoxAdapter(
-                    child: Container(
-                      color: AppColors.primary,
-                      padding: EdgeInsets.fromLTRB(20, MediaQuery.of(context).padding.top + 20, 20, 30),
+                    child: CustomHeader(
+                      height: 200, // Taller for Search Bar
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Workers',
+                            AppLocalizations.of(context)?.workers ?? 'Workers',
                             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -93,7 +94,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                               controller: _searchController,
                               onChanged: _onSearchChanged,
                               decoration: InputDecoration(
-                                hintText: 'Search workers...',
+                                hintText: AppLocalizations.of(context)?.searchWorkers ?? 'Search workers...',
                                 hintStyle: TextStyle(
                                   color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                                   fontSize: 14,
@@ -139,7 +140,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                   // Statistics Cards
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
                       child: Row(
                         children: [
                           Expanded(
@@ -266,6 +267,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                                 status: worker.statusDisplay,
                                 rating: worker.ratingStars,
                                 photoUrl: worker.photoUrl,
+                                currentBalance: worker.currentBalance,
                                 onTap: () {
                                   Navigator.push(
                                     context,
@@ -286,36 +288,47 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
             );
           },
         ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(bottom: 70),
-        child: FloatingActionButton(
-          onPressed: _navigateToAddWorker,
-          backgroundColor: AppColors.primary,
-          child: const Icon(Icons.add, color: Colors.white),
-        ),
+      floatingActionButton: Consumer<AuthProvider>(
+        builder: (context, authProvider, _) {
+          // Only show Add Worker button for admins
+          final canManageWorkers = authProvider.userRole?.canManageWorkers ?? false;
+          if (!canManageWorkers) return const SizedBox.shrink();
+          
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 70),
+            child: FloatingActionButton(
+              onPressed: _navigateToAddWorker,
+              backgroundColor: AppColors.primary,
+              child: const Icon(Icons.add, color: Colors.white),
+            ),
+          );
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 
   Widget _buildFilterChip(String label, String value) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isSelected = _selectedFilter == value;
+
     return GestureDetector(
       onTap: () => _onFilterChanged(value),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.white,
+          color: isSelected ? AppColors.primary : (isDark ? theme.cardColor : Colors.white),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: isSelected ? AppColors.primary : Colors.grey.shade300,
+            color: isSelected ? AppColors.primary : (isDark ? Colors.white12 : Colors.grey.shade300),
             width: 1,
           ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black87,
+            color: isSelected ? Colors.white : (isDark ? Colors.white70 : Colors.black87),
             fontSize: 13,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),
