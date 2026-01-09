@@ -6,6 +6,7 @@ import '../../../core/services/audit_service.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../widgets/background_pattern.dart';
+import '../../../l10n/app_localizations.dart';
 
 class AuditLogScreen extends StatefulWidget {
   const AuditLogScreen({super.key});
@@ -28,7 +29,7 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
     if (authProvider.userRole?.canManageUsers != true) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Audit Logs'),
+          title: Text(AppLocalizations.of(context)!.auditLogs),
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
         ),
@@ -45,16 +46,16 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
                 color: Colors.grey.shade400,
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Access Denied',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.accessDenied,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Only administrators can view audit logs',
+                AppLocalizations.of(context)!.adminAuditLogsOnly,
                 style: TextStyle(
                   color: Colors.grey.shade600,
                 ),
@@ -80,9 +81,9 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
               setState(() => _selectedFilter = value);
             },
             itemBuilder: (context) => [
-              const PopupMenuItem(
+              PopupMenuItem(
                 value: null,
-                child: Text('All Actions'),
+                child: Text(AppLocalizations.of(context)!.allActions),
               ),
               const PopupMenuDivider(),
               ...AuditAction.values.map((action) => PopupMenuItem(
@@ -122,13 +123,13 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
                   ),
                   const SizedBox(width: 8),
                   Text(
-                    'Filtering: ${_selectedFilter!.displayName}',
+                    AppLocalizations.of(context)!.filtering(_selectedFilter!.displayName),
                     style: const TextStyle(fontSize: 13),
                   ),
                   const Spacer(),
                   TextButton(
                     onPressed: () => setState(() => _selectedFilter = null),
-                    child: const Text('Clear'),
+                    child: Text(AppLocalizations.of(context)!.clear),
                   ),
                 ],
               ),
@@ -153,7 +154,7 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
                         Icon(Icons.error_outline, size: 48, color: Colors.red.shade300),
                         const SizedBox(height: 16),
                         Text(
-                          'Error loading logs',
+                          AppLocalizations.of(context)!.errorLoadingLogs,
                           style: TextStyle(color: Colors.red.shade700),
                         ),
                         const SizedBox(height: 8),
@@ -183,16 +184,16 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
                           color: Colors.grey.shade400,
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'No Audit Logs',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.noAuditLogs,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Activity logs will appear here',
+                          AppLocalizations.of(context)!.activityLogsWillAppear,
                           style: TextStyle(color: Colors.grey.shade600),
                         ),
                       ],

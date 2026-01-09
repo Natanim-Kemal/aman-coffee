@@ -24,7 +24,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get welcomeBack => 'Welcome back,';
+  String get welcomeBack => 'Welcome Back,';
 
   @override
   String get changeLanguage => 'Change Language';
@@ -168,7 +168,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get submitReport => 'Submit Report';
 
   @override
-  String get loadMore => 'Load More';
+  String loadMore(Object remaining) {
+    return 'Load More ($remaining remaining)';
+  }
 
   @override
   String get save => 'Save';
@@ -222,13 +224,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get avgPrice => 'Avg Price';
 
   @override
-  String get workerCommission => 'Worker Commission';
+  String get workerCommission => 'Worker Commission:';
 
   @override
   String get commissionEarned => 'Commission Earned';
 
   @override
-  String get commissionRate => 'Commission Rate';
+  String get commissionRate => 'Commission Rate (per Kg)';
 
   @override
   String get balance => 'Balance';
@@ -273,19 +275,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get quantity => 'Quantity';
 
   @override
-  String get pricePerKg => 'Price per Kg';
+  String get pricePerKg => 'Price/Kg';
 
   @override
   String get weight => 'Weight';
 
   @override
-  String get totalAmount => 'Total Amount';
+  String get totalAmount => 'Total Amount:';
 
   @override
   String get distributeMoney => 'Distribute Money';
 
   @override
-  String get returnMoney => 'Return Money';
+  String get returnMoney => 'Return';
 
   @override
   String get recordPurchase => 'Record Purchase';
@@ -334,7 +336,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noNotifications => 'No notifications';
 
   @override
-  String get endOfTransactions => 'End of transactions';
+  String get endOfTransactions => '— End of transactions —';
 
   @override
   String get companyName => 'Company Name';
@@ -346,7 +348,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get companyPhone => 'Phone';
 
   @override
-  String get maxDistributionLimit => 'Max Distribution Limit';
+  String maxDistributionLimit(Object currency) {
+    return 'Max Distribution Limit ($currency)';
+  }
 
   @override
   String get topBuyer => 'Top Buyer';
@@ -412,7 +416,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yearsOfExperience => 'Years of Experience';
 
   @override
-  String get createLoginAccount => 'Create login account';
+  String get createLoginAccount => 'Create Login Account';
 
   @override
   String get todayTopBuyer => 'Today\'s Top Buyer';
@@ -443,8 +447,8 @@ class AppLocalizationsEn extends AppLocalizations {
       'Business settings can only be edited by viewers (owners).';
 
   @override
-  String showingTransactions(Object current, Object total) {
-    return 'Showing $current of $total transactions';
+  String showingTransactions(Object count, Object total) {
+    return 'Showing $count of $total transactions';
   }
 
   @override
@@ -456,4 +460,700 @@ class AppLocalizationsEn extends AppLocalizations {
   String showingAllTransactions(Object count) {
     return 'Showing all $count transactions';
   }
+
+  @override
+  String get enterMessage => 'Please enter a message';
+
+  @override
+  String errorSendingPing(Object error) {
+    return 'Error sending ping: $error';
+  }
+
+  @override
+  String get workerAccountCreated => 'Worker Account Created!';
+
+  @override
+  String loginCredentialsFor(Object name) {
+    return 'Login credentials for $name:';
+  }
+
+  @override
+  String get sendCredentialsToWorker => 'Send these credentials to the worker:';
+
+  @override
+  String get welcomeToCofiz => 'Welcome to Cofiz!';
+
+  @override
+  String get credentialsCopied => 'Credentials copied to clipboard';
+
+  @override
+  String get couldNotOpenSms => 'Could not open SMS app';
+
+  @override
+  String get downloadAppMessage =>
+      'Download the app and login to start tracking your sales.';
+
+  @override
+  String get allActions => 'All Actions';
+
+  @override
+  String get accessDenied => 'Access Denied';
+
+  @override
+  String get adminAuditLogsOnly => 'Only administrators can view audit logs';
+
+  @override
+  String filtering(Object filter) {
+    return 'Filtering: $filter';
+  }
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get errorLoadingLogs => 'Error loading logs';
+
+  @override
+  String get noAuditLogs => 'No Audit Logs';
+
+  @override
+  String get activityLogsWillAppear => 'Activity logs will appear here';
+
+  @override
+  String get signInToWorkspace => 'Sign in to your workspace.';
+
+  @override
+  String get thisFieldRequired => 'This field is required';
+
+  @override
+  String get validEmailRequired => 'Please enter a valid email';
+
+  @override
+  String get passwordLengthError => 'Password must be at least 6 characters';
+
+  @override
+  String get signIn => 'Sign In';
+
+  @override
+  String passwordResetLinkSent(Object email) {
+    return 'Password reset link sent to $email';
+  }
+
+  @override
+  String get failedToSendResetLink => 'Failed to send reset link';
+
+  @override
+  String get sendResetLink => 'Send Reset Link';
+
+  @override
+  String get enterEmailResetPassword =>
+      'Enter your email address and we\'ll send you a link to reset your password.';
+
+  @override
+  String get pingAllWorkers => 'Ping All Workers';
+
+  @override
+  String get messageToAllWorkers => 'Message to all workers';
+
+  @override
+  String get announcement => 'Announcement';
+
+  @override
+  String get admin => 'Admin';
+
+  @override
+  String get notificationSentToAll => 'Notification sent to all workers';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String minutesAgo(Object minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String hoursAgo(Object hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String daysAgo(Object days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get last7Days => 'Last 7 Days';
+
+  @override
+  String get thisMonth => 'This Month';
+
+  @override
+  String get allTime => 'All Time';
+
+  @override
+  String get chooseDate => 'Choose Date';
+
+  @override
+  String get preparingPdfReport => 'Preparing PDF Report...';
+
+  @override
+  String get noTransactionsFound => 'No transactions found';
+
+  @override
+  String get records => 'records';
+
+  @override
+  String get business => 'Business';
+
+  @override
+  String get manageAreas => 'Manage Areas';
+
+  @override
+  String get purchaseLocations => 'Purchase locations';
+
+  @override
+  String get general => 'General';
+
+  @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get data => 'Data';
+
+  @override
+  String get backupExportClearCache => 'Backup, Export, Clear Cache';
+
+  @override
+  String get viewSystemActivityLogs => 'View system activity logs';
+
+  @override
+  String get app => 'App';
+
+  @override
+  String version(Object version) {
+    return 'Version $version';
+  }
+
+  @override
+  String passwordResetEmailSent(Object email) {
+    return 'Password reset email sent to $email';
+  }
+
+  @override
+  String failedToSendResetEmail(Object error) {
+    return 'Failed to send reset email: $error';
+  }
+
+  @override
+  String get changePasswordDialogTitle => 'Change Password';
+
+  @override
+  String get changePasswordDialogContent =>
+      'To change your password, we will send a password reset link to your email address. Do you want to proceed?';
+
+  @override
+  String get updateFailed => 'Update failed';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get enterYourName => 'Enter your name';
+
+  @override
+  String get pleaseEnterYourName => 'Please enter your name';
+
+  @override
+  String get emailAddress => 'Email Address';
+
+  @override
+  String get emailCannotBeChanged => 'Email cannot be changed';
+
+  @override
+  String get emailNotifications => 'Email Notifications';
+
+  @override
+  String get receiveUpdatesViaEmail => 'Receive updates via email';
+
+  @override
+  String get pushNotifications => 'Push Notifications';
+
+  @override
+  String get receiveInstantAlerts => 'Receive instant alerts on your device';
+
+  @override
+  String get smsNotifications => 'SMS Notifications';
+
+  @override
+  String get receiveTextAlerts => 'Receive text message alerts';
+
+  @override
+  String get businessSettingsSaved => 'Business settings saved successfully';
+
+  @override
+  String errorSavingSettings(Object error) {
+    return 'Error saving settings: $error';
+  }
+
+  @override
+  String get companyInformation => 'Company Information';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get businessLimits => 'Business Limits';
+
+  @override
+  String get required => 'Required';
+
+  @override
+  String get invalidNumber => 'Invalid number';
+
+  @override
+  String get termsOfService => 'Terms of Service';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get legal => 'Legal';
+
+  @override
+  String get support => 'Support';
+
+  @override
+  String get contactSupport => 'Contact Support';
+
+  @override
+  String get visitWebsite => 'Visit Website';
+
+  @override
+  String get copyright => '© 2026 Cofiz app. All rights reserved.';
+
+  @override
+  String get areaAlreadyExists => 'Area already exists';
+
+  @override
+  String areaAdded(Object name) {
+    return 'Area \"$name\" added';
+  }
+
+  @override
+  String get deleteArea => 'Delete Area';
+
+  @override
+  String deleteAreaConfirmation(Object name) {
+    return 'Are you sure you want to delete \"$name\"?';
+  }
+
+  @override
+  String areaDeleted(Object name) {
+    return 'Area \"$name\" deleted';
+  }
+
+  @override
+  String get editArea => 'Edit Area';
+
+  @override
+  String get areaName => 'Area Name';
+
+  @override
+  String areaRenamed(Object name) {
+    return 'Area renamed to \"$name\"';
+  }
+
+  @override
+  String get enterNewAreaName => 'Enter new area name...';
+
+  @override
+  String get noAreasYet => 'No areas yet';
+
+  @override
+  String get addYourFirstArea => 'Add your first area above';
+
+  @override
+  String get defaultArea => 'Default area';
+
+  @override
+  String dataExportedTo(Object path) {
+    return 'Data exported to:\n\n$path\n\nYou can access this file from your device file manager.';
+  }
+
+  @override
+  String exportFailed(Object error) {
+    return 'Export failed: $error';
+  }
+
+  @override
+  String get clearCache => 'Clear Cache?';
+
+  @override
+  String get clearCacheConfirmation =>
+      'This will clear local preferences (theme, settings, last login). It will NOT delete workers or transactions.\n\nAre you sure?';
+
+  @override
+  String get cacheCleared =>
+      'Cache cleared. Please restart app for full effect.';
+
+  @override
+  String get backupAndExport => 'Backup & Export';
+
+  @override
+  String get exportDataJson => 'Export Data (JSON)';
+
+  @override
+  String get exportDataSubtitle =>
+      'Save a full backup of all workers and transactions to your device.';
+
+  @override
+  String get storage => 'Storage';
+
+  @override
+  String get clearAppCache => 'Clear App Cache';
+
+  @override
+  String get clearAppCacheSubtitle =>
+      'Reset local preferences and temporary files.';
+
+  @override
+  String get failedToDeleteWorker => 'Failed to delete worker';
+
+  @override
+  String get distribute => 'Distribute';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get performance => 'Performance';
+
+  @override
+  String get transactionsWillAppearHere => 'Transactions will appear here';
+
+  @override
+  String get call => 'Call';
+
+  @override
+  String get message => 'Message';
+
+  @override
+  String couldNotMakeCall(Object error) {
+    return 'Could not make call: $error';
+  }
+
+  @override
+  String couldNotSendSMS(Object error) {
+    return 'Could not send SMS: $error';
+  }
+
+  @override
+  String yearsExperience(Object years) {
+    return '$years years experience';
+  }
+
+  @override
+  String get emailRequiredForLogin =>
+      'Email is required to create a login account';
+
+  @override
+  String workerSavedAccountFailed(Object error) {
+    return 'Worker saved, but login account failed: $error';
+  }
+
+  @override
+  String get workerUpdatedSuccessfully => 'Worker updated successfully';
+
+  @override
+  String get workerAddedSuccessfully => 'Worker added successfully';
+
+  @override
+  String get failedToSaveWorker => 'Failed to save worker';
+
+  @override
+  String get nameIsRequired => 'Name is required';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get phoneNumberIsRequired => 'Phone number is required';
+
+  @override
+  String get commissionRateIsRequired => 'Commission rate is required';
+
+  @override
+  String get enterValidNumber => 'Enter a valid number';
+
+  @override
+  String get emailRequiredLogin => 'Email (Required for login)';
+
+  @override
+  String get emailOptional => 'Email (Optional)';
+
+  @override
+  String get enterValidEmail => 'Please enter a valid email address';
+
+  @override
+  String get allowWorkerLogin => 'Allow this worker to login to the app';
+
+  @override
+  String years(Object count) {
+    return '$count years';
+  }
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get performanceRating => 'Performance Rating';
+
+  @override
+  String get filterWorkers => 'Filter Workers';
+
+  @override
+  String get tryAdjustingSearch => 'Try adjusting your search';
+
+  @override
+  String get tapToAddWorker => 'Tap + to add your first worker';
+
+  @override
+  String get returnMoneyTitle => 'Return Money';
+
+  @override
+  String get transaction => 'Transaction';
+
+  @override
+  String errorPickingImage(Object error) {
+    return 'Error picking image: $error';
+  }
+
+  @override
+  String get failedToUploadReceipt => 'Failed to upload receipt';
+
+  @override
+  String get transactionCompleted => 'Transaction completed successfully';
+
+  @override
+  String get failedToComplete => 'Failed to complete transaction';
+
+  @override
+  String amountWithCurrency(Object currency) {
+    return 'Amount ($currency)';
+  }
+
+  @override
+  String get amountIsRequired => 'Amount is required';
+
+  @override
+  String get invalidAmount => 'Invalid amount';
+
+  @override
+  String get selectCoffeeType => 'Please select a coffee type';
+
+  @override
+  String get weightKg => 'Weight (Kg)';
+
+  @override
+  String get totalCostCalculated => 'Total Cost (Calculated)';
+
+  @override
+  String get notesOptional => 'Notes (Optional)';
+
+  @override
+  String get addNotesHere => 'Add any notes here...';
+
+  @override
+  String get receiptSelected => 'Receipt Selected';
+
+  @override
+  String get addReceiptPhoto => 'Add Receipt Photo';
+
+  @override
+  String get workerDataNotFound => 'Worker data not found';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get navHome => 'Home';
+
+  @override
+  String get navHistory => 'History';
+
+  @override
+  String get navSettings => 'Settings';
+
+  @override
+  String get recentActivity => 'Recent Activity';
+
+  @override
+  String get lowBalanceWarning => 'Low balance - please return funds';
+
+  @override
+  String get balanceGood => 'Balance looks good';
+
+  @override
+  String get recordReturn => 'Record Return';
+
+  @override
+  String offlineSyncPending(Object count) {
+    return 'Offline • $count pending';
+  }
+
+  @override
+  String get youAreOffline => 'You are offline';
+
+  @override
+  String yrs(Object count) {
+    return '$count yrs';
+  }
+
+  @override
+  String get low => 'Low';
+
+  @override
+  String get recordCoffeePurchaseTitle => 'Record Coffee Purchase';
+
+  @override
+  String get recordCoffeePurchaseSubtitle =>
+      'Record coffee purchased from farmers';
+
+  @override
+  String get coffeeTypeLabel => 'Coffee Type *';
+
+  @override
+  String get quantityKgLabel => 'Quantity (Kg) *';
+
+  @override
+  String pricePerKgLabel(Object currency) {
+    return 'Price/Kg ($currency) *';
+  }
+
+  @override
+  String get yourCommission => 'Your Commission:';
+
+  @override
+  String commissionRateInfo(Object currency, Object rate) {
+    return '(Rate: $currency $rate per Kg)';
+  }
+
+  @override
+  String get purchaseLocation => 'Purchase Location';
+
+  @override
+  String get noAreasConfigured => 'No areas configured. Add areas in Settings.';
+
+  @override
+  String get placeLocationLabel => 'Place / Location (if not in list above)';
+
+  @override
+  String get notesDetailsLabel => 'Notes (details...)';
+
+  @override
+  String availableBalance(Object amount, Object currency) {
+    return 'Available: $currency $amount';
+  }
+
+  @override
+  String get insufficient => ' — Insufficient!';
+
+  @override
+  String get insufficientBalanceForPurchase =>
+      'Insufficient balance for this purchase';
+
+  @override
+  String locationPrefix(Object place) {
+    return 'Location: $place';
+  }
+
+  @override
+  String purchaseRecordedSuccess(Object commission, Object currency) {
+    return 'Purchase recorded! Commission: $currency $commission';
+  }
+
+  @override
+  String get failedToRecordPurchase => 'Failed to record purchase';
+
+  @override
+  String get recordReturnSubtitle =>
+      'Record money you are returning to the admin';
+
+  @override
+  String amountLabel(Object currency) {
+    return 'Amount ($currency)';
+  }
+
+  @override
+  String get pleaseEnterAmount => 'Please enter an amount';
+
+  @override
+  String get pleaseEnterValidAmount => 'Please enter a valid amount';
+
+  @override
+  String get amountExceedsBalance => 'Amount exceeds your current balance';
+
+  @override
+  String currentBalanceInfo(Object balance, Object currency) {
+    return 'Current balance: $currency $balance';
+  }
+
+  @override
+  String get returnRecordedSuccess => 'Return recorded successfully!';
+
+  @override
+  String get failedToRecordReturn => 'Failed to record return';
+
+  @override
+  String get moneyReturnedTitle => 'Money Returned';
+
+  @override
+  String get coffeePurchaseTitle => 'Coffee Purchase';
+
+  @override
+  String get kg => 'Kg';
+
+  @override
+  String get pingMessageHint => 'e.g. Please submit your daily report';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get loginCredentialsTitle => 'Cofiz Login Credentials';
+
+  @override
+  String pingWorkerTitle(Object name) {
+    return 'Ping $name';
+  }
+
+  @override
+  String get messageFromAdmin => 'Message from Admin';
+
+  @override
+  String notificationSentToUser(Object name) {
+    return 'Notification sent to $name';
+  }
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get errorGeneratingReport => 'Error generating report';
+
+  @override
+  String get remaining => 'remaining';
+
+  @override
+  String get pingWorker => 'Ping';
+
+  @override
+  String get welcome => 'Welcome';
 }

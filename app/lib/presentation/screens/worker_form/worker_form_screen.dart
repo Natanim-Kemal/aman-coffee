@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../core/models/worker_model.dart';
 import '../../../core/providers/worker_provider.dart';
@@ -71,8 +72,8 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
     // Validate email is provided if creating login account
     if (_createLoginAccount && _emailController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Email is required to create a login account'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.emailRequiredForLogin),
           backgroundColor: Colors.orange,
           behavior: SnackBarBehavior.floating,
         ),
@@ -166,7 +167,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
             // Account creation failed, show error but worker was still created
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Worker saved, but login account failed: ${result['error']}'),
+                content: Text(AppLocalizations.of(context)!.workerSavedAccountFailed(result['error'])),
                 backgroundColor: Colors.orange,
                 behavior: SnackBarBehavior.floating,
                 duration: const Duration(seconds: 4),
@@ -177,7 +178,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(isEditMode ? 'Worker updated successfully' : 'Worker added successfully'),
+              content: Text(isEditMode ? AppLocalizations.of(context)!.workerUpdatedSuccessfully : AppLocalizations.of(context)!.workerAddedSuccessfully),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
             ),
@@ -188,7 +189,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
         setState(() => _isLoading = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(workerProvider.errorMessage ?? 'Failed to save worker'),
+            content: Text(workerProvider.errorMessage ?? AppLocalizations.of(context)!.failedToSaveWorker),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -215,7 +216,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          isEditMode ? 'Edit Worker' : 'Add Worker',
+          isEditMode ? AppLocalizations.of(context)!.editWorker : AppLocalizations.of(context)!.addWorker,
           style: TextStyle(
             color: textColor,
             fontWeight: FontWeight.w600,
@@ -237,7 +238,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
             TextButton(
               onPressed: _saveWorker,
               child: Text(
-                'Save',
+                AppLocalizations.of(context)!.save,
                 style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w600,
@@ -258,12 +259,12 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
             // Name Field
             _buildTextField(
               controller: _nameController,
-              label: 'Full Name',
+              label: AppLocalizations.of(context)!.fullName,
               icon: Icons.person,
               isDark: isDark,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Name is required';
+                  return AppLocalizations.of(context)!.nameIsRequired;
                 }
                 return null;
               },
@@ -274,13 +275,13 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
             // Phone Field
             _buildTextField(
               controller: _phoneController,
-              label: 'Phone Number',
+              label: AppLocalizations.of(context)!.phoneNumber,
               icon: Icons.phone,
               keyboardType: TextInputType.phone,
               isDark: isDark,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Phone number is required';
+                  return AppLocalizations.of(context)!.phoneNumberIsRequired;
                 }
                 return null;
               },
@@ -291,16 +292,16 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
             // Commission Rate Field
             _buildTextField(
               controller: _commissionRateController,
-              label: 'Commission Rate (per Kg)',
+              label: AppLocalizations.of(context)!.commissionRate,
               icon: Icons.monetization_on,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               isDark: isDark,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Commission rate is required';
+                  return AppLocalizations.of(context)!.commissionRateIsRequired;
                 }
                 if (double.tryParse(value) == null) {
-                  return 'Enter a valid number';
+                  return AppLocalizations.of(context)!.enterValidNumber;
                 }
                 return null;
               },
@@ -311,25 +312,25 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
             // Email Field (Required for login account)
             _buildTextField(
               controller: _emailController,
-              label: _createLoginAccount ? 'Email (Required for login)' : 'Email (Optional)',
+              label: _createLoginAccount ? AppLocalizations.of(context)!.emailRequiredLogin : AppLocalizations.of(context)!.emailOptional,
               icon: Icons.email,
               keyboardType: TextInputType.emailAddress,
               isDark: isDark,
               validator: (value) {
                 if (_createLoginAccount) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Email is required to create a login account';
+                    return AppLocalizations.of(context)!.emailRequiredForLogin;
                   }
                   // Email format validation
                   final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                   if (!emailRegex.hasMatch(value.trim())) {
-                    return 'Please enter a valid email address';
+                    return AppLocalizations.of(context)!.enterValidEmail;
                   }
                 } else if (value != null && value.trim().isNotEmpty) {
                   // If email is optional but provided, still validate format
                   final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
                   if (!emailRegex.hasMatch(value.trim())) {
-                    return 'Please enter a valid email address';
+                    return AppLocalizations.of(context)!.enterValidEmail;
                   }
                 }
                 return null;
@@ -366,7 +367,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Create Login Account',
+                            AppLocalizations.of(context)!.createLoginAccount,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -375,7 +376,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            'Allow this worker to login to the app',
+                            AppLocalizations.of(context)!.allowWorkerLogin,
                             style: TextStyle(
                               fontSize: 12,
                               color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -417,7 +418,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Years of Experience',
+                    AppLocalizations.of(context)!.yearsOfExperience,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -434,7 +435,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                           max: 30,
                           divisions: 30,
                           activeColor: AppColors.primary,
-                          label: '$_yearsOfExperience years',
+                          label: AppLocalizations.of(context)!.years('$_yearsOfExperience'),
                           onChanged: (value) {
                             setState(() => _yearsOfExperience = value.toInt());
                           },
@@ -482,7 +483,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Status',
+                    AppLocalizations.of(context)!.status,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -492,11 +493,11 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      _buildStatusChip('Active', 'active', Colors.green, isDark),
+                      _buildStatusChip(AppLocalizations.of(context)!.active, 'active', Colors.green, isDark),
                       const SizedBox(width: 8),
-                      _buildStatusChip('Busy', 'busy', Colors.orange, isDark),
+                      _buildStatusChip(AppLocalizations.of(context)!.busy, 'busy', Colors.orange, isDark),
                       const SizedBox(width: 8),
-                      _buildStatusChip('Offline', 'offline', Colors.grey, isDark),
+                      _buildStatusChip(AppLocalizations.of(context)!.offline, 'offline', Colors.grey, isDark),
                     ],
                   ),
                 ],
@@ -523,7 +524,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Performance Rating',
+                    AppLocalizations.of(context)!.performanceRating,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,

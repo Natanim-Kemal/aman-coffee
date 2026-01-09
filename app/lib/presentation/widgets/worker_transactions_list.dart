@@ -5,6 +5,7 @@ import '../../../core/models/transaction_model.dart';
 import '../../core/providers/transaction_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/number_formatter.dart';
 
 class WorkerTransactionsList extends StatefulWidget {
   final String workerId;
@@ -70,7 +71,7 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
             ),
             const SizedBox(height: 12),
             Text(
-              'No transactions yet',
+              AppLocalizations.of(context)!.noTransactionsYet,
               style: TextStyle(
                 fontSize: 14,
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -78,7 +79,7 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
             ),
             const SizedBox(height: 4),
             Text(
-              'Transactions will appear here',
+              AppLocalizations.of(context)!.transactionsWillAppearHere,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey.shade400,
@@ -141,7 +142,7 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  transaction.typeDisplay,
+                  _getTypeDisplay(context, transaction.type),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -187,5 +188,18 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
         ],
       ),
     );
+  }
+
+  String _getTypeDisplay(BuildContext context, String type) {
+    switch (type.toLowerCase()) {
+      case 'distribution':
+        return AppLocalizations.of(context)?.distributed ?? 'Distributed';
+      case 'return':
+        return AppLocalizations.of(context)?.returned ?? 'Returned';
+      case 'purchase':
+        return AppLocalizations.of(context)?.purchased ?? 'Purchased';
+      default:
+        return type;
+    }
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/utils/number_formatter.dart';
 import '../../../../core/models/transaction_model.dart';
@@ -76,7 +77,7 @@ class WorkerTransactionTile extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      _getTransactionTitle(transaction.type),
+                      _getTransactionTitle(context, transaction.type),
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         color: isDark ? Colors.white : Colors.black87,
@@ -126,7 +127,7 @@ class WorkerTransactionTile extends StatelessWidget {
                       Icon(Icons.paid, size: 12, color: Colors.teal),
                       const SizedBox(width: 2),
                       Text(
-                        'ETB ${transaction.commissionAmount!.formatted}',
+                        '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${transaction.commissionAmount!.formatted}',
                         style: const TextStyle(
                           fontSize: 12,
                           color: Colors.teal,
@@ -157,7 +158,7 @@ class WorkerTransactionTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '$prefix ETB ${transaction.amount.formatted}',
+                '$prefix ${AppLocalizations.of(context)?.currency ?? 'ETB'} ${transaction.amount.formatted}',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -167,7 +168,7 @@ class WorkerTransactionTile extends StatelessWidget {
               // Show weight for purchases
               if (transaction.type == 'purchase' && transaction.coffeeWeight != null)
                 Text(
-                  '${transaction.coffeeWeight!.formatted} Kg',
+                  '${transaction.coffeeWeight!.formatted} ${AppLocalizations.of(context)!.kg}',
                   style: TextStyle(
                     fontSize: 11,
                     color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -180,16 +181,16 @@ class WorkerTransactionTile extends StatelessWidget {
     );
   }
 
-  String _getTransactionTitle(String type) {
+  String _getTransactionTitle(BuildContext context, String type) {
     switch (type) {
       case 'distribution':
-        return 'Money Received';
+        return AppLocalizations.of(context)?.moneyReceived ?? 'Money Received';
       case 'return':
-        return 'Money Returned';
+        return AppLocalizations.of(context)?.moneyReturnedTitle ?? 'Money Returned';
       case 'purchase':
-        return 'Coffee Purchase';
+        return AppLocalizations.of(context)?.coffeePurchaseTitle ?? 'Coffee Purchase';
       default:
-        return 'Transaction';
+        return AppLocalizations.of(context)?.transaction ?? 'Transaction';
     }
   }
 }

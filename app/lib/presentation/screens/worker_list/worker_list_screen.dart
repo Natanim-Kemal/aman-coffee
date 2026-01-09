@@ -146,7 +146,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                         children: [
                           Expanded(
                             child: StatsCard(
-                              title: 'Total',
+                              title: AppLocalizations.of(context)!.total,
                               value: '${workerProvider.totalWorkers}',
                               icon: Icons.people,
                             ),
@@ -154,7 +154,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: StatsCard(
-                              title: 'Active',
+                              title: AppLocalizations.of(context)!.active,
                               value: '${workerProvider.activeToday}',
                               icon: Icons.check_circle,
                               color: Colors.green,
@@ -175,13 +175,13 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                         scrollDirection: Axis.horizontal,
                         child: Row(
                           children: [
-                            _buildFilterChip('All', 'all'),
+                            _buildFilterChip(AppLocalizations.of(context)!.all, 'all'),
                             const SizedBox(width: 8),
-                            _buildFilterChip('Active', 'active'),
+                            _buildFilterChip(AppLocalizations.of(context)!.active, 'active'),
                             const SizedBox(width: 8),
-                            _buildFilterChip('Busy', 'busy'),
+                            _buildFilterChip(AppLocalizations.of(context)!.busy, 'busy'),
                             const SizedBox(width: 8),
-                            _buildFilterChip('Offline', 'offline'),
+                            _buildFilterChip(AppLocalizations.of(context)!.offline, 'offline'),
                           ],
                         ),
                       ),
@@ -211,7 +211,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                             const SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: _onRefresh,
-                              child: const Text('Retry'),
+                              child: Text(AppLocalizations.of(context)!.retry),
                             ),
                           ],
                         ),
@@ -231,8 +231,8 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                             const SizedBox(height: 16),
                             Text(
                               _searchController.text.isNotEmpty
-                                  ? 'No workers found'
-                                  : 'No workers yet',
+                                  ? AppLocalizations.of(context)!.noWorkersFound
+                                  : AppLocalizations.of(context)!.noWorkersYet,
                               style: TextStyle(
                                 fontSize: 18,
                                 color: AppColors.textMutedLight,
@@ -241,8 +241,8 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
                             const SizedBox(height: 8),
                             Text(
                               _searchController.text.isNotEmpty
-                                  ? 'Try adjusting your search'
-                                  : 'Tap + to add your first worker',
+                                  ? AppLocalizations.of(context)!.tryAdjustingSearch
+                                  : AppLocalizations.of(context)!.tapToAddWorker,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textMutedLight,
@@ -342,12 +342,12 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Filter Workers'),
+        title: Text(AppLocalizations.of(context)!.filterWorkers),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              title: const Text('All'),
+              title: Text(AppLocalizations.of(context)!.all),
               leading: Radio<String>(
                 value: 'all',
                 groupValue: _selectedFilter,
@@ -360,7 +360,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
               ),
             ),
             ListTile(
-              title: const Text('Active'),
+              title: Text(AppLocalizations.of(context)!.active),
               leading: Radio<String>(
                 value: 'active',
                 groupValue: _selectedFilter,
@@ -373,7 +373,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
               ),
             ),
             ListTile(
-              title: const Text('Busy'),
+              title: Text(AppLocalizations.of(context)!.busy),
               leading: Radio<String>(
                 value: 'busy',
                 groupValue: _selectedFilter,
@@ -386,7 +386,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
               ),
             ),
             ListTile(
-              title: const Text('Offline'),
+              title: Text(AppLocalizations.of(context)!.offline),
               leading: Radio<String>(
                 value: 'offline',
                 groupValue: _selectedFilter,

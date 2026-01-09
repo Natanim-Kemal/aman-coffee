@@ -21,7 +21,8 @@ android {
 
     defaultConfig {
         applicationId = "com.aman.cofiz"
-        minSdk = flutter.minSdkVersion
+        minSdkVersion = flutter.minSdkVersion
+        multiDexEnabled true
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

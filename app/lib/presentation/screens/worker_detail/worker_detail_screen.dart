@@ -47,11 +47,11 @@ class WorkerDetailScreen extends StatelessWidget {
                 children: [
                   Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
                   const SizedBox(height: 16),
-                  const Text('Worker not found'),
+                  Text(AppLocalizations.of(context)!.workerNotFound),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Go Back'),
+                    child: Text(AppLocalizations.of(context)!.goBack),
                   ),
                 ],
               ),
@@ -84,7 +84,7 @@ class WorkerDetailScreen extends StatelessWidget {
                             if (worker.userId != null)
                               IconButton(
                                 icon: const Icon(Icons.notifications_active, color: Colors.white),
-                                tooltip: 'Ping Worker',
+                                tooltip: AppLocalizations.of(context)!.pingWorker,
                                 onPressed: () => _showPingDialog(context, worker, authProvider),
                               ),
                             IconButton(
@@ -119,8 +119,8 @@ class WorkerDetailScreen extends StatelessWidget {
                                     if (success) {
                                       Navigator.pop(context);
                                       ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('Worker deleted successfully'),
+                                        SnackBar(
+                                          content: Text(AppLocalizations.of(context)!.workerDeletedSuccessfully),
                                           backgroundColor: Colors.green,
                                         ),
                                       );
@@ -128,7 +128,7 @@ class WorkerDetailScreen extends StatelessWidget {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            workerProvider.errorMessage ?? 'Failed to delete worker',
+                                            workerProvider.errorMessage ?? AppLocalizations.of(context)!.failedToDeleteWorker,
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
@@ -199,7 +199,7 @@ class WorkerDetailScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Transaction History',
+                            AppLocalizations.of(context)!.transactionHistory,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -334,7 +334,7 @@ class WorkerDetailScreen extends StatelessWidget {
           ],
 
           const SizedBox(height: 12),
-          _buildInfoRow(context, Icons.work_history, '${worker.yearsOfExperience} years experience'),
+          _buildInfoRow(context, Icons.work_history, AppLocalizations.of(context)!.yearsExperience('${worker.yearsOfExperience}')),
           
           // Call/SMS Actions
           if (worker.phone.isNotEmpty) ...[
@@ -351,13 +351,13 @@ class WorkerDetailScreen extends StatelessWidget {
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Could not make call: $e')),
+                            SnackBar(content: Text(AppLocalizations.of(context)!.couldNotMakeCall(e.toString()))),
                           );
                         }
                       }
                     },
                     icon: const Icon(Icons.phone, size: 18),
-                    label: const Text('Call'),
+                    label: Text(AppLocalizations.of(context)!.call),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
@@ -377,13 +377,13 @@ class WorkerDetailScreen extends StatelessWidget {
                       } catch (e) {
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Could not send SMS: $e')),
+                            SnackBar(content: Text(AppLocalizations.of(context)!.couldNotSendSMS(e.toString()))),
                           );
                         }
                       }
                     },
                     icon: const Icon(Icons.message, size: 18),
-                    label: const Text('Message'),
+                    label: Text(AppLocalizations.of(context)!.message),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
@@ -457,9 +457,9 @@ class WorkerDetailScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Current Balance',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.currentBalance,
+            style: const TextStyle(
               color: Colors.white70,
               fontSize: 14,
               fontWeight: FontWeight.w500,
@@ -480,7 +480,7 @@ class WorkerDetailScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildBalanceItem(
-                  'Distributed',
+                  AppLocalizations.of(context)!.distributed,
                   '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalDistributed.formatted}',
                   Icons.arrow_downward,
                 ),
@@ -492,7 +492,7 @@ class WorkerDetailScreen extends StatelessWidget {
               ),
               Expanded(
                 child: _buildBalanceItem(
-                  'Returned',
+                  AppLocalizations.of(context)!.returned,
                   '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalReturned.formatted}',
                   Icons.arrow_upward,
                 ),
@@ -510,7 +510,7 @@ class WorkerDetailScreen extends StatelessWidget {
             children: [
               Expanded(
                 child: _buildBalanceItem(
-                  'Purchased',
+                  AppLocalizations.of(context)!.purchased,
                   '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalCoffeePurchased.formatted}',
                   Icons.local_cafe,
                 ),
@@ -522,7 +522,7 @@ class WorkerDetailScreen extends StatelessWidget {
               ),
               Expanded(
                 child: _buildBalanceItem(
-                  'Commission',
+                  AppLocalizations.of(context)!.commission,
                   '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalCommissionEarned.formatted}',
                   Icons.paid,
                 ),
@@ -574,7 +574,7 @@ class WorkerDetailScreen extends StatelessWidget {
             Expanded(
               child: _buildActionButton(
                 context,
-                'Distribute',
+                AppLocalizations.of(context)!.distribute,
                 Icons.add_circle,
                 Colors.green,
                 () async {
@@ -596,7 +596,7 @@ class WorkerDetailScreen extends StatelessWidget {
               Expanded(
                 child: _buildActionButton(
                   context,
-                  'Record Purchase',
+                  AppLocalizations.of(context)!.recordPurchase,
                   Icons.shopping_cart,
                   Colors.orange,
                   () async {
@@ -617,7 +617,7 @@ class WorkerDetailScreen extends StatelessWidget {
               Expanded(
                 child: _buildActionButton(
                   context,
-                  'Return',
+                  AppLocalizations.of(context)!.returnMoney,
                   Icons.remove_circle,
                   Colors.red,
                   () async {
@@ -694,7 +694,7 @@ class WorkerDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Statistics',
+            AppLocalizations.of(context)!.statistics,
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -707,7 +707,7 @@ class WorkerDetailScreen extends StatelessWidget {
               Expanded(
                 child: _buildStatItem(
                   context,
-                  'Coffee Purchased',
+                  AppLocalizations.of(context)!.coffeePurchased,
                   '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalCoffeePurchased.formatted}',
                   Icons.local_cafe,
                   Colors.brown,
@@ -717,7 +717,7 @@ class WorkerDetailScreen extends StatelessWidget {
               Expanded(
                 child: _buildStatItem(
                   context,
-                  'Performance',
+                  AppLocalizations.of(context)!.performance,
                   '${worker.ratingPercentage}%',
                   Icons.star,
                   Colors.amber,
@@ -784,7 +784,7 @@ class WorkerDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 12),
             Text(
-              'No transactions yet',
+              AppLocalizations.of(context)!.noTransactionsYet,
               style: TextStyle(
                 fontSize: 14,
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -792,7 +792,7 @@ class WorkerDetailScreen extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              'Transactions will appear here',
+              AppLocalizations.of(context)!.transactionsWillAppearHere,
               style: TextStyle(
                 fontSize: 12,
                 color: Colors.grey.shade400,
@@ -821,23 +821,23 @@ class WorkerDetailScreen extends StatelessWidget {
     await showDialog(
       context: context,
       builder: (context) => PingDialog(
-        title: 'Ping ${worker.name}',
-        messageLabel: 'Message',
+        title: AppLocalizations.of(context)!.pingWorkerTitle(worker.name),
+        messageLabel: AppLocalizations.of(context)!.message,
         onSend: (message) async {
           final notificationProvider =
               Provider.of<NotificationProvider>(context, listen: false);
           
           await notificationProvider.sendPing(
             targetUserId: worker.userId!,
-            title: 'Message from Admin',
+            title: AppLocalizations.of(context)!.messageFromAdmin,
             body: message,
-            senderName: authProvider.user?.displayName ?? 'Admin',
+            senderName: authProvider.user?.displayName ?? AppLocalizations.of(context)!.admin,
             senderId: authProvider.user?.uid ?? '',
           );
           
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Notification sent to ${worker.name}')),
+              SnackBar(content: Text(AppLocalizations.of(context)!.notificationSentToUser(worker.name))),
             );
           }
         },

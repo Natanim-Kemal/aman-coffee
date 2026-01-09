@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../l10n/app_localizations.dart';
 
 class WorkerCredentialsDialog extends StatelessWidget {
   final String workerName;
@@ -25,7 +26,7 @@ class WorkerCredentialsDialog extends StatelessWidget {
         children: [
           const Icon(Icons.check_circle, color: Colors.green),
           const SizedBox(width: 12),
-          const Text('Worker Account Created!'),
+          Text(AppLocalizations.of(context)!.workerAccountCreated),
         ],
       ),
       content: SingleChildScrollView(
@@ -34,19 +35,19 @@ class WorkerCredentialsDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Login credentials for $workerName:',
+              AppLocalizations.of(context)!.loginCredentialsFor(workerName),
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: theme.textTheme.bodyLarge?.color,
               ),
             ),
             const SizedBox(height: 16),
-            _buildCredentialField(context, 'Email', email),
+            _buildCredentialField(context, AppLocalizations.of(context)!.email, email),
             const SizedBox(height: 12),
-            _buildCredentialField(context, 'Password', password),
+            _buildCredentialField(context, AppLocalizations.of(context)!.password, password),
             const SizedBox(height: 20),
             Text(
-              'Send these credentials to the worker:',
+              AppLocalizations.of(context)!.sendCredentialsToWorker,
               style: TextStyle(
                 fontSize: 12, 
                 color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
@@ -60,16 +61,16 @@ class WorkerCredentialsDialog extends StatelessWidget {
           TextButton.icon(
             onPressed: () => _sendViaSMS(context),
             icon: const Icon(Icons.sms),
-            label: const Text('Send SMS'),
+            label: Text(AppLocalizations.of(context)!.sendSms),
           ),
         TextButton.icon(
           onPressed: () => _copyToClipboard(context),
           icon: const Icon(Icons.copy),
-          label: const Text('Copy'),
+          label: Text(AppLocalizations.of(context)!.copy),
         ),
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Done'),
+          child: Text(AppLocalizations.of(context)!.done),
         ),
       ],
     );
@@ -116,11 +117,12 @@ class WorkerCredentialsDialog extends StatelessWidget {
   void _sendViaSMS(BuildContext context) {
     if (phone == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
     final message = Uri.encodeComponent(
-      'Welcome to Cofiz!\n\n'
-      'Email: $email\n'
-      'Password: $password\n\n'
-      'Download the app and login to start tracking your sales.',
+      '${l10n.welcomeToCofiz}\n\n'
+      '${l10n.email}: $email\n'
+      '${l10n.password}: $password\n\n'
+      '${l10n.downloadAppMessage}',
     );
 
     final smsUri = 'sms:$phone?body=$message';
@@ -128,25 +130,26 @@ class WorkerCredentialsDialog extends StatelessWidget {
     launchUrl(Uri.parse(smsUri)).then((success) {
       if (!success) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open SMS app')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.couldNotOpenSms)),
         );
       }
     });
   }
 
   void _copyToClipboard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final credentials = '''
-Cofiz Login Credentials
+${l10n.loginCredentialsTitle}
 
-Worker: $workerName
-Email: $email
-Password: $password
+${l10n.workerName}: $workerName
+${l10n.email}: $email
+${l10n.password}: $password
 ''';
 
     Clipboard.setData(ClipboardData(text: credentials));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Credentials copied to clipboard'),
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.credentialsCopied),
         backgroundColor: Colors.green,
       ),
     );

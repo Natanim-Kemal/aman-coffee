@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/services/connectivity_service.dart';
+import '../../l10n/app_localizations.dart';
 import '../../core/services/offline_sync_service.dart';
 
 class OfflineIndicator extends StatefulWidget {
@@ -47,8 +48,8 @@ class _OfflineIndicatorState extends State<OfflineIndicator> {
           const SizedBox(width: 8),
           Text(
             pendingCount > 0
-                ? 'Offline • $pendingCount pending'
-                : 'You are offline',
+                ? AppLocalizations.of(context)!.offlineSyncPending('$pendingCount')
+                : AppLocalizations.of(context)!.youAreOffline,
             style: const TextStyle(
               color: Colors.white,
               fontSize: 12,

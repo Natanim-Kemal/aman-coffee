@@ -6,6 +6,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/models/notification_model.dart';
 import '../../widgets/custom_header.dart';
 import '../../widgets/background_pattern.dart';
+import '../../../l10n/app_localizations.dart';
 
 class NotificationsScreen extends StatelessWidget {
   const NotificationsScreen({super.key});
@@ -44,9 +45,9 @@ class NotificationsScreen extends StatelessWidget {
                               ),
                             ),
                           ),
-                        const Text(
-                          'Notifications',
-                          style: TextStyle(
+                        Text(
+                          AppLocalizations.of(context)!.notifications,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -61,7 +62,7 @@ class NotificationsScreen extends StatelessWidget {
                       ),
                       child: IconButton(
                         icon: const Icon(Icons.done_all, color: Colors.white),
-                        tooltip: 'Mark all as read',
+                        tooltip: AppLocalizations.of(context)!.markAllAsRead,
                         onPressed: () {
                           Provider.of<NotificationProvider>(context, listen: false)
                               .markAllAsRead();
@@ -94,7 +95,7 @@ class NotificationsScreen extends StatelessWidget {
                             size: 64, color: Colors.grey.shade400),
                         const SizedBox(height: 16),
                         Text(
-                          'No notifications',
+                          AppLocalizations.of(context)!.noNotifications,
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.grey.shade600,
@@ -194,7 +195,7 @@ class NotificationsScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          _formatTime(notification.createdAt),
+                          _formatTime(notification.createdAt, context),
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -222,7 +223,7 @@ class NotificationsScreen extends StatelessWidget {
                                Provider.of<NotificationProvider>(context, listen: false)
                                   .markAsRead(notification.id);
                              },
-                             child: const Text('Submit Report'),
+                             child: Text(AppLocalizations.of(context)!.submitReport),
                            ),
                          ),
                        ),
@@ -251,18 +252,19 @@ class NotificationsScreen extends StatelessWidget {
     }
   }
 
-  String _formatTime(DateTime time) {
+  String _formatTime(DateTime time, BuildContext context) {
     final now = DateTime.now();
     final difference = now.difference(time);
+    final l10n = AppLocalizations.of(context)!;
 
     if (difference.inMinutes < 1) {
-      return 'Just now';
+      return l10n.justNow;
     } else if (difference.inMinutes < 60) {
-      return '${difference.inMinutes}m ago';
+      return l10n.minutesAgo(difference.inMinutes);
     } else if (difference.inHours < 24) {
-      return '${difference.inHours}h ago';
+      return l10n.hoursAgo(difference.inHours);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays}d ago';
+      return l10n.daysAgo(difference.inDays);
     } else {
       return DateFormat('MMM d').format(time);
     }

@@ -103,7 +103,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               child: IconButton(
                                 icon: const Icon(Icons.campaign, color: Colors.white),
-                                tooltip: 'Ping All Workers',
+                                tooltip: localizations?.pingAllWorkers ?? 'Ping All Workers',
                                 onPressed: () => _showPingAllDialog(context, authProvider),
                               ),
                             ),
@@ -573,25 +573,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
 
   Future<void> _showPingAllDialog(BuildContext context, AuthProvider authProvider) async {
+    final localizations = AppLocalizations.of(context);
     await showDialog(
       context: context,
       builder: (context) => PingDialog(
-        title: 'Ping All Workers',
-        messageLabel: 'Message to all workers',
+        title: localizations?.pingAllWorkers ?? 'Ping All Workers',
+        messageLabel: localizations?.messageToAllWorkers ?? 'Message to all workers',
         onSend: (message) async {
           final notificationProvider =
               Provider.of<NotificationProvider>(context, listen: false);
           
           await notificationProvider.sendGlobalPing(
-            title: 'Announcement',
+            title: localizations?.announcement ?? 'Announcement',
             body: message,
-            senderName: authProvider.user?.displayName ?? 'Admin',
+            senderName: authProvider.user?.displayName ?? localizations?.admin ?? 'Admin',
             senderId: authProvider.user?.uid ?? '',
           );
           
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Notification sent to all workers')),
+              SnackBar(content: Text(localizations?.notificationSentToAll ?? 'Notification sent to all workers')),
             );
           }
         },

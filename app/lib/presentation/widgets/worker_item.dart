@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/number_formatter.dart';
+import '../../l10n/app_localizations.dart';
 
 class WorkerItem extends StatelessWidget {
   final String name;
@@ -82,7 +83,7 @@ class WorkerItem extends StatelessWidget {
                           style: TextStyle(color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
                         ),
                         Text(
-                          '$yearsOfExperience yrs',
+                          AppLocalizations.of(context)!.yrs('$yearsOfExperience'),
                           style: TextStyle(
                             fontSize: 13,
                             color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
@@ -137,7 +138,7 @@ class WorkerItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'ETB ${currentBalance!.formatted}',
+            '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${currentBalance!.formatted}',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
@@ -146,7 +147,7 @@ class WorkerItem extends StatelessWidget {
           ),
           if (isLowBalance)
             Text(
-              'Low',
+              AppLocalizations.of(context)!.low,
               style: TextStyle(
                 fontSize: 10,
                 color: balanceColor,
@@ -233,7 +234,7 @@ class WorkerItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        status,
+        _getStatusText(context, status),
         style: TextStyle(
           fontSize: 11,
           color: badgeColor,
@@ -263,5 +264,17 @@ class WorkerItem extends StatelessWidget {
         ),
       ],
     );
+  }
+  String _getStatusText(BuildContext context, String status) {
+    switch (status.toLowerCase()) {
+      case 'active':
+        return AppLocalizations.of(context)?.active ?? 'Active';
+      case 'busy':
+        return AppLocalizations.of(context)?.busy ?? 'Busy';
+      case 'offline':
+        return AppLocalizations.of(context)?.offline ?? 'Offline';
+      default:
+        return status;
+    }
   }
 }

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/services/area_service.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class AreaManagementScreen extends StatefulWidget {
   const AreaManagementScreen({super.key});
@@ -46,7 +47,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
     
     if (_areas.contains(name)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Area already exists'), backgroundColor: Colors.orange),
+        SnackBar(content: Text(AppLocalizations.of(context)!.areaAlreadyExists), backgroundColor: Colors.orange),
       );
       return;
     }
@@ -57,7 +58,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
     
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Area "$name" added'), backgroundColor: Colors.green),
+        SnackBar(content: Text(AppLocalizations.of(context)!.areaAdded(name)), backgroundColor: Colors.green),
       );
     }
   }
@@ -66,16 +67,16 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Area'),
-        content: Text('Are you sure you want to delete "$area"?'),
+        title: Text(AppLocalizations.of(context)!.deleteArea),
+        content: Text(AppLocalizations.of(context)!.deleteAreaConfirmation(area)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.of(context)!.delete, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -87,7 +88,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Area "$area" deleted'), backgroundColor: Colors.green),
+          SnackBar(content: Text(AppLocalizations.of(context)!.areaDeleted(area)), backgroundColor: Colors.green),
         );
       }
     }
@@ -99,23 +100,23 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
     final newName = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Area'),
+        title: Text(AppLocalizations.of(context)!.editArea),
         content: TextField(
           controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Area Name',
-            border: OutlineInputBorder(),
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context)!.areaName,
+            border: const OutlineInputBorder(),
           ),
           autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text('Save'),
+            child: Text(AppLocalizations.of(context)!.save),
           ),
         ],
       ),
@@ -127,7 +128,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
       
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Area renamed to "$newName"'), backgroundColor: Colors.green),
+          SnackBar(content: Text(AppLocalizations.of(context)!.areaRenamed(newName)), backgroundColor: Colors.green),
         );
       }
     }
@@ -143,7 +144,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Manage Areas'),
+        title: Text(AppLocalizations.of(context)!.manageAreas),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -159,7 +160,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
                   child: TextField(
                     controller: _newAreaController,
                     decoration: InputDecoration(
-                      hintText: 'Enter new area name...',
+                      hintText: AppLocalizations.of(context)!.enterNewAreaName,
                       prefixIcon: const Icon(Icons.add_location_alt),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -174,7 +175,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
                 ElevatedButton.icon(
                   onPressed: _addArea,
                   icon: const Icon(Icons.add),
-                  label: const Text('Add'),
+                  label: Text(AppLocalizations.of(context)!.add),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -202,7 +203,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
                             Icon(Icons.location_off, size: 64, color: Colors.grey.shade400),
                             const SizedBox(height: 16),
                             Text(
-                              'No areas yet',
+                              AppLocalizations.of(context)!.noAreasYet,
                               style: TextStyle(
                                 fontSize: 18,
                                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -210,7 +211,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Add your first area above',
+                              AppLocalizations.of(context)!.addYourFirstArea,
                               style: TextStyle(
                                 fontSize: 14,
                                 color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,
@@ -263,7 +264,7 @@ class _AreaManagementScreenState extends State<AreaManagementScreen> {
                                 ),
                                 subtitle: isDefault && !isAdmin
                                     ? Text(
-                                        'Default area',
+                                        AppLocalizations.of(context)!.defaultArea,
                                         style: TextStyle(
                                           fontSize: 11,
                                           color: isDark ? Colors.grey.shade500 : Colors.grey.shade500,

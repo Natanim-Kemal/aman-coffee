@@ -48,13 +48,13 @@ class _TransactionDialogState extends State<TransactionDialog> {
   String get title {
     switch (widget.type) {
       case 'distribution':
-        return 'Distribute Money';
+        return AppLocalizations.of(context)!.distributeMoney;
       case 'return':
-        return 'Return Money';
+        return AppLocalizations.of(context)!.returnMoneyTitle;
       case 'purchase':
-        return 'Record Purchase';
+        return AppLocalizations.of(context)!.recordPurchase;
       default:
-        return 'Transaction';
+        return AppLocalizations.of(context)!.transaction;
     }
   }
 
@@ -96,7 +96,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error picking image: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorPickingImage(e.toString()))),
         );
       }
     }
@@ -148,7 +148,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
           setState(() => _isLoading = false);
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(transactionProvider.errorMessage ?? 'Failed to upload receipt'),
+              content: Text(transactionProvider.errorMessage ?? AppLocalizations.of(context)!.failedToUploadReceipt),
               backgroundColor: Colors.red,
             ),
           );
@@ -211,7 +211,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
         Navigator.pop(context, true);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Transaction completed successfully'),
+            content: Text(AppLocalizations.of(context)!.transactionCompleted),
             backgroundColor: Colors.green,
             behavior: SnackBarBehavior.floating,
           ),
@@ -219,7 +219,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(transactionProvider.errorMessage ?? 'Failed to complete transaction'),
+            content: Text(transactionProvider.errorMessage ?? AppLocalizations.of(context)!.failedToComplete),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
           ),
@@ -288,18 +288,18 @@ class _TransactionDialogState extends State<TransactionDialog> {
                       FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
                     ],
                     decoration: InputDecoration(
-                      labelText: 'Amount (${AppLocalizations.of(context)?.currency ?? 'ETB'})',
+                      labelText: AppLocalizations.of(context)!.amountWithCurrency(AppLocalizations.of(context)?.currency ?? 'ETB'),
                       prefixIcon: const Icon(Icons.attach_money),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       filled: true,
                       fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
                     ),
                     validator: (value) {
-                      if (value == null || value.trim().isEmpty) return 'Amount is required';
+                      if (value == null || value.trim().isEmpty) return AppLocalizations.of(context)!.amountIsRequired;
                       final val = double.tryParse(value);
-                      if (val == null || val <= 0) return 'Invalid amount';
+                      if (val == null || val <= 0) return AppLocalizations.of(context)!.invalidAmount;
                        if (widget.type == 'return' && val > widget.worker.currentBalance) {
-                        return 'Insufficient balance';
+                        return AppLocalizations.of(context)!.insufficientBalance;
                       }
                       return null;
                     },
@@ -309,7 +309,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                   DropdownButtonFormField<CoffeeType>(
                     value: _selectedCoffeeType,
                     decoration: InputDecoration(
-                      labelText: 'Coffee Type',
+                      labelText: AppLocalizations.of(context)!.coffeeType,
                       prefixIcon: const Icon(Icons.category),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       filled: true,
@@ -328,7 +328,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                     },
                     validator: (value) {
                       if (value == null) {
-                        return 'Please select a coffee type';
+                        return AppLocalizations.of(context)!.selectCoffeeType;
                       }
                       return null;
                     },
@@ -341,14 +341,14 @@ class _TransactionDialogState extends State<TransactionDialog> {
                           controller: _weightController,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           decoration: InputDecoration(
-                            labelText: 'Weight (Kg)',
+                            labelText: AppLocalizations.of(context)!.weightKg,
                             suffixText: 'Kg',
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                             filled: true,
                             fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
                           ),
                           onChanged: (val) => _updateTotalCost(),
-                          validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
+                          validator: (val) => (val == null || val.isEmpty) ? AppLocalizations.of(context)!.required : null,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -357,13 +357,13 @@ class _TransactionDialogState extends State<TransactionDialog> {
                           controller: _priceController,
                           keyboardType: const TextInputType.numberWithOptions(decimal: true),
                           decoration: InputDecoration(
-                            labelText: 'Price/Kg',
+                            labelText: AppLocalizations.of(context)!.pricePerKg,
                             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                             filled: true,
                             fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
                           ),
                           onChanged: (val) => _updateTotalCost(),
-                          validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
+                          validator: (val) => (val == null || val.isEmpty) ? AppLocalizations.of(context)!.required : null,
                         ),
                       ),
                     ],
@@ -375,7 +375,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                     controller: _amountController,
                     readOnly: true,
                     decoration: InputDecoration(
-                      labelText: 'Total Cost (Calculated)',
+                      labelText: AppLocalizations.of(context)!.totalCostCalculated,
                       prefixIcon: const Icon(Icons.calculate),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                       filled: true,
@@ -395,7 +395,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('Worker Commission:', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                        Text(AppLocalizations.of(context)!.workerCommission, style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
                         Text(
                           _calculateCommission(),
                           style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 16),
@@ -412,8 +412,8 @@ class _TransactionDialogState extends State<TransactionDialog> {
                   controller: _notesController,
                   maxLines: 3,
                   decoration: InputDecoration(
-                    labelText: 'Notes (Optional)',
-                    hintText: 'Add any notes here...',
+                    labelText: AppLocalizations.of(context)!.notesOptional,
+                    hintText: AppLocalizations.of(context)!.addNotesHere,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -440,7 +440,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: Text(
-                            _receiptImage != null ? 'Receipt Selected' : 'Add Receipt Photo',
+                            _receiptImage != null ? AppLocalizations.of(context)!.receiptSelected : AppLocalizations.of(context)!.addReceiptPhoto,
                             style: TextStyle(
                               color: _receiptImage != null ? Colors.green : (isDark ? Colors.grey.shade400 : Colors.grey.shade600),
                               fontWeight: _receiptImage != null ? FontWeight.bold : FontWeight.normal,
@@ -504,7 +504,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text('Cancel'),
+                        child: Text(AppLocalizations.of(context)!.cancel),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -528,7 +528,7 @@ class _TransactionDialogState extends State<TransactionDialog> {
                                   color: Colors.white,
                                 ),
                               )
-                            : const Text('Confirm'),
+                            : Text(AppLocalizations.of(context)!.confirm),
                       ),
                     ),
                   ],

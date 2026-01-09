@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../core/providers/auth_provider.dart';
@@ -100,11 +101,11 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                 children: [
                   const Icon(Icons.error_outline, size: 64, color: Colors.red),
                   const SizedBox(height: 16),
-                  const Text('Worker data not found'),
+                  Text(AppLocalizations.of(context)!.workerDataNotFound),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => authProvider.signOut(),
-                    child: const Text('Sign Out'),
+                    child: Text(AppLocalizations.of(context)!.signOut),
                   ),
                 ],
               ),
@@ -133,9 +134,9 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Welcome Back,',
-                              style: TextStyle(
+                            Text(
+                              AppLocalizations.of(context)!.welcomeBack,
+                              style: const TextStyle(
                                 fontSize: 14,
                                 color: Colors.white70,
                               ),
@@ -161,7 +162,7 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
                               ),
                               child: IconButton(
                                 icon: const Icon(Icons.refresh, color: Colors.white),
-                                tooltip: 'Refresh',
+                                tooltip: AppLocalizations.of(context)!.refresh,
                                 onPressed: () => setState(() {}),
                               ),
                             ),
@@ -245,18 +246,18 @@ class _WorkerDashboardScreenState extends State<WorkerDashboardScreen> {
             selectedFontSize: 10,
             unselectedFontSize: 10,
             iconSize: 24,
-            items: const [
+            items: [
               BottomNavigationBarItem(
-                icon: Icon(Icons.grid_view_rounded), // Uniform with Admin Dashboard
-                label: 'Home',
+                icon: const Icon(Icons.grid_view_rounded), // Uniform with Admin Dashboard
+                label: AppLocalizations.of(context)!.navHome,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.history),
-                label: 'History',
+                icon: const Icon(Icons.history),
+                label: AppLocalizations.of(context)!.navHistory,
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.settings_outlined), // Uniform with Admin Settings
-                label: 'Settings',
+                icon: const Icon(Icons.settings_outlined), // Uniform with Admin Settings
+                label: AppLocalizations.of(context)!.navSettings,
               ),
             ],
           ),

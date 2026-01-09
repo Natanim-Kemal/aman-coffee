@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../main.dart';
 import '../../widgets/background_pattern.dart';
+import '../../../l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -59,33 +60,33 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Reset Password'),
+        title: Text(AppLocalizations.of(context)!.resetPassword),
         content: Form(
           key: formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Enter your email address and we\'ll send you a link to reset your password.',
-                style: TextStyle(fontSize: 14),
+              Text(
+                AppLocalizations.of(context)!.enterEmailResetPassword,
+                style: const TextStyle(fontSize: 14),
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: emailController,
                 keyboardType: TextInputType.emailAddress,
                 style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-                decoration: const InputDecoration(
-                  labelText: 'Email',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.email),
+                decoration: InputDecoration(
+                  labelText: AppLocalizations.of(context)!.email,
+                  border: const OutlineInputBorder(),
+                  prefixIcon: const Icon(Icons.email),
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
-                    return 'Email is required';
+                    return AppLocalizations.of(context)!.thisFieldRequired;
                   }
                   if (!value.contains('@')) {
-                    return 'Enter a valid email';
+                    return AppLocalizations.of(context)!.validEmailRequired;
                   }
                   return null;
                 },
@@ -96,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           ElevatedButton(
             onPressed: () async {
@@ -113,8 +114,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     SnackBar(
                       content: Text(
                         success
-                            ? 'Password reset link sent to ${emailController.text.trim()}'
-                            : authProvider.errorMessage ?? 'Failed to send reset link',
+                            ? AppLocalizations.of(context)!.passwordResetLinkSent(emailController.text.trim())
+                            : authProvider.errorMessage ?? AppLocalizations.of(context)!.failedToSendResetLink,
                       ),
                       backgroundColor: success ? Colors.green : Colors.red,
                     ),
@@ -125,7 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
             ),
-            child: const Text('Send Reset Link'),
+            child: Text(AppLocalizations.of(context)!.sendResetLink),
           ),
         ],
       ),
@@ -175,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Title
               Text(
-                'Welcome',
+                AppLocalizations.of(context)!.welcome,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -187,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 8),
               
               Text(
-                'Sign in to your workspace.',
+                AppLocalizations.of(context)!.signInToWorkspace,
                 textAlign: TextAlign.center,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
@@ -199,7 +200,7 @@ class _LoginScreenState extends State<LoginScreen> {
               // Minimal Form
               _buildMinimalTextField(
                 controller: _emailController,
-                label: 'Email',
+                label: AppLocalizations.of(context)!.email,
                 isLast: false,
                 isDark: isDark,
               ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1, end: 0),
@@ -208,7 +209,7 @@ class _LoginScreenState extends State<LoginScreen> {
               
               _buildMinimalTextField(
                 controller: _passwordController,
-                label: 'Password',
+                label: AppLocalizations.of(context)!.password,
                 isObscure: true,
                 isLast: true,
                 isDark: isDark,
@@ -240,7 +241,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         )
                       : Text(
-                          'Sign In',
+                          AppLocalizations.of(context)!.signIn,
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -260,7 +261,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     foregroundColor: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                   ),
                   child: Text(
-                    'Forgot Password?',
+                    AppLocalizations.of(context)!.forgotPassword,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
                     ),
@@ -300,19 +301,19 @@ class _LoginScreenState extends State<LoginScreen> {
       onFieldSubmitted: isLast ? (_) => _login() : null,
       validator: (value) {
         if (value == null || value.trim().isEmpty) {
-          return 'This field is required';
+          return AppLocalizations.of(context)!.thisFieldRequired;
         }
         // Email validation
         if (label == 'Email') {
           final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
           if (!emailRegex.hasMatch(value.trim())) {
-            return 'Please enter a valid email';
+            return AppLocalizations.of(context)!.validEmailRequired;
           }
         }
         // Password validation
         if (label == 'Password') {
           if (value.length < 6) {
-            return 'Password must be at least 6 characters';
+            return AppLocalizations.of(context)!.passwordLengthError;
           }
         }
         return null;

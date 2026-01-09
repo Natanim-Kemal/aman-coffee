@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/providers/transaction_provider.dart';
@@ -53,7 +54,7 @@ class _WorkerHistoryTabState extends State<WorkerHistoryTab> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'No Transactions Yet',
+                    AppLocalizations.of(context)!.noTransactionsYet,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -62,7 +63,7 @@ class _WorkerHistoryTabState extends State<WorkerHistoryTab> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Your transaction history will appear here',
+                    AppLocalizations.of(context)!.transactionsWillAppearHere,
                     style: TextStyle(
                       color: widget.isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                     ),
@@ -97,7 +98,7 @@ class _WorkerHistoryTabState extends State<WorkerHistoryTab> {
               children: [
                 // Transaction count header
                 Text(
-                  'Showing ${transactions.length} of ${allTransactions.length} transactions',
+                  AppLocalizations.of(context)!.showingTransactions('${transactions.length}', '${allTransactions.length}'),
                   style: TextStyle(
                     fontSize: 12,
                     color: widget.isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
@@ -140,7 +141,7 @@ class _WorkerHistoryTabState extends State<WorkerHistoryTab> {
                       child: OutlinedButton.icon(
                         onPressed: _loadMore,
                         icon: const Icon(Icons.expand_more),
-                        label: Text('Load More ($remaining remaining)'),
+                        label: Text(AppLocalizations.of(context)!.loadMore('$remaining')),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: AppColors.primary,
                           side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
@@ -157,7 +158,7 @@ class _WorkerHistoryTabState extends State<WorkerHistoryTab> {
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     child: Center(
                       child: Text(
-                        '— End of transactions —',
+                        AppLocalizations.of(context)!.endOfTransactions,
                         style: TextStyle(
                           fontSize: 12,
                           color: widget.isDark ? AppColors.textMutedDark : AppColors.textMutedLight,

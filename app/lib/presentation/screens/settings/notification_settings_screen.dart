@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/settings_provider.dart';
+import '../../../l10n/app_localizations.dart';
 
 class NotificationSettingsScreen extends StatelessWidget {
   const NotificationSettingsScreen({super.key});
@@ -12,7 +13,7 @@ class NotificationSettingsScreen extends StatelessWidget {
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications', style: TextStyle(color: Colors.white)),
+        title: Text(AppLocalizations.of(context)!.notifications, style: const TextStyle(color: Colors.white)),
         backgroundColor: AppColors.primary,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.white),
@@ -24,22 +25,22 @@ class NotificationSettingsScreen extends StatelessWidget {
             children: [
               _buildSwitchTile(
                 context,
-                title: 'Email Notifications',
-                subtitle: 'Receive updates via email',
+                title: AppLocalizations.of(context)!.emailNotifications,
+                subtitle: AppLocalizations.of(context)!.receiveUpdatesViaEmail,
                 value: settings.emailNotifications,
                 onChanged: (val) => settings.toggleEmailNotifications(val),
               ),
               _buildSwitchTile(
                 context,
-                title: 'Push Notifications',
-                subtitle: 'Receive instant alerts on your device',
+                title: AppLocalizations.of(context)!.pushNotifications,
+                subtitle: AppLocalizations.of(context)!.receiveInstantAlerts,
                 value: settings.pushNotifications,
                 onChanged: (val) => settings.togglePushNotifications(val),
               ),
               _buildSwitchTile(
                 context,
-                title: 'SMS Notifications',
-                subtitle: 'Receive text message alerts',
+                title: AppLocalizations.of(context)!.smsNotifications,
+                subtitle: AppLocalizations.of(context)!.receiveTextAlerts,
                 value: settings.smsNotifications,
                 onChanged: (val) => settings.toggleSmsNotifications(val),
               ),

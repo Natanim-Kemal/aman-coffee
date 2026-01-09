@@ -131,7 +131,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeBack.
   ///
   /// In en, this message translates to:
-  /// **'Welcome back,'**
+  /// **'Welcome Back,'**
   String get welcomeBack;
 
   /// No description provided for @changeLanguage.
@@ -419,8 +419,8 @@ abstract class AppLocalizations {
   /// No description provided for @loadMore.
   ///
   /// In en, this message translates to:
-  /// **'Load More'**
-  String get loadMore;
+  /// **'Load More ({remaining} remaining)'**
+  String loadMore(Object remaining);
 
   /// No description provided for @save.
   ///
@@ -527,7 +527,7 @@ abstract class AppLocalizations {
   /// No description provided for @workerCommission.
   ///
   /// In en, this message translates to:
-  /// **'Worker Commission'**
+  /// **'Worker Commission:'**
   String get workerCommission;
 
   /// No description provided for @commissionEarned.
@@ -539,7 +539,7 @@ abstract class AppLocalizations {
   /// No description provided for @commissionRate.
   ///
   /// In en, this message translates to:
-  /// **'Commission Rate'**
+  /// **'Commission Rate (per Kg)'**
   String get commissionRate;
 
   /// No description provided for @balance.
@@ -629,7 +629,7 @@ abstract class AppLocalizations {
   /// No description provided for @pricePerKg.
   ///
   /// In en, this message translates to:
-  /// **'Price per Kg'**
+  /// **'Price/Kg'**
   String get pricePerKg;
 
   /// No description provided for @weight.
@@ -641,7 +641,7 @@ abstract class AppLocalizations {
   /// No description provided for @totalAmount.
   ///
   /// In en, this message translates to:
-  /// **'Total Amount'**
+  /// **'Total Amount:'**
   String get totalAmount;
 
   /// No description provided for @distributeMoney.
@@ -653,7 +653,7 @@ abstract class AppLocalizations {
   /// No description provided for @returnMoney.
   ///
   /// In en, this message translates to:
-  /// **'Return Money'**
+  /// **'Return'**
   String get returnMoney;
 
   /// No description provided for @recordPurchase.
@@ -749,7 +749,7 @@ abstract class AppLocalizations {
   /// No description provided for @endOfTransactions.
   ///
   /// In en, this message translates to:
-  /// **'End of transactions'**
+  /// **'— End of transactions —'**
   String get endOfTransactions;
 
   /// No description provided for @companyName.
@@ -773,8 +773,8 @@ abstract class AppLocalizations {
   /// No description provided for @maxDistributionLimit.
   ///
   /// In en, this message translates to:
-  /// **'Max Distribution Limit'**
-  String get maxDistributionLimit;
+  /// **'Max Distribution Limit ({currency})'**
+  String maxDistributionLimit(Object currency);
 
   /// No description provided for @topBuyer.
   ///
@@ -905,7 +905,7 @@ abstract class AppLocalizations {
   /// No description provided for @createLoginAccount.
   ///
   /// In en, this message translates to:
-  /// **'Create login account'**
+  /// **'Create Login Account'**
   String get createLoginAccount;
 
   /// No description provided for @todayTopBuyer.
@@ -965,8 +965,8 @@ abstract class AppLocalizations {
   /// No description provided for @showingTransactions.
   ///
   /// In en, this message translates to:
-  /// **'Showing {current} of {total} transactions'**
-  String showingTransactions(Object current, Object total);
+  /// **'Showing {count} of {total} transactions'**
+  String showingTransactions(Object count, Object total);
 
   /// No description provided for @remainingItems.
   ///
@@ -979,6 +979,1236 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Showing all {count} transactions'**
   String showingAllTransactions(Object count);
+
+  /// No description provided for @enterMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a message'**
+  String get enterMessage;
+
+  /// No description provided for @errorSendingPing.
+  ///
+  /// In en, this message translates to:
+  /// **'Error sending ping: {error}'**
+  String errorSendingPing(Object error);
+
+  /// No description provided for @workerAccountCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker Account Created!'**
+  String get workerAccountCreated;
+
+  /// No description provided for @loginCredentialsFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Login credentials for {name}:'**
+  String loginCredentialsFor(Object name);
+
+  /// No description provided for @sendCredentialsToWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Send these credentials to the worker:'**
+  String get sendCredentialsToWorker;
+
+  /// No description provided for @welcomeToCofiz.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Cofiz!'**
+  String get welcomeToCofiz;
+
+  /// No description provided for @credentialsCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Credentials copied to clipboard'**
+  String get credentialsCopied;
+
+  /// No description provided for @couldNotOpenSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open SMS app'**
+  String get couldNotOpenSms;
+
+  /// No description provided for @downloadAppMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Download the app and login to start tracking your sales.'**
+  String get downloadAppMessage;
+
+  /// No description provided for @allActions.
+  ///
+  /// In en, this message translates to:
+  /// **'All Actions'**
+  String get allActions;
+
+  /// No description provided for @accessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Denied'**
+  String get accessDenied;
+
+  /// No description provided for @adminAuditLogsOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Only administrators can view audit logs'**
+  String get adminAuditLogsOnly;
+
+  /// No description provided for @filtering.
+  ///
+  /// In en, this message translates to:
+  /// **'Filtering: {filter}'**
+  String filtering(Object filter);
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @errorLoadingLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading logs'**
+  String get errorLoadingLogs;
+
+  /// No description provided for @noAuditLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'No Audit Logs'**
+  String get noAuditLogs;
+
+  /// No description provided for @activityLogsWillAppear.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity logs will appear here'**
+  String get activityLogsWillAppear;
+
+  /// No description provided for @signInToWorkspace.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to your workspace.'**
+  String get signInToWorkspace;
+
+  /// No description provided for @thisFieldRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get thisFieldRequired;
+
+  /// No description provided for @validEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email'**
+  String get validEmailRequired;
+
+  /// No description provided for @passwordLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordLengthError;
+
+  /// No description provided for @signIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign In'**
+  String get signIn;
+
+  /// No description provided for @passwordResetLinkSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset link sent to {email}'**
+  String passwordResetLinkSent(Object email);
+
+  /// No description provided for @failedToSendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send reset link'**
+  String get failedToSendResetLink;
+
+  /// No description provided for @sendResetLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Reset Link'**
+  String get sendResetLink;
+
+  /// No description provided for @enterEmailResetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address and we\'ll send you a link to reset your password.'**
+  String get enterEmailResetPassword;
+
+  /// No description provided for @pingAllWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Ping All Workers'**
+  String get pingAllWorkers;
+
+  /// No description provided for @messageToAllWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Message to all workers'**
+  String get messageToAllWorkers;
+
+  /// No description provided for @announcement.
+  ///
+  /// In en, this message translates to:
+  /// **'Announcement'**
+  String get announcement;
+
+  /// No description provided for @admin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get admin;
+
+  /// No description provided for @notificationSentToAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification sent to all workers'**
+  String get notificationSentToAll;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String minutesAgo(Object minutes);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h ago'**
+  String hoursAgo(Object hours);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String daysAgo(Object days);
+
+  /// No description provided for @last7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 Days'**
+  String get last7Days;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This Month'**
+  String get thisMonth;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All Time'**
+  String get allTime;
+
+  /// No description provided for @chooseDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Date'**
+  String get chooseDate;
+
+  /// No description provided for @preparingPdfReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing PDF Report...'**
+  String get preparingPdfReport;
+
+  /// No description provided for @noTransactionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found'**
+  String get noTransactionsFound;
+
+  /// No description provided for @records.
+  ///
+  /// In en, this message translates to:
+  /// **'records'**
+  String get records;
+
+  /// No description provided for @business.
+  ///
+  /// In en, this message translates to:
+  /// **'Business'**
+  String get business;
+
+  /// No description provided for @manageAreas.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Areas'**
+  String get manageAreas;
+
+  /// No description provided for @purchaseLocations.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase locations'**
+  String get purchaseLocations;
+
+  /// No description provided for @general.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get general;
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// No description provided for @data.
+  ///
+  /// In en, this message translates to:
+  /// **'Data'**
+  String get data;
+
+  /// No description provided for @backupExportClearCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup, Export, Clear Cache'**
+  String get backupExportClearCache;
+
+  /// No description provided for @viewSystemActivityLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'View system activity logs'**
+  String get viewSystemActivityLogs;
+
+  /// No description provided for @app.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get app;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String version(Object version);
+
+  /// No description provided for @passwordResetEmailSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset email sent to {email}'**
+  String passwordResetEmailSent(Object email);
+
+  /// No description provided for @failedToSendResetEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send reset email: {error}'**
+  String failedToSendResetEmail(Object error);
+
+  /// No description provided for @changePasswordDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePasswordDialogTitle;
+
+  /// No description provided for @changePasswordDialogContent.
+  ///
+  /// In en, this message translates to:
+  /// **'To change your password, we will send a password reset link to your email address. Do you want to proceed?'**
+  String get changePasswordDialogContent;
+
+  /// No description provided for @updateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Update failed'**
+  String get updateFailed;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// No description provided for @enterYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get enterYourName;
+
+  /// No description provided for @pleaseEnterYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your name'**
+  String get pleaseEnterYourName;
+
+  /// No description provided for @emailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Address'**
+  String get emailAddress;
+
+  /// No description provided for @emailCannotBeChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Email cannot be changed'**
+  String get emailCannotBeChanged;
+
+  /// No description provided for @emailNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Notifications'**
+  String get emailNotifications;
+
+  /// No description provided for @receiveUpdatesViaEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive updates via email'**
+  String get receiveUpdatesViaEmail;
+
+  /// No description provided for @pushNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Push Notifications'**
+  String get pushNotifications;
+
+  /// No description provided for @receiveInstantAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive instant alerts on your device'**
+  String get receiveInstantAlerts;
+
+  /// No description provided for @smsNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS Notifications'**
+  String get smsNotifications;
+
+  /// No description provided for @receiveTextAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive text message alerts'**
+  String get receiveTextAlerts;
+
+  /// No description provided for @businessSettingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Business settings saved successfully'**
+  String get businessSettingsSaved;
+
+  /// No description provided for @errorSavingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving settings: {error}'**
+  String errorSavingSettings(Object error);
+
+  /// No description provided for @companyInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Company Information'**
+  String get companyInformation;
+
+  /// No description provided for @address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get address;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @businessLimits.
+  ///
+  /// In en, this message translates to:
+  /// **'Business Limits'**
+  String get businessLimits;
+
+  /// No description provided for @required.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get required;
+
+  /// No description provided for @invalidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid number'**
+  String get invalidNumber;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfService;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @legal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal'**
+  String get legal;
+
+  /// No description provided for @support.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get support;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Support'**
+  String get contactSupport;
+
+  /// No description provided for @visitWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Visit Website'**
+  String get visitWebsite;
+
+  /// No description provided for @copyright.
+  ///
+  /// In en, this message translates to:
+  /// **'© 2026 Cofiz app. All rights reserved.'**
+  String get copyright;
+
+  /// No description provided for @areaAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Area already exists'**
+  String get areaAlreadyExists;
+
+  /// No description provided for @areaAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Area \"{name}\" added'**
+  String areaAdded(Object name);
+
+  /// No description provided for @deleteArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Area'**
+  String get deleteArea;
+
+  /// No description provided for @deleteAreaConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete \"{name}\"?'**
+  String deleteAreaConfirmation(Object name);
+
+  /// No description provided for @areaDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Area \"{name}\" deleted'**
+  String areaDeleted(Object name);
+
+  /// No description provided for @editArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Area'**
+  String get editArea;
+
+  /// No description provided for @areaName.
+  ///
+  /// In en, this message translates to:
+  /// **'Area Name'**
+  String get areaName;
+
+  /// No description provided for @areaRenamed.
+  ///
+  /// In en, this message translates to:
+  /// **'Area renamed to \"{name}\"'**
+  String areaRenamed(Object name);
+
+  /// No description provided for @enterNewAreaName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new area name...'**
+  String get enterNewAreaName;
+
+  /// No description provided for @noAreasYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No areas yet'**
+  String get noAreasYet;
+
+  /// No description provided for @addYourFirstArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first area above'**
+  String get addYourFirstArea;
+
+  /// No description provided for @defaultArea.
+  ///
+  /// In en, this message translates to:
+  /// **'Default area'**
+  String get defaultArea;
+
+  /// No description provided for @dataExportedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Data exported to:\n\n{path}\n\nYou can access this file from your device file manager.'**
+  String dataExportedTo(Object path);
+
+  /// No description provided for @exportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Export failed: {error}'**
+  String exportFailed(Object error);
+
+  /// No description provided for @clearCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Cache?'**
+  String get clearCache;
+
+  /// No description provided for @clearCacheConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'This will clear local preferences (theme, settings, last login). It will NOT delete workers or transactions.\n\nAre you sure?'**
+  String get clearCacheConfirmation;
+
+  /// No description provided for @cacheCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache cleared. Please restart app for full effect.'**
+  String get cacheCleared;
+
+  /// No description provided for @backupAndExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & Export'**
+  String get backupAndExport;
+
+  /// No description provided for @exportDataJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Data (JSON)'**
+  String get exportDataJson;
+
+  /// No description provided for @exportDataSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save a full backup of all workers and transactions to your device.'**
+  String get exportDataSubtitle;
+
+  /// No description provided for @storage.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage'**
+  String get storage;
+
+  /// No description provided for @clearAppCache.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear App Cache'**
+  String get clearAppCache;
+
+  /// No description provided for @clearAppCacheSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset local preferences and temporary files.'**
+  String get clearAppCacheSubtitle;
+
+  /// No description provided for @failedToDeleteWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete worker'**
+  String get failedToDeleteWorker;
+
+  /// No description provided for @distribute.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribute'**
+  String get distribute;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @performance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get performance;
+
+  /// No description provided for @transactionsWillAppearHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions will appear here'**
+  String get transactionsWillAppearHere;
+
+  /// No description provided for @call.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get call;
+
+  /// No description provided for @message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get message;
+
+  /// No description provided for @couldNotMakeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not make call: {error}'**
+  String couldNotMakeCall(Object error);
+
+  /// No description provided for @couldNotSendSMS.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send SMS: {error}'**
+  String couldNotSendSMS(Object error);
+
+  /// No description provided for @yearsExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'{years} years experience'**
+  String yearsExperience(Object years);
+
+  /// No description provided for @emailRequiredForLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Email is required to create a login account'**
+  String get emailRequiredForLogin;
+
+  /// No description provided for @workerSavedAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker saved, but login account failed: {error}'**
+  String workerSavedAccountFailed(Object error);
+
+  /// No description provided for @workerUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker updated successfully'**
+  String get workerUpdatedSuccessfully;
+
+  /// No description provided for @workerAddedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker added successfully'**
+  String get workerAddedSuccessfully;
+
+  /// No description provided for @failedToSaveWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save worker'**
+  String get failedToSaveWorker;
+
+  /// No description provided for @nameIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required'**
+  String get nameIsRequired;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumber;
+
+  /// No description provided for @phoneNumberIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required'**
+  String get phoneNumberIsRequired;
+
+  /// No description provided for @commissionRateIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission rate is required'**
+  String get commissionRateIsRequired;
+
+  /// No description provided for @enterValidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid number'**
+  String get enterValidNumber;
+
+  /// No description provided for @emailRequiredLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Email (Required for login)'**
+  String get emailRequiredLogin;
+
+  /// No description provided for @emailOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Email (Optional)'**
+  String get emailOptional;
+
+  /// No description provided for @enterValidEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get enterValidEmail;
+
+  /// No description provided for @allowWorkerLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow this worker to login to the app'**
+  String get allowWorkerLogin;
+
+  /// No description provided for @years.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} years'**
+  String years(Object count);
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @performanceRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance Rating'**
+  String get performanceRating;
+
+  /// No description provided for @filterWorkers.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Workers'**
+  String get filterWorkers;
+
+  /// No description provided for @tryAdjustingSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Try adjusting your search'**
+  String get tryAdjustingSearch;
+
+  /// No description provided for @tapToAddWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap + to add your first worker'**
+  String get tapToAddWorker;
+
+  /// No description provided for @returnMoneyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Return Money'**
+  String get returnMoneyTitle;
+
+  /// No description provided for @transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction'**
+  String get transaction;
+
+  /// No description provided for @errorPickingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error picking image: {error}'**
+  String errorPickingImage(Object error);
+
+  /// No description provided for @failedToUploadReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload receipt'**
+  String get failedToUploadReceipt;
+
+  /// No description provided for @transactionCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction completed successfully'**
+  String get transactionCompleted;
+
+  /// No description provided for @failedToComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to complete transaction'**
+  String get failedToComplete;
+
+  /// No description provided for @amountWithCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount ({currency})'**
+  String amountWithCurrency(Object currency);
+
+  /// No description provided for @amountIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount is required'**
+  String get amountIsRequired;
+
+  /// No description provided for @invalidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid amount'**
+  String get invalidAmount;
+
+  /// No description provided for @selectCoffeeType.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a coffee type'**
+  String get selectCoffeeType;
+
+  /// No description provided for @weightKg.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight (Kg)'**
+  String get weightKg;
+
+  /// No description provided for @totalCostCalculated.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Cost (Calculated)'**
+  String get totalCostCalculated;
+
+  /// No description provided for @notesOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (Optional)'**
+  String get notesOptional;
+
+  /// No description provided for @addNotesHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Add any notes here...'**
+  String get addNotesHere;
+
+  /// No description provided for @receiptSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Receipt Selected'**
+  String get receiptSelected;
+
+  /// No description provided for @addReceiptPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Receipt Photo'**
+  String get addReceiptPhoto;
+
+  /// No description provided for @workerDataNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker data not found'**
+  String get workerDataNotFound;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @navHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get navHome;
+
+  /// No description provided for @navHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get navHistory;
+
+  /// No description provided for @navSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get navSettings;
+
+  /// No description provided for @recentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get recentActivity;
+
+  /// No description provided for @lowBalanceWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Low balance - please return funds'**
+  String get lowBalanceWarning;
+
+  /// No description provided for @balanceGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance looks good'**
+  String get balanceGood;
+
+  /// No description provided for @recordReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Return'**
+  String get recordReturn;
+
+  /// No description provided for @offlineSyncPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline • {count} pending'**
+  String offlineSyncPending(Object count);
+
+  /// No description provided for @youAreOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'You are offline'**
+  String get youAreOffline;
+
+  /// No description provided for @yrs.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} yrs'**
+  String yrs(Object count);
+
+  /// No description provided for @low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get low;
+
+  /// No description provided for @recordCoffeePurchaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Coffee Purchase'**
+  String get recordCoffeePurchaseTitle;
+
+  /// No description provided for @recordCoffeePurchaseSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record coffee purchased from farmers'**
+  String get recordCoffeePurchaseSubtitle;
+
+  /// No description provided for @coffeeTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee Type *'**
+  String get coffeeTypeLabel;
+
+  /// No description provided for @quantityKgLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity (Kg) *'**
+  String get quantityKgLabel;
+
+  /// No description provided for @pricePerKgLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price/Kg ({currency}) *'**
+  String pricePerKgLabel(Object currency);
+
+  /// No description provided for @yourCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Commission:'**
+  String get yourCommission;
+
+  /// No description provided for @commissionRateInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'(Rate: {currency} {rate} per Kg)'**
+  String commissionRateInfo(Object currency, Object rate);
+
+  /// No description provided for @purchaseLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Location'**
+  String get purchaseLocation;
+
+  /// No description provided for @noAreasConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'No areas configured. Add areas in Settings.'**
+  String get noAreasConfigured;
+
+  /// No description provided for @placeLocationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Place / Location (if not in list above)'**
+  String get placeLocationLabel;
+
+  /// No description provided for @notesDetailsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes (details...)'**
+  String get notesDetailsLabel;
+
+  /// No description provided for @availableBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Available: {currency} {amount}'**
+  String availableBalance(Object amount, Object currency);
+
+  /// No description provided for @insufficient.
+  ///
+  /// In en, this message translates to:
+  /// **' — Insufficient!'**
+  String get insufficient;
+
+  /// No description provided for @insufficientBalanceForPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance for this purchase'**
+  String get insufficientBalanceForPurchase;
+
+  /// No description provided for @locationPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Location: {place}'**
+  String locationPrefix(Object place);
+
+  /// No description provided for @purchaseRecordedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase recorded! Commission: {currency} {commission}'**
+  String purchaseRecordedSuccess(Object commission, Object currency);
+
+  /// No description provided for @failedToRecordPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to record purchase'**
+  String get failedToRecordPurchase;
+
+  /// No description provided for @recordReturnSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record money you are returning to the admin'**
+  String get recordReturnSubtitle;
+
+  /// No description provided for @amountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount ({currency})'**
+  String amountLabel(Object currency);
+
+  /// No description provided for @pleaseEnterAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an amount'**
+  String get pleaseEnterAmount;
+
+  /// No description provided for @pleaseEnterValidAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid amount'**
+  String get pleaseEnterValidAmount;
+
+  /// No description provided for @amountExceedsBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount exceeds your current balance'**
+  String get amountExceedsBalance;
+
+  /// No description provided for @currentBalanceInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Current balance: {currency} {balance}'**
+  String currentBalanceInfo(Object balance, Object currency);
+
+  /// No description provided for @returnRecordedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Return recorded successfully!'**
+  String get returnRecordedSuccess;
+
+  /// No description provided for @failedToRecordReturn.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to record return'**
+  String get failedToRecordReturn;
+
+  /// No description provided for @moneyReturnedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Money Returned'**
+  String get moneyReturnedTitle;
+
+  /// No description provided for @coffeePurchaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee Purchase'**
+  String get coffeePurchaseTitle;
+
+  /// No description provided for @kg.
+  ///
+  /// In en, this message translates to:
+  /// **'Kg'**
+  String get kg;
+
+  /// No description provided for @pingMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Please submit your daily report'**
+  String get pingMessageHint;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @loginCredentialsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cofiz Login Credentials'**
+  String get loginCredentialsTitle;
+
+  /// No description provided for @pingWorkerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ping {name}'**
+  String pingWorkerTitle(Object name);
+
+  /// No description provided for @messageFromAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Message from Admin'**
+  String get messageFromAdmin;
+
+  /// No description provided for @notificationSentToUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification sent to {name}'**
+  String notificationSentToUser(Object name);
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @errorGeneratingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Error generating report'**
+  String get errorGeneratingReport;
+
+  /// No description provided for @remaining.
+  ///
+  /// In en, this message translates to:
+  /// **'remaining'**
+  String get remaining;
+
+  /// No description provided for @pingWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Ping'**
+  String get pingWorker;
+
+  /// No description provided for @welcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome'**
+  String get welcome;
 }
 
 class _AppLocalizationsDelegate

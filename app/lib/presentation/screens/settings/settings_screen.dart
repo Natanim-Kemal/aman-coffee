@@ -74,12 +74,12 @@ class SettingsScreen extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
               children: [
-                _buildSectionHeader(theme, 'Business'),
+                _buildSectionHeader(theme, localizations.business),
                 if (isAdmin || authProvider.isViewer)
                   _buildSettingsTile(
                     context,
                     icon: Icons.store,
-                    title: 'Business Information',
+                    title: localizations.businessInformation,
                     subtitle: settingsProvider.companyName,
                     trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                     onTap: () {
@@ -92,8 +92,8 @@ class SettingsScreen extends StatelessWidget {
                 _buildSettingsTile(
                   context,
                   icon: Icons.location_on,
-                  title: 'Manage Areas',
-                  subtitle: 'Purchase locations',
+                  title: localizations.manageAreas,
+                  subtitle: localizations.purchaseLocations,
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                   onTap: () {
                     Navigator.push(
@@ -104,7 +104,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 
-                _buildSectionHeader(theme, 'General'),
+                _buildSectionHeader(theme, localizations.general),
                 _buildSettingsTile(
                   context,
                   icon: Icons.person_outline,
@@ -132,7 +132,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 
                 const SizedBox(height: 24),
-                _buildSectionHeader(theme, 'Preferences'),
+                _buildSectionHeader(theme, localizations.preferences),
                  _buildSettingsTile(
                   context,
                   icon: Icons.dark_mode_outlined,
@@ -153,7 +153,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
 
                 const SizedBox(height: 24),
-                _buildSectionHeader(theme, 'Security'),
+                _buildSectionHeader(theme, localizations.security),
                 _buildSettingsTile(
                   context,
                   icon: Icons.lock_outline,
@@ -169,12 +169,12 @@ class SettingsScreen extends StatelessWidget {
 
                 if (isAdmin || authProvider.isViewer) ...[
                   const SizedBox(height: 24),
-                  _buildSectionHeader(theme, 'Data'),
+                  _buildSectionHeader(theme, localizations.data),
                   _buildSettingsTile(
                     context,
                     icon: Icons.backup_outlined,
-                    title: 'Data Management',
-                    subtitle: 'Backup, Export, Clear Cache',
+                    title: localizations.dataManagement,
+                    subtitle: localizations.backupExportClearCache,
                      onTap: () {
                       Navigator.push(
                         context,
@@ -194,8 +194,8 @@ class SettingsScreen extends StatelessWidget {
                     return _buildSettingsTile(
                       context,
                       icon: Icons.history,
-                      title: 'Audit Logs',
-                      subtitle: 'View system activity logs',
+                      title: localizations.auditLogs,
+                      subtitle: localizations.viewSystemActivityLogs,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -208,12 +208,12 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 
                 const SizedBox(height: 24),
-                _buildSectionHeader(theme, 'App'),
+                _buildSectionHeader(theme, localizations.app),
                 _buildSettingsTile(
                   context,
                   icon: Icons.info_outline,
-                  title: 'About Cofiz',
-                  subtitle: 'Version 1.1.9',
+                  title: localizations.aboutCofiz,
+                  subtitle: localizations.version("1.1.9"),
                    onTap: () {
                     Navigator.push(
                       context,
@@ -332,10 +332,10 @@ class SettingsScreen extends StatelessWidget {
      showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Change Password'), // String literal for now? Or localize 'Change Password' (done)
-        content: const Text(
-          'To change your password, we will send a password reset link to your email address. Do you want to proceed?'
-        ), // Should localize this too, but for now literal is okay if not in ARB
+        title: Text(AppLocalizations.of(context)?.changePasswordDialogTitle ?? 'Change Password'),
+        content: Text(
+          AppLocalizations.of(context)?.changePasswordDialogContent ?? 'To change your password, we will send a password reset link to your email address. Do you want to proceed?'
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -353,15 +353,15 @@ class SettingsScreen extends StatelessWidget {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(success 
-                        ? 'Password reset email sent to $email' 
-                        : 'Failed to send reset email: ${authProvider.errorMessage}'
+                        ? AppLocalizations.of(context)!.passwordResetEmailSent(email) 
+                        : AppLocalizations.of(context)!.failedToSendResetEmail(authProvider.errorMessage ?? 'Unknown')
                       ),
                     ),
                   );
                 }
               }
             },
-            child: const Text('Send Email'),
+            child: Text(AppLocalizations.of(context)?.sendEmail ?? 'Send Email'),
           ),
         ],
       ),

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../../../core/providers/settings_provider.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class BusinessSettingsScreen extends StatefulWidget {
   const BusinessSettingsScreen({super.key});
@@ -63,8 +64,8 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
         if (mounted) {
           Navigator.pop(context);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Business settings saved successfully'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.businessSettingsSaved),
               backgroundColor: Colors.green,
             ),
           );
@@ -73,7 +74,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error saving settings: $e'),
+              content: Text('${AppLocalizations.of(context)!.errorSavingSettings("e")}'),
               backgroundColor: Colors.red,
             ),
           );
@@ -93,7 +94,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Business Settings'),
+        title: Text(AppLocalizations.of(context)!.businessSettings),
         backgroundColor: theme.appBarTheme.backgroundColor ?? AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -104,26 +105,26 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildSectionHeader(context, 'Company Information'),
+              _buildSectionHeader(context, AppLocalizations.of(context)!.companyInformation),
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _nameController,
-                label: 'Company Name',
+                label: AppLocalizations.of(context)!.companyName,
                 icon: Icons.business,
-                validator: (v) => v?.isNotEmpty == true ? null : 'Required',
+                validator: (v) => v?.isNotEmpty == true ? null : AppLocalizations.of(context)!.required,
                 readOnly: !canEdit,
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _addressController,
-                label: 'Address',
+                label: AppLocalizations.of(context)!.address,
                 icon: Icons.location_on,
                 readOnly: !canEdit,
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _phoneController,
-                label: 'Phone',
+                label: AppLocalizations.of(context)!.phone,
                 icon: Icons.phone,
                 keyboardType: TextInputType.phone,
                 readOnly: !canEdit,
@@ -131,17 +132,17 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
 
               const SizedBox(height: 32),
               
-              _buildSectionHeader(context, 'Business Limits'),
+              _buildSectionHeader(context, AppLocalizations.of(context)!.businessLimits),
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _limitController,
-                label: 'Max Distribution Limit (ETB)',
+                label: AppLocalizations.of(context)!.maxDistributionLimit('ETB'),
                 icon: Icons.attach_money,
                 keyboardType: TextInputType.number,
                 readOnly: !canEdit,
                  validator: (v) {
-                  if (v == null || v.isEmpty) return 'Required';
-                  if (double.tryParse(v) == null) return 'Invalid number';
+                  if (v == null || v.isEmpty) return AppLocalizations.of(context)!.required;
+                  if (double.tryParse(v) == null) return AppLocalizations.of(context)!.invalidNumber;
                   return null;
                 },
               ),
@@ -164,9 +165,9 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
                     ),
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Save Changes',
-                            style: TextStyle(
+                        : Text(
+                            AppLocalizations.of(context)!.saveChanges,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),

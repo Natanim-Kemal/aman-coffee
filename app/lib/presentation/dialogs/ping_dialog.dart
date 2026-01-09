@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class PingDialog extends StatefulWidget {
   final String title;
@@ -8,7 +9,7 @@ class PingDialog extends StatefulWidget {
   const PingDialog({
     super.key,
     required this.title,
-    this.messageLabel = 'Message',
+    required this.messageLabel,
     required this.onSend,
   });
 
@@ -40,7 +41,7 @@ class _PingDialogState extends State<PingDialog> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error sending ping: $e')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.errorSendingPing(e.toString()))),
         );
         setState(() => _isSending = false);
       }
@@ -59,14 +60,14 @@ class _PingDialogState extends State<PingDialog> {
             TextFormField(
               controller: _messageController,
               decoration: InputDecoration(
-                labelText: widget.messageLabel,
+                labelText: widget.messageLabel, // Or pass localized string from parent
                 border: const OutlineInputBorder(),
-                hintText: 'e.g. Please submit your daily report',
+                hintText: AppLocalizations.of(context)!.pingMessageHint,
               ),
               maxLines: 3,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
-                  return 'Please enter a message';
+                  return AppLocalizations.of(context)!.enterMessage;
                 }
                 return null;
               },
@@ -77,7 +78,7 @@ class _PingDialogState extends State<PingDialog> {
       actions: [
         TextButton(
           onPressed: _isSending ? null : () => Navigator.of(context).pop(false),
-          child: const Text('Cancel'),
+          child: Text(AppLocalizations.of(context)!.cancel),
         ),
         ElevatedButton(
           onPressed: _isSending ? null : _handleSend,
@@ -87,7 +88,7 @@ class _PingDialogState extends State<PingDialog> {
                   height: 20,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : const Text('Send'),
+              : Text(AppLocalizations.of(context)!.send),
         ),
       ],
     );

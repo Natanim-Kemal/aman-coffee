@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/models/worker_model.dart';
 import '../../../../core/constants/coffee_types.dart';
 import '../../../../core/utils/number_formatter.dart';
@@ -122,18 +123,18 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                       child: const Icon(Icons.local_cafe, color: Colors.brown),
                     ),
                     const SizedBox(width: 12),
-                    const Text(
-                      'Record Coffee Purchase',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                      Text(
+                        AppLocalizations.of(context)!.recordCoffeePurchaseTitle,
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Record coffee purchased from farmers',
+                  AppLocalizations.of(context)!.recordCoffeePurchaseSubtitle,
                   style: TextStyle(
                     color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                   ),
@@ -144,7 +145,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                 DropdownButtonFormField<CoffeeType>(
                   value: selectedCoffeeType,
                   decoration: InputDecoration(
-                    labelText: 'Coffee Type *',
+                    labelText: AppLocalizations.of(context)!.coffeeTypeLabel,
                     prefixIcon: const Icon(Icons.category),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -165,7 +166,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                   },
                   validator: (value) {
                     if (value == null) {
-                      return 'Please select a coffee type';
+                      return AppLocalizations.of(context)!.selectCoffeeType;
                     }
                     return null;
                   },
@@ -181,7 +182,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                         controller: quantityController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         decoration: InputDecoration(
-                          labelText: 'Quantity (Kg) *',
+                          labelText: AppLocalizations.of(context)!.quantityKgLabel,
                           prefixIcon: const Icon(Icons.scale),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -192,11 +193,11 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                         onChanged: (_) => _updateCalculations(),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Required';
+                            return AppLocalizations.of(context)!.required;
                           }
                           final qty = double.tryParse(value);
                           if (qty == null || qty <= 0) {
-                            return 'Invalid';
+                            return AppLocalizations.of(context)!.invalidAmount;
                           }
                           return null;
                         },
@@ -209,7 +210,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                         controller: priceController,
                         keyboardType: const TextInputType.numberWithOptions(decimal: true),
                         decoration: InputDecoration(
-                          labelText: 'Price/Kg (ETB) *',
+                          labelText: AppLocalizations.of(context)!.pricePerKgLabel(AppLocalizations.of(context)?.currency ?? 'ETB'),
                           prefixIcon: const Icon(Icons.attach_money),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
@@ -220,11 +221,11 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                         onChanged: (_) => _updateCalculations(),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Required';
+                            return AppLocalizations.of(context)!.required;
                           }
                           final price = double.tryParse(value);
                           if (price == null || price <= 0) {
-                            return 'Invalid';
+                            return AppLocalizations.of(context)!.invalidAmount;
                           }
                           return null;
                         },
@@ -250,13 +251,13 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Total Amount:',
+                            AppLocalizations.of(context)!.totalAmount,
                             style: TextStyle(
                               color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
                             ),
                           ),
                           Text(
-                            'ETB ${totalAmount.toStringAsFixed(2)}',
+                            '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${totalAmount.toStringAsFixed(2)}',
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -274,7 +275,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                               Icon(Icons.paid, size: 16, color: Colors.green.shade600),
                               const SizedBox(width: 4),
                               Text(
-                                'Your Commission:',
+                                AppLocalizations.of(context)!.yourCommission,
                                 style: TextStyle(
                                   color: isDark ? Colors.grey.shade300 : Colors.grey.shade700,
                                 ),
@@ -282,7 +283,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                             ],
                           ),
                           Text(
-                            'ETB ${commissionAmount.toStringAsFixed(2)}',
+                            '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${commissionAmount.toStringAsFixed(2)}',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -293,7 +294,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '(Rate: ETB ${widget.worker.commissionRate.toStringAsFixed(2)} per Kg)',
+                        AppLocalizations.of(context)!.commissionRateInfo(AppLocalizations.of(context)?.currency ?? 'ETB', widget.worker.commissionRate.toStringAsFixed(2)),
                         style: TextStyle(
                           fontSize: 12,
                           color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
@@ -306,7 +307,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                 
                 // Quick Pick Areas
                 Text(
-                  'Purchase Location',
+                  AppLocalizations.of(context)!.purchaseLocation,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -316,7 +317,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                 const SizedBox(height: 8),
                 if (areas.isEmpty)
                   Text(
-                    'No areas configured. Add areas in Settings.',
+                    AppLocalizations.of(context)!.noAreasConfigured,
                     style: TextStyle(
                       fontSize: 12,
                       color: isDark ? Colors.grey.shade500 : Colors.grey.shade600,
@@ -335,7 +336,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                 TextFormField(
                   controller: placeController,
                   decoration: InputDecoration(
-                    labelText: 'Place / Location (if not in list above)',
+                    labelText: AppLocalizations.of(context)!.placeLocationLabel,
                     prefixIcon: const Icon(Icons.place),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -350,7 +351,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                 TextFormField(
                   controller: notesController,
                   decoration: InputDecoration(
-                    labelText: 'Notes (details...)',
+                    labelText: AppLocalizations.of(context)!.notesDetailsLabel,
                     prefixIcon: const Icon(Icons.note),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -387,7 +388,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        'Available: ETB ${widget.worker.currentBalance.toStringAsFixed(2)}',
+                        AppLocalizations.of(context)!.availableBalance(AppLocalizations.of(context)?.currency ?? 'ETB', widget.worker.currentBalance.toStringAsFixed(2)),
                         style: TextStyle(
                           color: totalAmount > widget.worker.currentBalance 
                               ? Colors.red 
@@ -396,7 +397,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                       ),
                       if (totalAmount > widget.worker.currentBalance)
                         Text(
-                          ' — Insufficient!',
+                          AppLocalizations.of(context)!.insufficient,
                           style: TextStyle(
                             color: Colors.red,
                             fontWeight: FontWeight.bold,
@@ -416,8 +417,8 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                         // Check balance
                         if (totalAmount > widget.worker.currentBalance) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Insufficient balance for this purchase'),
+                            SnackBar(
+                              content: Text(AppLocalizations.of(context)!.insufficientBalanceForPurchase),
                               backgroundColor: Colors.red,
                             ),
                           );
@@ -442,7 +443,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                           // Combine place and notes
                           String? combinedNotes;
                           if (place != null && place.isNotEmpty) {
-                            combinedNotes = 'Location: $place';
+                            combinedNotes = AppLocalizations.of(context)!.locationPrefix(place);
                             if (notesController.text.trim().isNotEmpty) {
                               combinedNotes += ' | ${notesController.text.trim()}';
                             }
@@ -470,8 +471,8 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                               SnackBar(
                                 content: Text(
                                   success 
-                                      ? 'Purchase recorded! Commission: ETB ${commissionAmount.formatted}' 
-                                      : 'Failed to record purchase',
+                                      ? AppLocalizations.of(context)!.purchaseRecordedSuccess(AppLocalizations.of(context)?.currency ?? 'ETB', commissionAmount.formatted) 
+                                      : AppLocalizations.of(context)!.failedToRecordPurchase,
                                 ),
                                 backgroundColor: success ? Colors.green : Colors.red,
                               ),
@@ -504,9 +505,9 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text(
-                            'Record Purchase',
-                            style: TextStyle(
+                        : Text(
+                            AppLocalizations.of(context)!.recordPurchase,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),

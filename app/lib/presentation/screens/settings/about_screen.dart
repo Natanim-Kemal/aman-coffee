@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../widgets/background_pattern.dart';
+import '../../../l10n/app_localizations.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -23,7 +24,7 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(AppLocalizations.of(context)?.close ?? 'Close'),
           ),
         ],
       ),
@@ -59,7 +60,7 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About Cofiz'),
+        title: Text(AppLocalizations.of(context)?.aboutCofiz ?? 'About Cofiz'),
         backgroundColor: theme.appBarTheme.backgroundColor ?? AppColors.primary,
         foregroundColor: Colors.white,
        iconTheme: IconThemeData(color: Colors.white),
@@ -87,45 +88,45 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
             ),
             const SizedBox(height: 8),
             Text(
-              'Version 1.1.9',
+              AppLocalizations.of(context)!.version('1.1.9'),
               style: TextStyle(
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
               ),
             ),
             const SizedBox(height: 40),
             
-            _buildSection(context, 'Legal'),
+            _buildSection(context, AppLocalizations.of(context)!.legal),
             _buildTile(
               context, 
-              'Terms of Service', 
+              AppLocalizations.of(context)?.termsOfService ?? 'Terms of Service', 
               Icons.description_outlined,
-              () => _showContentDialog(context, 'Terms of Service', _loremIpsum),
+              () => _showContentDialog(context, AppLocalizations.of(context)?.termsOfService ?? 'Terms of Service', _loremIpsum),
             ),
             _buildTile(
               context, 
-              'Privacy Policy', 
+              AppLocalizations.of(context)?.privacyPolicy ?? 'Privacy Policy', 
               Icons.privacy_tip_outlined,
-              () => _showContentDialog(context, 'Privacy Policy', _loremIpsum),
+              () => _showContentDialog(context, AppLocalizations.of(context)?.privacyPolicy ?? 'Privacy Policy', _loremIpsum),
             ),
 
             const SizedBox(height: 24),
-            _buildSection(context, 'Support'),
+            _buildSection(context, AppLocalizations.of(context)!.support),
             _buildTile(
               context, 
-              'Contact Support', 
+              AppLocalizations.of(context)?.contactSupport ?? 'Contact Support', 
               Icons.email_outlined,
               () => _launchEmail(),
             ),
             _buildTile(
               context, 
-              'Visit Website', 
+              AppLocalizations.of(context)?.visitWebsite ?? 'Visit Website', 
               Icons.language,
               () => _launchUrl('https://example.com'),
             ),
             
             const SizedBox(height: 40),
             Text(
-              '© 2026 Cofiz app. All rights reserved.',
+              AppLocalizations.of(context)?.copyright ?? '© 2026 Cofiz app. All rights reserved.',
               style: TextStyle(
                 fontSize: 12,
                  color: isDark ? Colors.white30 : Colors.grey.shade400,

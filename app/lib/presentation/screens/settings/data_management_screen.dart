@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/providers/worker_provider.dart';
 import '../../../core/providers/transaction_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class DataManagementScreen extends StatefulWidget {
   const DataManagementScreen({super.key});
@@ -45,12 +46,12 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
         showDialog(
           context: context,
           builder: (context) => AlertDialog(
-            title: const Text('Backup Successful'),
-            content: Text('Data exported to:\n\n${file.path}\n\nYou can access this file from your device file manager.'),
+            title: Text(AppLocalizations.of(context)!.backupSuccessful),
+            content: Text(AppLocalizations.of(context)!.dataExportedTo(file.path)),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text('OK'),
+                child: Text(AppLocalizations.of(context)!.ok),
               ),
             ],
           ),
@@ -60,7 +61,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Export failed: $e'),
+            content: Text('${AppLocalizations.of(context)!.exportFailed("e")}'),
             backgroundColor: Colors.red,
           ),
         );
@@ -74,18 +75,18 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear Cache?'),
-        content: const Text(
-          'This will clear local preferences (theme, settings, last login). It will NOT delete workers or transactions.\n\nAre you sure?'
+        title: Text(AppLocalizations.of(context)!.clearCache),
+        content: Text(
+          AppLocalizations.of(context)!.clearCacheConfirmation
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancel'),
+            child: Text(AppLocalizations.of(context)!.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Clear', style: TextStyle(color: Colors.red)),
+            child: Text(AppLocalizations.of(context)!.clear, style: const TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -99,7 +100,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Cache cleared. Please restart app for full effect.')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.cacheCleared)),
           );
         }
       } catch (e) {
@@ -119,7 +120,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Data Management'),
+        title: Text(AppLocalizations.of(context)!.dataManagement),
         backgroundColor: theme.appBarTheme.backgroundColor ?? AppColors.primary,
         foregroundColor: Colors.white,
       ),
@@ -128,24 +129,24 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildSectionHeader(context, 'Backup & Export'),
+            _buildSectionHeader(context, AppLocalizations.of(context)!.backupAndExport),
             const SizedBox(height: 16),
             _buildActionTile(
               context,
               icon: Icons.download_rounded,
-              title: 'Export Data (JSON)',
-              subtitle: 'Save a full backup of all workers and transactions to your device.',
+              title: AppLocalizations.of(context)!.exportDataJson,
+              subtitle: AppLocalizations.of(context)!.exportDataSubtitle,
               onTap: _exportData,
             ),
             
             const SizedBox(height: 32),
-            _buildSectionHeader(context, 'Storage'),
+            _buildSectionHeader(context, AppLocalizations.of(context)!.storage),
             const SizedBox(height: 16),
             _buildActionTile(
               context,
               icon: Icons.cleaning_services_outlined,
-              title: 'Clear App Cache',
-              subtitle: 'Reset local preferences and temporary files.',
+              title: AppLocalizations.of(context)!.clearAppCache,
+              subtitle: AppLocalizations.of(context)!.clearAppCacheSubtitle,
               isDestructive: true,
               onTap: _clearCache,
             ),

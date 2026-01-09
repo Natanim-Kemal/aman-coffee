@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../core/models/worker_model.dart';
 import '../../../../core/utils/number_formatter.dart';
 import 'package:provider/provider.dart';
@@ -78,9 +79,9 @@ class _RecordReturnDialogState extends State<RecordReturnDialog> {
                     child: const Icon(Icons.arrow_upward, color: Colors.green),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
-                    'Record Return',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.returnMoneyTitle,
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -89,7 +90,7 @@ class _RecordReturnDialogState extends State<RecordReturnDialog> {
               ),
               const SizedBox(height: 8),
               Text(
-                'Record money you are returning to the admin',
+                AppLocalizations.of(context)!.recordReturnSubtitle,
                 style: TextStyle(
                   color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                 ),
@@ -101,7 +102,7 @@ class _RecordReturnDialogState extends State<RecordReturnDialog> {
                 controller: amountController,
                 keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
-                  labelText: 'Amount (ETB)',
+                  labelText: AppLocalizations.of(context)!.amountLabel(AppLocalizations.of(context)?.currency ?? 'ETB'),
                   prefixIcon: const Icon(Icons.attach_money),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -111,14 +112,14 @@ class _RecordReturnDialogState extends State<RecordReturnDialog> {
                 ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter an amount';
+                    return AppLocalizations.of(context)!.pleaseEnterAmount;
                   }
                   final amount = double.tryParse(value);
                   if (amount == null || amount <= 0) {
-                    return 'Please enter a valid amount';
+                    return AppLocalizations.of(context)!.pleaseEnterValidAmount;
                   }
                   if (amount > widget.worker.currentBalance) {
-                    return 'Amount exceeds your current balance';
+                    return AppLocalizations.of(context)!.amountExceedsBalance;
                   }
                   return null;
                 },
@@ -129,7 +130,7 @@ class _RecordReturnDialogState extends State<RecordReturnDialog> {
               TextFormField(
                 controller: notesController,
                 decoration: InputDecoration(
-                  labelText: 'Notes (optional)',
+                  labelText: AppLocalizations.of(context)!.notesOptional,
                   prefixIcon: const Icon(Icons.note),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -153,7 +154,7 @@ class _RecordReturnDialogState extends State<RecordReturnDialog> {
                     const Icon(Icons.info_outline, color: Colors.blue, size: 20),
                     const SizedBox(width: 8),
                     Text(
-                      'Current balance: ETB ${widget.worker.currentBalance.formatted}',
+                      AppLocalizations.of(context)!.currentBalanceInfo(AppLocalizations.of(context)?.currency ?? 'ETB', widget.worker.currentBalance.formatted),
                       style: const TextStyle(color: Colors.blue),
                     ),
                   ],
@@ -195,8 +196,8 @@ class _RecordReturnDialogState extends State<RecordReturnDialog> {
                             SnackBar(
                               content: Text(
                                 success 
-                                    ? 'Return recorded successfully!' 
-                                    : 'Failed to record return',
+                                    ? AppLocalizations.of(context)!.returnRecordedSuccess 
+                                    : AppLocalizations.of(context)!.failedToRecordReturn,
                               ),
                               backgroundColor: success ? Colors.green : Colors.red,
                             ),
@@ -229,9 +230,9 @@ class _RecordReturnDialogState extends State<RecordReturnDialog> {
                             color: Colors.white,
                           ),
                         )
-                      : const Text(
-                          'Record Return',
-                          style: TextStyle(
+                      : Text(
+                          AppLocalizations.of(context)!.recordReturn,
+                          style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),

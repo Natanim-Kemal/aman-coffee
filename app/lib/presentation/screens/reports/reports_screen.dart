@@ -18,14 +18,44 @@ class ReportsScreen extends StatefulWidget {
 }
 
 class _ReportsScreenState extends State<ReportsScreen> {
-  String _dateFilter = 'Last 7 Days';
-  String _typeFilter = 'All';
+  String? _dateFilter;
+  String? _typeFilter;
   int _itemsToShow = 20; // Pagination - items per page
   static const int _itemsPerLoad = 20;
   DateTime? _selectedDate; // For "Choose Date" option
   
-  final List<String> _dateOptions = ['Today', 'Last 7 Days', 'This Month', 'All Time', 'Choose Date'];
-  final List<String> _typeOptions = ['All', 'Distribution', 'Return', 'Purchase'];
+  late List<String> _dateOptions;
+  late List<String> _typeOptions;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = AppLocalizations.of(context)!;
+    
+    _dateOptions = [
+      l10n.today, 
+      l10n.last7Days, 
+      l10n.thisMonth, 
+      l10n.allTime, 
+      l10n.chooseDate
+    ];
+    
+    _typeOptions = [
+      l10n.all,
+      l10n.distribute,
+      l10n.returnMoney,
+      l10n.coffeePurchase,
+    ];
+
+    // Ensure initial or valid selection
+    if (_dateFilter == null || !_dateOptions.contains(_dateFilter)) {
+      _dateFilter = l10n.last7Days;
+    }
+    
+    if (_typeFilter == null || !_typeOptions.contains(_typeFilter)) {
+      _typeFilter = l10n.all;
+    }
+  }
 
   @override
   void initState() {
@@ -48,6 +78,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Future<void> _pickDate() async {
+    final l10n = AppLocalizations.of(context)!;
+    
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime.now(),
@@ -71,49 +103,58 @@ class _ReportsScreenState extends State<ReportsScreen> {
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _dateFilter = 'Choose Date';
+        _dateFilter = l10n.chooseDate;
         _itemsToShow = _itemsPerLoad; // Reset pagination
       });
     }
   }
 
-  List<MoneyTransaction> _getFilteredTransactions(List<MoneyTransaction> allTransactions) {
+  List<MoneyTransaction> _getFilteredTransactions(List<MoneyTransaction> allTransactions, AppLocalizations l10n) {
     DateTime now = DateTime.now();
     DateTime? startDate;
     DateTime? endDate;
     
-    switch (_dateFilter) {
-      case 'Today':
-        startDate = DateTime(now.year, now.month, now.day);
-        break;
-      case 'Last 7 Days':
-        startDate = now.subtract(const Duration(days: 7));
-        break;
-      case 'This Month':
-        startDate = DateTime(now.year, now.month, 1);
-        break;
-      case 'All Time':
-        startDate = null;
-        break;
-      case 'Choose Date':
-        if (_selectedDate != null) {
-          startDate = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day);
-          endDate = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day, 23, 59, 59);
-        }
-        break;
+    // Use localized strings for comparison
+    if (_dateFilter == l10n.today) {
+      startDate = DateTime(now.year, now.month, now.day);
+    } else if (_dateFilter == l10n.last7Days) {
+      startDate = now.subtract(const Duration(days: 7));
+    } else if (_dateFilter == l10n.thisMonth) {
+      startDate = DateTime(now.year, now.month, 1);
+    } else if (_dateFilter == l10n.allTime) {
+      startDate = null;
+    } else if (_dateFilter == l10n.chooseDate) {
+      if (_selectedDate != null) {
+        startDate = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day);
+        endDate = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day, 23, 59, 59);
+      }
     }
 
     return allTransactions.where((t) {
       bool dateMatch;
-      if (_dateFilter == 'Choose Date' && startDate != null && endDate != null) {
+      if (_dateFilter == l10n.chooseDate && startDate != null && endDate != null) {
         // For specific date, check if transaction is within that day
         dateMatch = t.createdAt.isAfter(startDate.subtract(const Duration(seconds: 1))) && 
                     t.createdAt.isBefore(endDate.add(const Duration(seconds: 1)));
       } else {
         dateMatch = startDate == null || t.createdAt.isAfter(startDate);
       }
-      bool typeMatch = _typeFilter == 'All' || 
-                       t.type.toLowerCase() == _typeFilter.toLowerCase();
+      
+      // Determine type match based on localized string mapping or internal type
+      // Internal types: 'Distribution', 'Return', 'Purchase'
+      bool typeMatch = false;
+      String typeLower = t.type.toLowerCase();
+      
+      if (_typeFilter == l10n.all) {
+        typeMatch = true;
+      } else if (_typeFilter == l10n.distribute && typeLower == 'distribution') {
+        typeMatch = true;
+      } else if (_typeFilter == l10n.returnMoney && typeLower == 'return') {
+        typeMatch = true;
+      } else if (_typeFilter == l10n.coffeePurchase && typeLower == 'purchase') {
+        typeMatch = true;
+      }
+      
       return dateMatch && typeMatch;
     }).toList();
   }
@@ -123,7 +164,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final transactionProvider = Provider.of<TransactionProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final filteredTransactions = _getFilteredTransactions(transactionProvider.allTransactions);
+    final l10n = AppLocalizations.of(context)!;
+    final filteredTransactions = _getFilteredTransactions(transactionProvider.allTransactions, l10n);
     
     // Calculate summary
     double totalAmount = filteredTransactions.fold(0, (sum, t) => sum + t.amount);
@@ -155,20 +197,20 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         onPressed: () async {
                            if (filteredTransactions.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('No data to export')),
+                                SnackBar(content: Text(AppLocalizations.of(context)!.noDataToExport)),
                             );
                             return;
                           }
                           
                           try {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Preparing PDF Report...')),
+                                SnackBar(content: Text(AppLocalizations.of(context)!.preparingPdfReport)),
                             );
 
                             await ReportService().generateTransactionReport(
                               filteredTransactions,
-                              _dateFilter,
-                              _typeFilter,
+                              _dateFilter!,
+                              _typeFilter!,
                             );
                           } catch (e, stackTrace) {
                             print('Error generating PDF report: $e');
@@ -176,7 +218,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text('Error generating report: $e'),
+                                  content: Text('${AppLocalizations.of(context)!.errorGeneratingReport}: $e'),
                                   backgroundColor: Colors.red,
                                   duration: const Duration(seconds: 5),
                                 ),
@@ -197,10 +239,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         child: _selectedDate != null 
                           ? _buildDateChip()
                           : _buildFilterDropdown(
-                              value: _dateFilter,
+                              value: _dateFilter!,
                               items: _dateOptions,
                               onChanged: (val) {
-                                if (val == 'Choose Date') {
+                                if (val == l10n.chooseDate) {
                                   _pickDate();
                                 } else {
                                   setState(() {
@@ -216,7 +258,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildFilterDropdown(
-                          value: _typeFilter,
+                          value: _typeFilter!,
                           items: _typeOptions,
                           onChanged: (val) => setState(() => _typeFilter = val!),
                           icon: Icons.filter_list,
@@ -247,7 +289,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     const SizedBox(height: 24),
 
                     // Coffee Purchase Summary by Type
-                    if (_typeFilter == 'All' || _typeFilter == 'Purchase')
+                    if (_typeFilter == l10n.all || _typeFilter == l10n.coffeePurchase)
                       _buildCoffeeSummary(filteredTransactions),
 
                     const SizedBox(height: 24),
@@ -257,7 +299,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'Transactions',
+                          AppLocalizations.of(context)!.transactions,
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -265,7 +307,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                           ),
                         ),
                         Text(
-                          '${filteredTransactions.length} records',
+                          '${filteredTransactions.length} ${AppLocalizations.of(context)!.records}',
                           style: TextStyle(
                             fontSize: 12,
                             color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
@@ -283,7 +325,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                               Icon(Icons.search_off, size: 48, color: Colors.grey.shade300),
                               const SizedBox(height: 16),
                               Text(
-                                'No transactions found',
+                                AppLocalizations.of(context)!.noTransactionsFound,
                                 style: TextStyle(color: Colors.grey.shade500),
                               ),
                             ],
@@ -312,7 +354,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                                 onPressed: _loadMore,
                                 icon: const Icon(Icons.expand_more),
                                 label: Text(
-                                  'Load More (${filteredTransactions.length - _itemsToShow} remaining)',
+                                  '${AppLocalizations.of(context)!.loadMore} (${filteredTransactions.length - _itemsToShow} ${AppLocalizations.of(context)!.remaining})',
                                 ),
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: AppColors.primary,
@@ -328,7 +370,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             Padding(
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               child: Text(
-                                'Showing all ${filteredTransactions.length} transactions',
+                                AppLocalizations.of(context)!.showingAllTransactions(filteredTransactions.length),
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
@@ -387,7 +429,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
               onTap: () {
                 setState(() {
                   _selectedDate = null;
-                  _dateFilter = 'Last 7 Days';
+                  _dateFilter = 'Last 7 Days'; // Keep default key for now to avoid breaking too much logic one shot
                   _itemsToShow = _itemsPerLoad;
                 });
               },

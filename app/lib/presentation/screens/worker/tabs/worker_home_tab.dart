@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/providers/transaction_provider.dart';
 import '../../../../../core/utils/number_formatter.dart';
@@ -44,7 +45,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
             children: [
               Expanded(
                 child: WorkerStatCard(
-                  label: 'Total Distributed',
+                  label: AppLocalizations.of(context)!.totalDistributed,
                   value: 'ETB ${widget.worker.totalDistributed.formatted}',
                   icon: Icons.arrow_downward,
                   color: Colors.orange,
@@ -54,7 +55,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
               const SizedBox(width: 12),
               Expanded(
                 child: WorkerStatCard(
-                  label: 'Total Returned',
+                  label: AppLocalizations.of(context)!.totalReturned,
                   value: 'ETB ${widget.worker.totalReturned.formatted}',
                   icon: Icons.arrow_upward,
                   color: Colors.green,
@@ -70,7 +71,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
             children: [
               Expanded(
                 child: WorkerStatCard(
-                  label: 'Coffee Purchased',
+                  label: AppLocalizations.of(context)!.coffeePurchased,
                   value: 'ETB ${widget.worker.totalCoffeePurchased.formatted}',
                   icon: Icons.local_cafe,
                   color: Colors.brown,
@@ -80,7 +81,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
               const SizedBox(width: 12),
               Expanded(
                 child: WorkerStatCard(
-                  label: 'Commission Earned',
+                  label: AppLocalizations.of(context)!.commissionEarned,
                   value: 'ETB ${widget.worker.totalCommissionEarned.formatted}',
                   icon: Icons.paid,
                   color: Colors.teal,
@@ -113,9 +114,9 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Current Balance',
-                  style: TextStyle(
+                Text(
+                  AppLocalizations.of(context)!.currentBalance,
+                  style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                   ),
@@ -144,8 +145,8 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
                     const SizedBox(width: 8),
                     Text(
                       widget.worker.currentBalance < 500 
-                          ? 'Low balance - please return funds'
-                          : 'Balance looks good',
+                          ? AppLocalizations.of(context)!.lowBalanceWarning
+                          : AppLocalizations.of(context)!.balanceGood,
                       style: TextStyle(
                         color: widget.worker.currentBalance < 500 
                             ? Colors.orange 
@@ -167,7 +168,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
               Expanded(
                 child: WorkerActionButton(
                   icon: Icons.arrow_upward,
-                  label: 'Record Return',
+                  label: AppLocalizations.of(context)!.recordReturn,
                   color: Colors.green,
                   onTap: () => widget.onRecordReturn(widget.worker),
                 ),
@@ -176,7 +177,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
               Expanded(
                 child: WorkerActionButton(
                   icon: Icons.shopping_cart,
-                  label: 'Record Purchase',
+                  label: AppLocalizations.of(context)!.recordPurchase,
                   color: Colors.blue,
                   onTap: () => widget.onRecordPurchase(widget.worker),
                 ),
@@ -205,7 +206,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Recent Activity',
+                  AppLocalizations.of(context)!.recentActivity,
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -215,7 +216,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
                 TextButton(
                   onPressed: widget.onViewHistory,
                   child: Text(
-                    'View All',
+                    AppLocalizations.of(context)!.viewAll,
                     style: TextStyle(color: AppColors.primary),
                   ),
                 ),
@@ -239,7 +240,7 @@ class _WorkerHomeTabState extends State<WorkerHomeTab> {
                 ),
                 child: Center(
                   child: Text(
-                    'No transactions yet',
+                    AppLocalizations.of(context)!.noTransactionsYet,
                     style: TextStyle(
                       color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
                     ),

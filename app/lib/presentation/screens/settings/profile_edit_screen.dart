@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../l10n/app_localizations.dart';
 
 class ProfileEditScreen extends StatefulWidget {
   const ProfileEditScreen({super.key});
@@ -38,13 +39,13 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
       if (mounted) {
         if (success) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile updated successfully')),
+            SnackBar(content: Text(AppLocalizations.of(context)!.profileUpdatedSuccessfully)),
           );
           Navigator.pop(context);
         } else {
            ScaffoldMessenger.of(context).showSnackBar(
              SnackBar(content: Text(
-               Provider.of<AuthProvider>(context, listen: false).errorMessage ?? 'Update failed'
+               Provider.of<AuthProvider>(context, listen: false).errorMessage ?? AppLocalizations.of(context)!.updateFailed
              )),
           );
         }
@@ -61,7 +62,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text('Edit Profile', style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
+        title: Text(AppLocalizations.of(context)!.editProfile, style: TextStyle(color: theme.textTheme.bodyLarge?.color)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: theme.iconTheme.color ?? (isDark ? Colors.white : Colors.black)),
@@ -112,7 +113,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 const SizedBox(height: 32),
                 
                 Text(
-                  'Full Name',
+                  AppLocalizations.of(context)!.fullName,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -124,7 +125,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   controller: _nameController,
                   style: TextStyle(color: theme.textTheme.bodyMedium?.color),
                   decoration: InputDecoration(
-                    hintText: 'Enter your name',
+                    hintText: AppLocalizations.of(context)!.enterYourName,
                     hintStyle: TextStyle(color: theme.hintColor),
                     filled: true,
                     fillColor: isDark ? theme.cardColor : Colors.white,
@@ -143,7 +144,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your name';
+                      return AppLocalizations.of(context)!.pleaseEnterYourName;
                     }
                     return null;
                   },
@@ -152,7 +153,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 const SizedBox(height: 24),
                 
                 Text(
-                  'Email Address',
+                  AppLocalizations.of(context)!.emailAddress,
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16,
@@ -184,7 +185,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                 Padding(
                   padding: const EdgeInsets.only(top: 8, left: 4),
                   child: Text(
-                    'Email cannot be changed',
+                    AppLocalizations.of(context)!.emailCannotBeChanged,
                     style: TextStyle(
                       color: isDark ? Colors.grey.shade400 : AppColors.textMutedLight,
                       fontSize: 12,
@@ -216,8 +217,8 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                               strokeWidth: 2,
                             ),
                           )
-                        : const Text(
-                            'Save Changes',
+                        : Text(
+                            AppLocalizations.of(context)!.saveChanges,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
