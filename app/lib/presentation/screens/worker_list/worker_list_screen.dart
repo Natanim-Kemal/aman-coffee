@@ -55,6 +55,7 @@ class _WorkerListScreenState extends State<WorkerListScreen> {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Consumer<WorkerProvider>(
           builder: (context, workerProvider, _) {
             return RefreshIndicator(

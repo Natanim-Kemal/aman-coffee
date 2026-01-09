@@ -331,6 +331,654 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Weekly Activity'**
   String get weeklyActivity;
+
+  /// No description provided for @aboutCofiz.
+  ///
+  /// In en, this message translates to:
+  /// **'About Cofiz'**
+  String get aboutCofiz;
+
+  /// No description provided for @auditLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Audit Logs'**
+  String get auditLogs;
+
+  /// No description provided for @businessSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Business Settings'**
+  String get businessSettings;
+
+  /// No description provided for @businessInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Business Information'**
+  String get businessInformation;
+
+  /// No description provided for @dataManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Management'**
+  String get dataManagement;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @resetPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get resetPassword;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @sendEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Send Email'**
+  String get sendEmail;
+
+  /// No description provided for @sendSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Send SMS'**
+  String get sendSms;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @submitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Report'**
+  String get submitReport;
+
+  /// No description provided for @loadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load More'**
+  String get loadMore;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @done.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get done;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
+  /// No description provided for @offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offline;
+
+  /// No description provided for @busy.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get busy;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @qty.
+  ///
+  /// In en, this message translates to:
+  /// **'Qty'**
+  String get qty;
+
+  /// No description provided for @avgPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg Price'**
+  String get avgPrice;
+
+  /// No description provided for @workerCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker Commission'**
+  String get workerCommission;
+
+  /// No description provided for @commissionEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission Earned'**
+  String get commissionEarned;
+
+  /// No description provided for @commissionRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission Rate'**
+  String get commissionRate;
+
+  /// No description provided for @balance.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance'**
+  String get balance;
+
+  /// No description provided for @currentBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Balance'**
+  String get currentBalance;
+
+  /// No description provided for @totalDistributed.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Distributed'**
+  String get totalDistributed;
+
+  /// No description provided for @totalReturned.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Returned'**
+  String get totalReturned;
+
+  /// No description provided for @coffeePurchased.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee Purchased'**
+  String get coffeePurchased;
+
+  /// No description provided for @totalCoffeePurchased.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Coffee Purchased'**
+  String get totalCoffeePurchased;
+
+  /// No description provided for @transactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get transactions;
+
+  /// No description provided for @transactionHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction History'**
+  String get transactionHistory;
+
+  /// No description provided for @recentTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Transactions'**
+  String get recentTransactions;
+
+  /// No description provided for @jenfel.
+  ///
+  /// In en, this message translates to:
+  /// **'Jenfel'**
+  String get jenfel;
+
+  /// No description provided for @yetatebe.
+  ///
+  /// In en, this message translates to:
+  /// **'Yetatebe'**
+  String get yetatebe;
+
+  /// No description provided for @special.
+  ///
+  /// In en, this message translates to:
+  /// **'Special'**
+  String get special;
+
+  /// No description provided for @coffeeType.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee Type'**
+  String get coffeeType;
+
+  /// No description provided for @quantity.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get quantity;
+
+  /// No description provided for @pricePerKg.
+  ///
+  /// In en, this message translates to:
+  /// **'Price per Kg'**
+  String get pricePerKg;
+
+  /// No description provided for @weight.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get weight;
+
+  /// No description provided for @totalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Amount'**
+  String get totalAmount;
+
+  /// No description provided for @distributeMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Distribute Money'**
+  String get distributeMoney;
+
+  /// No description provided for @returnMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Return Money'**
+  String get returnMoney;
+
+  /// No description provided for @recordPurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Record Purchase'**
+  String get recordPurchase;
+
+  /// No description provided for @coffeePurchase.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee Purchase'**
+  String get coffeePurchase;
+
+  /// No description provided for @transactionCompletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction completed successfully'**
+  String get transactionCompletedSuccessfully;
+
+  /// No description provided for @profileUpdatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdatedSuccessfully;
+
+  /// No description provided for @workerDeletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker deleted successfully'**
+  String get workerDeletedSuccessfully;
+
+  /// No description provided for @workerSavedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker saved successfully'**
+  String get workerSavedSuccessfully;
+
+  /// No description provided for @backupSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Successful'**
+  String get backupSuccessful;
+
+  /// No description provided for @insufficientBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient balance'**
+  String get insufficientBalance;
+
+  /// No description provided for @workerNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker not found'**
+  String get workerNotFound;
+
+  /// No description provided for @notificationSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification sent'**
+  String get notificationSent;
+
+  /// No description provided for @errorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred'**
+  String get errorOccurred;
+
+  /// No description provided for @pleaseWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait...'**
+  String get pleaseWait;
+
+  /// No description provided for @loading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading...'**
+  String get loading;
+
+  /// No description provided for @noTransactionsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions yet'**
+  String get noTransactionsYet;
+
+  /// No description provided for @noNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get noNotifications;
+
+  /// No description provided for @endOfTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'End of transactions'**
+  String get endOfTransactions;
+
+  /// No description provided for @companyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Company Name'**
+  String get companyName;
+
+  /// No description provided for @companyAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get companyAddress;
+
+  /// No description provided for @companyPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get companyPhone;
+
+  /// No description provided for @maxDistributionLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Distribution Limit'**
+  String get maxDistributionLimit;
+
+  /// No description provided for @topBuyer.
+  ///
+  /// In en, this message translates to:
+  /// **'Top Buyer'**
+  String get topBuyer;
+
+  /// No description provided for @commission.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission'**
+  String get commission;
+
+  /// No description provided for @purchased.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchased'**
+  String get purchased;
+
+  /// No description provided for @purchasesByType.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee Purchases by Type'**
+  String get purchasesByType;
+
+  /// No description provided for @quickNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Notes'**
+  String get quickNotes;
+
+  /// No description provided for @cashPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash payment'**
+  String get cashPayment;
+
+  /// No description provided for @creditToCollect.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit - to collect'**
+  String get creditToCollect;
+
+  /// No description provided for @qualityGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Quality: Good'**
+  String get qualityGood;
+
+  /// No description provided for @qualityAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Quality: Average'**
+  String get qualityAverage;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @password.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password?'**
+  String get forgotPassword;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me'**
+  String get rememberMe;
+
+  /// No description provided for @addWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Worker'**
+  String get addWorker;
+
+  /// No description provided for @editWorker.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Worker'**
+  String get editWorker;
+
+  /// No description provided for @workerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Worker Name'**
+  String get workerName;
+
+  /// No description provided for @workerPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get workerPhone;
+
+  /// No description provided for @workerRole.
+  ///
+  /// In en, this message translates to:
+  /// **'Role'**
+  String get workerRole;
+
+  /// No description provided for @yearsOfExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Years of Experience'**
+  String get yearsOfExperience;
+
+  /// No description provided for @createLoginAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create login account'**
+  String get createLoginAccount;
+
+  /// No description provided for @todayTopBuyer.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Top Buyer'**
+  String get todayTopBuyer;
+
+  /// No description provided for @avgPriceToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Price Today'**
+  String get avgPriceToday;
+
+  /// No description provided for @commissionPaidToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission Paid Today'**
+  String get commissionPaidToday;
+
+  /// No description provided for @lowBalanceAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Balance Alert'**
+  String get lowBalanceAlert;
+
+  /// No description provided for @moneyReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Money Received'**
+  String get moneyReceived;
+
+  /// No description provided for @purchaseRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase Recorded'**
+  String get purchaseRecorded;
+
+  /// No description provided for @viewSystemLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'View system activity logs'**
+  String get viewSystemLogs;
+
+  /// No description provided for @backupExportClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup, Export, Clear Cache'**
+  String get backupExportClear;
+
+  /// No description provided for @onlyViewersCanEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Business settings can only be edited by viewers (owners).'**
+  String get onlyViewersCanEdit;
+
+  /// No description provided for @showingTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing {current} of {total} transactions'**
+  String showingTransactions(Object current, Object total);
+
+  /// No description provided for @remainingItems.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} remaining'**
+  String remainingItems(Object count);
+
+  /// No description provided for @showingAllTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing all {count} transactions'**
+  String showingAllTransactions(Object count);
 }
 
 class _AppLocalizationsDelegate

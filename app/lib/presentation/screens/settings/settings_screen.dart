@@ -9,6 +9,7 @@ import '../../widgets/custom_header.dart';
 import 'profile_edit_screen.dart';
 import 'notification_settings_screen.dart';
 import 'business_settings_screen.dart';
+import 'area_management_screen.dart';
 import 'data_management_screen.dart';
 import 'about_screen.dart';
 import '../audit/audit_log_screen.dart';
@@ -24,7 +25,11 @@ class SettingsScreen extends StatelessWidget {
     final isDark = themeProvider.themeMode == ThemeMode.dark;
     final localizations = AppLocalizations.of(context)!;
 
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isAdmin = authProvider.isAdmin;
+
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
           CustomHeader(
@@ -32,13 +37,27 @@ class SettingsScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                Text(
-                  localizations.settings,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
+                Row(
+                  children: [
+                    if (Navigator.canPop(context))
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => Navigator.pop(context),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                        ),
+                      ),
+                    Text(
+                      localizations.settings,
+                      style: const TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 8),
                 Text(
@@ -56,21 +75,35 @@ class SettingsScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
               children: [
                 _buildSectionHeader(theme, 'Business'),
+                if (isAdmin || authProvider.isViewer)
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.store,
+                    title: 'Business Information',
+                    subtitle: settingsProvider.companyName,
+                    trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const BusinessSettingsScreen()),
+                      );
+                    },
+                  ),
                 _buildSettingsTile(
                   context,
-                  icon: Icons.store,
-                  title: 'Business Information',
-                  subtitle: settingsProvider.companyName,
+                  icon: Icons.location_on,
+                  title: 'Manage Areas',
+                  subtitle: 'Purchase locations',
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const BusinessSettingsScreen()),
+                      MaterialPageRoute(builder: (context) => const AreaManagementScreen()),
                     );
                   },
                 ),
-                
                 const SizedBox(height: 24),
+                
                 _buildSectionHeader(theme, 'General'),
                 _buildSettingsTile(
                   context,
@@ -134,21 +167,23 @@ class SettingsScreen extends StatelessWidget {
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),
                 ),
 
-                const SizedBox(height: 24),
-                _buildSectionHeader(theme, 'Data'),
-                _buildSettingsTile(
-                  context,
-                  icon: Icons.backup_outlined,
-                  title: 'Data Management',
-                  subtitle: 'Backup, Export, Clear Cache',
-                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const DataManagementScreen()),
-                    );
-                  },
-                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
-                ),
+                if (isAdmin || authProvider.isViewer) ...[
+                  const SizedBox(height: 24),
+                  _buildSectionHeader(theme, 'Data'),
+                  _buildSettingsTile(
+                    context,
+                    icon: Icons.backup_outlined,
+                    title: 'Data Management',
+                    subtitle: 'Backup, Export, Clear Cache',
+                     onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const DataManagementScreen()),
+                      );
+                    },
+                    trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                  ),
+                ],
                 
                 // Audit Logs - Admin only
                 Consumer<AuthProvider>(
@@ -178,7 +213,7 @@ class SettingsScreen extends StatelessWidget {
                   context,
                   icon: Icons.info_outline,
                   title: 'About Cofiz',
-                  subtitle: 'Version 1.0.0',
+                  subtitle: 'Version 1.1.9',
                    onTap: () {
                     Navigator.push(
                       context,
@@ -211,7 +246,11 @@ class SettingsScreen extends StatelessWidget {
                     );
 
                     if (confirmed == true && context.mounted) {
-                      await Provider.of<AuthProvider>(context, listen: false).signOut();
+                      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                      await authProvider.signOut();
+                      if (context.mounted) {
+                        Navigator.of(context).popUntil((route) => route.isFirst);
+                      }
                     }
                   },
                   style: TextButton.styleFrom(

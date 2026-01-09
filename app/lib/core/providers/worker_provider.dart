@@ -123,28 +123,37 @@ class WorkerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get worker by ID
+  /// Get worker by ID from service (async)
   Future<Worker?> getWorkerById(String id) async {
     return await _workerService.getWorkerById(id);
   }
 
-  /// Add new worker
-  Future<bool> addWorker(Worker worker) async {
+  /// Find worker in local list by ID (sync, ignores filters)
+  Worker? findById(String id) {
+    try {
+      return _workers.firstWhere((w) => w.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// Add new worker (returns ID on success, null on failure)
+  Future<String?> addWorker(Worker worker) async {
     try {
       _isLoading = true;
       _errorMessage = null;
       notifyListeners();
 
-      await _workerService.addWorker(worker);
+      final newId = await _workerService.addWorker(worker);
 
       _isLoading = false;
       notifyListeners();
-      return true;
+      return newId;
     } catch (e) {
       _errorMessage = e.toString();
       _isLoading = false;
       notifyListeners();
-      return false;
+      return null;
     }
   }
 

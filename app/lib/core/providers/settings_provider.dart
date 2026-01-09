@@ -40,7 +40,7 @@ class SettingsProvider with ChangeNotifier {
     }
     
     // Load Business Settings
-    _companyName = prefs.getString('company_name') ?? 'Stitch Plc';
+    _companyName = prefs.getString('company_name') ?? 'YT Plc';
     _companyAddress = prefs.getString('company_address') ?? 'Addis Ababa, Ethiopia';
     _companyPhone = prefs.getString('company_phone') ?? '+251 911 223344';
     _distributionLimit = prefs.getDouble('distribution_limit') ?? 5000.0;

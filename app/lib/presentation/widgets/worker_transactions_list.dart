@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../../../core/models/transaction_model.dart';
 import '../../core/providers/transaction_provider.dart';
-import '../../core/models/transaction_model.dart';
 import '../../l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 
@@ -178,7 +177,7 @@ class _WorkerTransactionsListState extends State<WorkerTransactionsList> {
 
           // Amount
           Text(
-            '${isPositive ? '+' : '-'}${AppLocalizations.of(context)?.currency ?? 'ETB'} ${transaction.amount.toStringAsFixed(2)}',
+            '${isPositive ? '+' : '-'}${AppLocalizations.of(context)?.currency ?? 'ETB'} ${transaction.amount.formatted}',
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

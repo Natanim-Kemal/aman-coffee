@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/auth_service.dart';
+import '../services/fcm_service.dart';
 import '../models/user_model.dart';
 
 enum AuthStatus {
@@ -31,26 +32,27 @@ class AuthProvider with ChangeNotifier {
   bool get isAuthenticated => _status == AuthStatus.authenticated;
   bool get isLoading => _status == AuthStatus.loading;
   bool get isWorker => _userRole == UserRole.worker && _workerId != null;
+  bool get isAdmin => _userRole == UserRole.admin;
+  bool get isViewer => _userRole == UserRole.viewer;
 
   AuthProvider() {
     _initializeAuth();
   }
 
   Future<void> _initializeAuth() async {
+    await _authService.enablePersistence();
     final currentUser = _authService.currentUser;
+    
     if (currentUser != null) {
       final isValid = await _authService.isSessionValid();
       if (!isValid) {
-        // Session expired, sign out
         await _authService.signOut();
       }
     }
 
-    // Listen to auth state changes
     _authService.authStateChanges.listen((User? user) async {
       if (user != null) {
         _user = user;
-        // Fetch user role and data from Firestore
         await _fetchUserData(user.uid);
         _status = AuthStatus.authenticated;
       } else {
@@ -64,20 +66,16 @@ class AuthProvider with ChangeNotifier {
     });
   }
 
+
   /// Fetch user data from Firestore
   Future<void> _fetchUserData(String uid) async {
     try {
-      print('DEBUG: Fetching user data for uid: $uid');
       final doc = await _firestore.collection('users').doc(uid).get();
-      print('DEBUG: Document exists: ${doc.exists}');
       
       if (doc.exists) {
-        print('DEBUG: Document data: ${doc.data()}');
         _appUser = AppUser.fromFirestore(doc.data()!, uid);
         _userRole = _appUser!.role;
         _workerId = _appUser!.workerId;
-        print('DEBUG: Parsed role: $_userRole');
-        print('DEBUG: Parsed workerId: $_workerId');
       } else {
         // User document doesn't exist - must be manually created by admin
         debugPrint('ERROR: User document not found for uid: $uid');
@@ -99,7 +97,6 @@ class AuthProvider with ChangeNotifier {
     required String password,
   }) async {
     try {
-      print('DEBUG: Starting sign in...');
       _status = AuthStatus.loading;
       _errorMessage = null;
       notifyListeners();
@@ -109,32 +106,26 @@ class AuthProvider with ChangeNotifier {
         password: password,
       );
 
-      print('DEBUG: Credential received: ${credential != null}');
-      print('DEBUG: User: ${credential?.user != null}');
-
       if (credential != null && credential.user != null) {
         _user = credential.user;
         
         // Fetch user role and data from Firestore
         await _fetchUserData(credential.user!.uid);
         
-        print('DEBUG: User role: $_userRole');
-        print('DEBUG: Worker ID: $_workerId');
+        // Save FCM token for push notifications
+        await FCMService().saveTokenForUser(credential.user!.uid);
         
         _status = AuthStatus.authenticated;
         _errorMessage = null;
-        print('DEBUG: Sign in SUCCESS - returning true');
         notifyListeners();
         return true;
       } else {
         _status = AuthStatus.unauthenticated;
         _errorMessage = 'Login failed. Please try again.';
-        print('DEBUG: Sign in FAILED - credential or user is null');
         notifyListeners();
         return false;
       }
     } catch (e) {
-      print('DEBUG: Sign in ERROR: $e');
       _status = AuthStatus.unauthenticated;
       _errorMessage = e.toString();
       notifyListeners();
@@ -142,24 +133,30 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  /// Sign out
   Future<void> signOut() async {
     try {
       print('DEBUG: Starting sign out...');
       _status = AuthStatus.loading;
       notifyListeners();
 
+      // Remove FCM token before signing out
+      if (_user != null) {
+        await FCMService().removeTokenForUser(_user!.uid);
+      }
+
       await _authService.signOut();
 
-      // Clear ALL user state
+      // Explicitly clear all user data
       _user = null;
+      _appUser = null;
+      _userRole = null;
+      _workerId = null;
       _appUser = null;
       _userRole = null;
       _workerId = null;
       _status = AuthStatus.unauthenticated;
       _errorMessage = null;
       
-      print('DEBUG: Sign out complete, status = $_status');
       notifyListeners();
     } catch (e) {
       print('DEBUG: Sign out ERROR: $e');
@@ -170,6 +167,12 @@ class AuthProvider with ChangeNotifier {
       _workerId = null;
       _status = AuthStatus.unauthenticated;
       _errorMessage = e.toString();
+      // Even if firebase signout fails, we should clear local state
+      _user = null;
+      _appUser = null;
+      _userRole = null;
+      _workerId = null;
+      _status = AuthStatus.unauthenticated;
       notifyListeners();
     }
   }
@@ -212,6 +215,8 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
+
+
   /// Update user profile
   Future<bool> updateUserProfile({String? displayName, String? photoUrl}) async {
     try {
@@ -221,7 +226,7 @@ class AuthProvider with ChangeNotifier {
       await _authService.updateProfile(displayName: displayName, photoUrl: photoUrl);
       
       // Refresh user data
-      _user = _authService.currentUser; // Should be updated now
+      _user = _authService.currentUser;
       _status = AuthStatus.authenticated;
       notifyListeners();
       return true;

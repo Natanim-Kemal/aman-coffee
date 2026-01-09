@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../../core/providers/transaction_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/transaction_model.dart';
+import '../../../core/utils/number_formatter.dart';
 import '../../widgets/stats_card.dart';
 import '../../../core/services/report_service.dart';
 import '../../widgets/custom_header.dart';
@@ -19,8 +20,11 @@ class ReportsScreen extends StatefulWidget {
 class _ReportsScreenState extends State<ReportsScreen> {
   String _dateFilter = 'Last 7 Days';
   String _typeFilter = 'All';
+  int _itemsToShow = 20; // Pagination - items per page
+  static const int _itemsPerLoad = 20;
+  DateTime? _selectedDate; // For "Choose Date" option
   
-  final List<String> _dateOptions = ['Today', 'Last 7 Days', 'This Month', 'All Time'];
+  final List<String> _dateOptions = ['Today', 'Last 7 Days', 'This Month', 'All Time', 'Choose Date'];
   final List<String> _typeOptions = ['All', 'Distribution', 'Return', 'Purchase'];
 
   @override
@@ -30,10 +34,53 @@ class _ReportsScreenState extends State<ReportsScreen> {
       Provider.of<TransactionProvider>(context, listen: false).loadAllTransactions();
     });
   }
+  
+  void _loadMore() {
+    setState(() {
+      _itemsToShow += _itemsPerLoad;
+    });
+  }
+  
+  void _resetPagination() {
+    setState(() {
+      _itemsToShow = _itemsPerLoad;
+    });
+  }
+
+  Future<void> _pickDate() async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: AppColors.primary,
+              onPrimary: Colors.white,
+              surface: Theme.of(context).cardColor,
+              onSurface: Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        _dateFilter = 'Choose Date';
+        _itemsToShow = _itemsPerLoad; // Reset pagination
+      });
+    }
+  }
 
   List<MoneyTransaction> _getFilteredTransactions(List<MoneyTransaction> allTransactions) {
     DateTime now = DateTime.now();
     DateTime? startDate;
+    DateTime? endDate;
     
     switch (_dateFilter) {
       case 'Today':
@@ -48,10 +95,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
       case 'All Time':
         startDate = null;
         break;
+      case 'Choose Date':
+        if (_selectedDate != null) {
+          startDate = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day);
+          endDate = DateTime(_selectedDate!.year, _selectedDate!.month, _selectedDate!.day, 23, 59, 59);
+        }
+        break;
     }
 
     return allTransactions.where((t) {
-      bool dateMatch = startDate == null || t.createdAt.isAfter(startDate);
+      bool dateMatch;
+      if (_dateFilter == 'Choose Date' && startDate != null && endDate != null) {
+        // For specific date, check if transaction is within that day
+        dateMatch = t.createdAt.isAfter(startDate.subtract(const Duration(seconds: 1))) && 
+                    t.createdAt.isBefore(endDate.add(const Duration(seconds: 1)));
+      } else {
+        dateMatch = startDate == null || t.createdAt.isAfter(startDate);
+      }
       bool typeMatch = _typeFilter == 'All' || 
                        t.type.toLowerCase() == _typeFilter.toLowerCase();
       return dateMatch && typeMatch;
@@ -71,6 +131,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: Column(
           children: [
               // Header
@@ -109,10 +170,16 @@ class _ReportsScreenState extends State<ReportsScreen> {
                               _dateFilter,
                               _typeFilter,
                             );
-                          } catch (e) {
+                          } catch (e, stackTrace) {
+                            print('Error generating PDF report: $e');
+                            print(stackTrace);
                             if (mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Error generating report: $e')),
+                                SnackBar(
+                                  content: Text('Error generating report: $e'),
+                                  backgroundColor: Colors.red,
+                                  duration: const Duration(seconds: 5),
+                                ),
                               );
                             }
                           }
@@ -127,12 +194,24 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: _buildFilterDropdown(
-                          value: _dateFilter,
-                          items: _dateOptions,
-                          onChanged: (val) => setState(() => _dateFilter = val!),
-                          icon: Icons.calendar_today,
-                        ),
+                        child: _selectedDate != null 
+                          ? _buildDateChip()
+                          : _buildFilterDropdown(
+                              value: _dateFilter,
+                              items: _dateOptions,
+                              onChanged: (val) {
+                                if (val == 'Choose Date') {
+                                  _pickDate();
+                                } else {
+                                  setState(() {
+                                    _dateFilter = val!;
+                                    _selectedDate = null;
+                                    _itemsToShow = _itemsPerLoad;
+                                  });
+                                }
+                              },
+                              icon: Icons.calendar_today,
+                            ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -151,32 +230,25 @@ class _ReportsScreenState extends State<ReportsScreen> {
 
             // Summary Cards
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: StatsCard(
-                            title: AppLocalizations.of(context)?.total ?? 'Total',
-                            value: '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${totalAmount.toStringAsFixed(0)}',
-                            icon: Icons.attach_money,
-                            color: Colors.blue,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: StatsCard(
-                            title: 'Transactions',
-                            value: '$count',
-                            icon: Icons.receipt_long,
-                            color: Colors.orange,
-                          ),
-                        ),
-                      ],
-                    ),
+              child: RefreshIndicator(
+                color: AppColors.primary,
+                onRefresh: () async {
+                  Provider.of<TransactionProvider>(context, listen: false).loadAllTransactions();
+                  await Future.delayed(const Duration(milliseconds: 500));
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                    // Quick Stats Row
+                    _buildQuickStats(filteredTransactions),
 
+                    const SizedBox(height: 24),
+
+                    // Coffee Purchase Summary by Type
+                    if (_typeFilter == 'All' || _typeFilter == 'Purchase')
+                      _buildCoffeeSummary(filteredTransactions),
 
                     const SizedBox(height: 24),
 
@@ -201,7 +273,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
                     
                     if (filteredTransactions.isEmpty)
                       Padding(
@@ -220,23 +291,111 @@ class _ReportsScreenState extends State<ReportsScreen> {
                         ),
                       )
                     else
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: filteredTransactions.length,
-                        itemBuilder: (context, index) {
-                          final transaction = filteredTransactions[index];
-                          return _buildTransactionItem(transaction);
-                        },
+                      Column(
+                        children: [
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: filteredTransactions.length > _itemsToShow 
+                                ? _itemsToShow 
+                                : filteredTransactions.length,
+                            itemBuilder: (context, index) {
+                              final transaction = filteredTransactions[index];
+                              return _buildTransactionItem(transaction);
+                            },
+                          ),
+                          // Load More button
+                          if (filteredTransactions.length > _itemsToShow)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: OutlinedButton.icon(
+                                onPressed: _loadMore,
+                                icon: const Icon(Icons.expand_more),
+                                label: Text(
+                                  'Load More (${filteredTransactions.length - _itemsToShow} remaining)',
+                                ),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppColors.primary,
+                                  side: BorderSide(color: AppColors.primary.withOpacity(0.5)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                ),
+                              ),
+                            )
+                          else if (filteredTransactions.length > _itemsPerLoad)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              child: Text(
+                                'Showing all ${filteredTransactions.length} transactions',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                       
                     const SizedBox(height: 80), 
                   ],
                 ),
               ),
+             ),
             ),
           ],
         ),
+    );
+  }
+
+  Widget _buildDateChip() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    return GestureDetector(
+      onTap: _pickDate,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.calendar_today, size: 18, color: AppColors.primary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                DateFormat('MMM d, yyyy').format(_selectedDate!),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? Colors.white : Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  _selectedDate = null;
+                  _dateFilter = 'Last 7 Days';
+                  _itemsToShow = _itemsPerLoad;
+                });
+              },
+              child: Icon(Icons.close, size: 18, color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -275,6 +434,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 isExpanded: true,
                 icon: Icon(Icons.arrow_drop_down, color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight),
                 dropdownColor: theme.cardColor,
+                borderRadius: BorderRadius.circular(12),
                 style: TextStyle(
                   fontSize: 14,
                   color: isDark ? Colors.white : Colors.black87,
@@ -375,7 +535,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${transaction.amount.toStringAsFixed(0)}',
+                '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${transaction.amount.formatted}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
@@ -394,5 +554,279 @@ class _ReportsScreenState extends State<ReportsScreen> {
         ],
       ),
     );
+  }
+
+  /// Build quick stats row (top buyer, avg price, commission)
+  Widget _buildQuickStats(List<MoneyTransaction> transactions) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    // Get purchase transactions only
+    final purchases = transactions.where((t) => t.type.toLowerCase() == 'purchase').toList();
+    
+    // Calculate stats
+    String topBuyer = '-';
+    double avgPrice = 0;
+    double totalCommission = 0;
+    
+    if (purchases.isNotEmpty) {
+      // Find top buyer (by total amount)
+      Map<String, double> buyerTotals = {};
+      for (var t in purchases) {
+        buyerTotals[t.workerName] = (buyerTotals[t.workerName] ?? 0) + t.amount;
+      }
+      topBuyer = buyerTotals.entries
+          .reduce((a, b) => a.value > b.value ? a : b)
+          .key;
+      
+      // Calculate average price per kg
+      double totalWeight = 0;
+      double totalValue = 0;
+      for (var t in purchases) {
+        if (t.coffeeWeight != null && t.coffeeWeight! > 0) {
+          totalWeight += t.coffeeWeight!;
+          totalValue += t.amount;
+        }
+      }
+      if (totalWeight > 0) {
+        avgPrice = totalValue / totalWeight;
+      }
+      
+      // Calculate total commission
+      for (var t in purchases) {
+        totalCommission += t.commissionAmount ?? 0;
+      }
+    }
+    
+    return Row(
+      children: [
+        Expanded(
+          child: _buildQuickStatCard(
+            icon: Icons.emoji_events,
+            label: 'Top Buyer',
+            value: topBuyer.length > 10 ? '${topBuyer.substring(0, 10)}...' : topBuyer,
+            color: Colors.amber,
+            isDark: isDark,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildQuickStatCard(
+            icon: Icons.trending_up,
+            label: 'Avg Price',
+            value: 'ETB ${avgPrice.formatted}/Kg',
+            color: Colors.purple,
+            isDark: isDark,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: _buildQuickStatCard(
+            icon: Icons.paid,
+            label: 'Commission',
+            value: 'ETB ${totalCommission.formatted}',
+            color: Colors.teal,
+            isDark: isDark,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+    required bool isDark,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 18),
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : Colors.black87,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Build coffee purchase summary by type
+  Widget _buildCoffeeSummary(List<MoneyTransaction> transactions) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
+    // Get purchase transactions only
+    final purchases = transactions.where((t) => t.type.toLowerCase() == 'purchase').toList();
+    
+    if (purchases.isEmpty) return const SizedBox.shrink();
+    
+    // Group by coffee type
+    Map<String, Map<String, double>> coffeeData = {};
+    
+    for (var t in purchases) {
+      String type = t.coffeeType ?? 'Unknown';
+      type = type.isNotEmpty ? type[0].toUpperCase() + type.substring(1) : 'Unknown';
+      
+      coffeeData.putIfAbsent(type, () => {'qty': 0, 'total': 0, 'count': 0});
+      coffeeData[type]!['qty'] = (coffeeData[type]!['qty'] ?? 0) + (t.coffeeWeight ?? 0);
+      coffeeData[type]!['total'] = (coffeeData[type]!['total'] ?? 0) + t.amount;
+      coffeeData[type]!['count'] = (coffeeData[type]!['count'] ?? 0) + 1;
+    }
+    
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.cardColor,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.local_cafe, color: Colors.brown, size: 20),
+              const SizedBox(width: 8),
+              Text(
+                'Coffee Purchases by Type',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: isDark ? Colors.white : Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          
+          // Header
+          Row(
+            children: [
+              Expanded(flex: 2, child: Text('Type', style: _headerStyle(isDark))),
+              Expanded(flex: 1, child: Text('Qty', style: _headerStyle(isDark), textAlign: TextAlign.right)),
+              Expanded(flex: 2, child: Text('Avg Price', style: _headerStyle(isDark), textAlign: TextAlign.right)),
+              Expanded(flex: 2, child: Text('Total', style: _headerStyle(isDark), textAlign: TextAlign.right)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Divider(color: isDark ? Colors.grey.shade700 : Colors.grey.shade300),
+          const SizedBox(height: 8),
+          
+          // Data rows
+          ...coffeeData.entries.map((entry) {
+            final type = entry.key;
+            final data = entry.value;
+            final qty = data['qty'] ?? 0;
+            final total = data['total'] ?? 0;
+            final avgPrice = qty > 0 ? total / qty : 0;
+            
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 6),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2, 
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: _getCoffeeTypeColor(type),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(type, style: _valueStyle(isDark)),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    flex: 1, 
+                    child: Text(
+                      '${qty.formatted} Kg',
+                      style: _valueStyle(isDark),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2, 
+                    child: Text(
+                      'ETB ${avgPrice.formatted}',
+                      style: _valueStyle(isDark),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                  Expanded(
+                    flex: 2, 
+                    child: Text(
+                      'ETB ${total.formatted}',
+                      style: _valueStyle(isDark).copyWith(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+
+  TextStyle _headerStyle(bool isDark) {
+    return TextStyle(
+      fontSize: 11,
+      fontWeight: FontWeight.w600,
+      color: isDark ? AppColors.textMutedDark : AppColors.textMutedLight,
+    );
+  }
+
+  TextStyle _valueStyle(bool isDark) {
+    return TextStyle(
+      fontSize: 13,
+      color: isDark ? Colors.white : Colors.black87,
+    );
+  }
+
+  Color _getCoffeeTypeColor(String type) {
+    switch (type.toLowerCase()) {
+      case 'jenfel':
+        return Colors.brown;
+      case 'yetatebe':
+        return Colors.orange;
+      case 'special':
+        return Colors.amber;
+      default:
+        return Colors.grey;
+    }
   }
 }

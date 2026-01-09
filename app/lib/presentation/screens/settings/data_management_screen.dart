@@ -37,7 +37,7 @@ class _DataManagementScreenState extends State<DataManagementScreen> {
 
       final jsonString = const JsonEncoder.withIndent('  ').convert(data);
       final dir = await getApplicationDocumentsDirectory();
-      final fileName = 'stitch_backup_${DateTime.now().millisecondsSinceEpoch}.json';
+      final fileName = 'cofiz_backup_${DateTime.now().millisecondsSinceEpoch}.json';
       final file = File('${dir.path}/$fileName');
       await file.writeAsString(jsonString);
 

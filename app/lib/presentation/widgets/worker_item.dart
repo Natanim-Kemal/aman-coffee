@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/utils/number_formatter.dart';
 
 class WorkerItem extends StatelessWidget {
   final String name;
@@ -35,6 +36,7 @@ class WorkerItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.primary.withOpacity(0.5)),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
@@ -135,7 +137,7 @@ class WorkerItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'ETB ${currentBalance!.toStringAsFixed(0)}',
+            'ETB ${currentBalance!.formatted}',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,

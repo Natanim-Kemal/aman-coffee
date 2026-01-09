@@ -7,6 +7,7 @@ import '../../../core/services/worker_account_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../dialogs/worker_credentials_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../widgets/background_pattern.dart';
 
 class WorkerFormScreen extends StatefulWidget {
   final Worker? worker; // null for add, Worker for edit
@@ -22,6 +23,7 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+  final _commissionRateController = TextEditingController();
   
   int _yearsOfExperience = 0;
   String _status = 'active';
@@ -42,17 +44,22 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
       _nameController.text = widget.worker!.name;
       _phoneController.text = widget.worker!.phone;
       _emailController.text = widget.worker!.email ?? '';
+      _commissionRateController.text = widget.worker!.commissionRate.toString();
       _yearsOfExperience = widget.worker!.yearsOfExperience;
       _status = widget.worker!.status;
       _performanceRating = widget.worker!.performanceRating;
+    } else {
+      _commissionRateController.text = '2.0'; // Default
     }
   }
+
 
   @override
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
+    _commissionRateController.dispose();
     super.dispose();
   }
 
@@ -91,6 +98,10 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
       totalDistributed: widget.worker?.totalDistributed ?? 0.0,
       totalReturned: widget.worker?.totalReturned ?? 0.0,
       totalCoffeePurchased: widget.worker?.totalCoffeePurchased ?? 0.0,
+      totalCommissionEarned: widget.worker?.totalCommissionEarned ?? 0.0,
+      commissionRate: double.tryParse(_commissionRateController.text.trim()) ?? 0.0,
+      userId: widget.worker?.userId,
+      hasLoginAccess: isEditMode ? (widget.worker?.hasLoginAccess ?? false) : _createLoginAccount,
     );
 
     final workerProvider = Provider.of<WorkerProvider>(context, listen: false);
@@ -100,39 +111,56 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
     if (isEditMode) {
       success = await workerProvider.updateWorker(widget.worker!.id, worker);
     } else {
-      success = await workerProvider.addWorker(worker);
-      // Get the ID of the newly created worker
-      if (success && workerProvider.workers.isNotEmpty) {
-        newWorkerId = workerProvider.workers.last.id;
-      }
+      newWorkerId = await workerProvider.addWorker(worker);
+      success = newWorkerId != null;
     }
 
     if (mounted) {
       if (success) {
-        // If creating login account for new worker
-        if (!isEditMode && _createLoginAccount && newWorkerId != null) {
+        // Determine if account creation is needed
+        final targetId = isEditMode ? widget.worker!.id : newWorkerId;
+        final shouldCreateAccount = _createLoginAccount && 
+            (!isEditMode || (isEditMode && !(widget.worker?.hasLoginAccess ?? false)));
+
+        if (shouldCreateAccount && targetId != null) {
           final accountService = WorkerAccountService();
           final result = await accountService.createWorkerAccount(
-            workerId: newWorkerId,
+            workerId: targetId,
             email: _emailController.text.trim(),
             workerName: _nameController.text.trim(),
           );
 
+          // Force update local cache if possible, or wait for stream
+          // Note: WorkerProvider stream will eventually update the worker with userId
+          
           setState(() => _isLoading = false);
 
           if (result['success'] == true) {
-            // Show credentials dialog
-            if (mounted) {
-              await showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (context) => WorkerCredentialsDialog(
-                  workerName: _nameController.text.trim(),
-                  email: _emailController.text.trim(),
-                  password: result['password'] as String,
-                  phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
-                ),
-              );
+            // Check if it was a restoration (existing account)
+            if (result['message'] != null) {
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(result['message']),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            } else {
+              // Show credentials dialog for new accounts
+              if (mounted) {
+                await showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => WorkerCredentialsDialog(
+                    workerName: _nameController.text.trim(),
+                    email: _emailController.text.trim(),
+                    password: result['password'] as String,
+                    phone: _phoneController.text.trim().isEmpty ? null : _phoneController.text.trim(),
+                  ),
+                );
+              }
             }
           } else {
             // Account creation failed, show error but worker was still created
@@ -219,7 +247,10 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
             ),
         ],
       ),
-      body: Form(
+      body: Stack(
+        children: [
+          const BackgroundPattern(),
+          Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(20),
@@ -250,6 +281,26 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return 'Phone number is required';
+                }
+                return null;
+              },
+            ),
+
+            const SizedBox(height: 16),
+            
+            // Commission Rate Field
+            _buildTextField(
+              controller: _commissionRateController,
+              label: 'Commission Rate (per Kg)',
+              icon: Icons.monetization_on,
+              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              isDark: isDark,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Commission rate is required';
+                }
+                if (double.tryParse(value) == null) {
+                  return 'Enter a valid number';
                 }
                 return null;
               },
@@ -287,8 +338,8 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
 
             const SizedBox(height: 16),
 
-            // Create Login Account Toggle (only for new workers)
-            if (!isEditMode)
+            // Create Login Account Toggle (new workers or existing without login)
+            if (!isEditMode || (isEditMode && !(widget.worker?.hasLoginAccess ?? false)))
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
@@ -520,6 +571,8 @@ class _WorkerFormScreenState extends State<WorkerFormScreen> {
             const SizedBox(height: 100),
           ],
         ),
+      ),
+        ],
       ),
     );
   }

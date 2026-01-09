@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -15,28 +16,31 @@ class AuthService {
   // Stream of auth state changes
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  /// Enable persistence explicitly
+  Future<void> enablePersistence() async {
+    try {
+      await _auth.setPersistence(Persistence.LOCAL);
+    } catch (e) {
+    }
+  }
+
   /// Sign in with email and password
   Future<UserCredential?> signInWithEmailPassword({
     required String email,
     required String password,
   }) async {
     try {
-      print('DEBUG AUTH: Signing in with Firebase...');
       final credential = await _auth.signInWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
 
-      print('DEBUG AUTH: Firebase auth success, saving timestamp...');
       await _saveLoginTimestamp();
-      print('DEBUG AUTH: Timestamp saved successfully');
 
       return credential;
     } on FirebaseAuthException catch (e) {
-      print('DEBUG AUTH: Firebase exception: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     } catch (e) {
-      print('DEBUG AUTH: Unexpected error: $e');
       throw 'Unexpected error: $e';
     }
   }
@@ -53,7 +57,9 @@ class AuthService {
 
   /// Check if session is still valid (within 7 days)
   Future<bool> isSessionValid() async {
-    if (_auth.currentUser == null) return false;
+    if (_auth.currentUser == null) {
+      return false;
+    }
 
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -64,7 +70,7 @@ class AuthService {
       final loginDate = DateTime.fromMillisecondsSinceEpoch(timestamp);
       final now = DateTime.now();
       final difference = now.difference(loginDate);
-
+      
       // Session is valid if less than 7 days
       return difference.inDays < _sessionDurationDays;
     } catch (e) {

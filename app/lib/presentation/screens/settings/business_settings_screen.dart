@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/providers/settings_provider.dart';
+import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
 
 class BusinessSettingsScreen extends StatefulWidget {
@@ -35,6 +36,11 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
     _phoneController.dispose();
     _limitController.dispose();
     super.dispose();
+  }
+
+  bool _canEdit(AuthProvider authProvider) {
+    // Only viewers can edit business settings
+    return authProvider.isViewer;
   }
 
   void _saveSettings() async {
@@ -82,6 +88,8 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final authProvider = Provider.of<AuthProvider>(context);
+    final canEdit = _canEdit(authProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -103,12 +111,14 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
                 label: 'Company Name',
                 icon: Icons.business,
                 validator: (v) => v?.isNotEmpty == true ? null : 'Required',
+                readOnly: !canEdit,
               ),
               const SizedBox(height: 16),
               _buildTextField(
                 controller: _addressController,
                 label: 'Address',
                 icon: Icons.location_on,
+                readOnly: !canEdit,
               ),
               const SizedBox(height: 16),
               _buildTextField(
@@ -116,6 +126,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
                 label: 'Phone',
                 icon: Icons.phone,
                 keyboardType: TextInputType.phone,
+                readOnly: !canEdit,
               ),
 
               const SizedBox(height: 32),
@@ -127,6 +138,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
                 label: 'Max Distribution Limit (ETB)',
                 icon: Icons.attach_money,
                 keyboardType: TextInputType.number,
+                readOnly: !canEdit,
                  validator: (v) {
                   if (v == null || v.isEmpty) return 'Required';
                   if (double.tryParse(v) == null) return 'Invalid number';
@@ -136,29 +148,31 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
 
               const SizedBox(height: 40),
 
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _saveSettings,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+              // Only show save button for viewers
+              if (canEdit)
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _saveSettings,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                  ),
-                  child: _isLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text(
-                          'Save Changes',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Save Changes',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -183,6 +197,7 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
     required IconData icon,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
+    bool readOnly = false,
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
@@ -190,13 +205,19 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      validator: validator,
+      validator: readOnly ? null : validator,
+      readOnly: readOnly,
       style: TextStyle(
-        color: isDark ? Colors.white : Colors.black87,
+        color: readOnly 
+            ? (isDark ? Colors.grey.shade400 : Colors.grey.shade600)
+            : (isDark ? Colors.white : Colors.black87),
       ),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: Colors.grey),
+        suffixIcon: readOnly 
+            ? Icon(Icons.lock, size: 18, color: Colors.grey.shade400)
+            : null,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -205,7 +226,9 @@ class _BusinessSettingsScreenState extends State<BusinessSettingsScreen> {
           borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
         ),
         filled: true,
-        fillColor: isDark ? Colors.grey.shade900 : Colors.grey.shade50,
+        fillColor: readOnly 
+            ? (isDark ? Colors.grey.shade800.withOpacity(0.5) : Colors.grey.shade100)
+            : (isDark ? Colors.grey.shade900 : Colors.grey.shade50),
       ),
     );
   }
