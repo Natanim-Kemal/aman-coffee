@@ -83,6 +83,23 @@ class WorkerAccountService {
       
       switch (e.code) {
         case 'email-already-in-use':
+          // Attempt to restore access if worker already has this account linked
+          try {
+            final workerDoc = await _firestore.collection('workers').doc(workerId).get();
+            final currentUserId = workerDoc.data()?['userId'];
+            if (currentUserId != null) {
+              await _firestore.collection('workers').doc(workerId).update({
+                'hasLoginAccess': true,
+              });
+              return {
+                'success': true,
+                'password': 'Existing (Unchanged)',
+                'userId': currentUserId,
+                'message': 'Login access restored for existing account',
+              };
+            }
+          } catch (_) {}
+          
           errorMessage = 'This email is already in use';
           break;
         case 'invalid-email':

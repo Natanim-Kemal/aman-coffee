@@ -74,7 +74,13 @@ class AppUser {
       uid: uid,
       email: data['email'] ?? '',
       displayName: data['displayName'] ?? '',
-      role: parsedRole,
+      role: UserRole.values.firstWhere(
+        (r) => r.name == data['role'],
+        orElse: () {
+          if (data['workerId'] != null) return UserRole.worker;
+          throw Exception('Invalid user role: ${data['role']}');
+        },
+      ),
       photoUrl: data['photoUrl'],
       createdAt: data['createdAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(data['createdAt'])

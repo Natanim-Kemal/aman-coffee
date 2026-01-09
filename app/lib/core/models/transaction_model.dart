@@ -7,7 +7,13 @@ class MoneyTransaction {
   final String? notes;
   final String? receiptUrl;
   final DateTime createdAt;
-  final String createdBy; // user ID who created it
+  final String createdBy;
+  
+  // Specific to Coffee Purchase
+  final String? coffeeType;     // 'jenfel', 'yetatebe', 'special'
+  final double? coffeeWeight;   // in Kg
+  final double? pricePerKg;
+  final double? commissionAmount;
 
   MoneyTransaction({
     required this.id,
@@ -19,9 +25,12 @@ class MoneyTransaction {
     this.receiptUrl,
     required this.createdAt,
     required this.createdBy,
+    this.coffeeType,
+    this.coffeeWeight,
+    this.pricePerKg,
+    this.commissionAmount,
   });
 
-  /// Create MoneyTransaction from Firestore document
   factory MoneyTransaction.fromFirestore(Map<String, dynamic> data, String id) {
     return MoneyTransaction(
       id: id,
@@ -35,10 +44,13 @@ class MoneyTransaction {
           ? DateTime.fromMillisecondsSinceEpoch(data['createdAt'])
           : DateTime.now(),
       createdBy: data['createdBy'] ?? '',
+      coffeeType: data['coffeeType'],
+      coffeeWeight: (data['coffeeWeight'] ?? 0.0).toDouble() == 0.0 ? null : (data['coffeeWeight'] ?? 0.0).toDouble(),
+      pricePerKg: (data['pricePerKg'] ?? 0.0).toDouble() == 0.0 ? null : (data['pricePerKg'] ?? 0.0).toDouble(),
+      commissionAmount: (data['commissionAmount'] ?? 0.0).toDouble() == 0.0 ? null : (data['commissionAmount'] ?? 0.0).toDouble(),
     );
   }
 
-  /// Convert MoneyTransaction to Firestore document
   Map<String, dynamic> toFirestore() {
     return {
       'workerId': workerId,
@@ -49,6 +61,10 @@ class MoneyTransaction {
       'receiptUrl': receiptUrl,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'createdBy': createdBy,
+      'coffeeType': coffeeType,
+      'coffeeWeight': coffeeWeight,
+      'pricePerKg': pricePerKg,
+      'commissionAmount': commissionAmount,
     };
   }
 
@@ -60,7 +76,6 @@ class MoneyTransaction {
     };
   }
 
-  /// Create MoneyTransaction from JSON
   factory MoneyTransaction.fromJson(Map<String, dynamic> json) {
     return MoneyTransaction(
       id: json['id'] ?? '',
@@ -74,6 +89,10 @@ class MoneyTransaction {
           ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
           : DateTime.now(),
       createdBy: json['createdBy'] ?? '',
+      coffeeType: json['coffeeType'],
+      coffeeWeight: (json['coffeeWeight'] ?? 0.0).toDouble() == 0.0 ? null : (json['coffeeWeight'] ?? 0.0).toDouble(),
+      pricePerKg: (json['pricePerKg'] ?? 0.0).toDouble() == 0.0 ? null : (json['pricePerKg'] ?? 0.0).toDouble(),
+      commissionAmount: (json['commissionAmount'] ?? 0.0).toDouble() == 0.0 ? null : (json['commissionAmount'] ?? 0.0).toDouble(),
     );
   }
 

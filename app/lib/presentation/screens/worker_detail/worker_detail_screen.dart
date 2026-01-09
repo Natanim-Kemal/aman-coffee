@@ -5,11 +5,15 @@ import '../../../core/models/transaction_model.dart';
 import '../../../core/providers/worker_provider.dart';
 import '../../../core/providers/transaction_provider.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/notification_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/number_formatter.dart';
 import '../../../core/utils/worker_actions.dart';
 import '../worker_form/worker_form_screen.dart';
 import '../transaction/transaction_dialog.dart';
+import '../../dialogs/ping_dialog.dart';
 import '../../widgets/worker_transactions_list.dart';
+import '../../widgets/background_pattern.dart';
 import '../../../l10n/app_localizations.dart';
 
 class WorkerDetailScreen extends StatelessWidget {
@@ -24,21 +28,26 @@ class WorkerDetailScreen extends StatelessWidget {
 
     return Scaffold(
       // backgroundColor: AppColors.backgroundLight, // Removed for theme support
-      body: FutureBuilder<Worker?>(
-        future: Provider.of<WorkerProvider>(context, listen: false).getWorkerById(workerId),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: Stack(
+        children: [
+          const BackgroundPattern(),
+          Consumer<WorkerProvider>(
+        builder: (context, workerProvider, _) {
+          // Find worker from the reactive list (using full list)
+          final worker = workerProvider.findById(workerId);
 
-          if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-            return Center(
+          if (worker == null) {
+            // If not found in list, try fetching it (or show loading/error)
+            if (workerProvider.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
                   const SizedBox(height: 16),
-                  const Text('Failed to load worker details'),
+                  const Text('Worker not found'),
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => Navigator.pop(context),
@@ -49,8 +58,7 @@ class WorkerDetailScreen extends StatelessWidget {
             );
           }
 
-          final worker = snapshot.data!;
-
+          
           return CustomScrollView(
             slivers: [
               // App Bar
@@ -72,7 +80,13 @@ class WorkerDetailScreen extends StatelessWidget {
                       return Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          if (canEdit)
+                          if (canEdit) ...[
+                            if (worker.userId != null)
+                              IconButton(
+                                icon: const Icon(Icons.notifications_active, color: Colors.white),
+                                tooltip: 'Ping Worker',
+                                onPressed: () => _showPingDialog(context, worker, authProvider),
+                              ),
                             IconButton(
                               icon: const Icon(Icons.edit, color: Colors.white),
                               onPressed: () {
@@ -84,6 +98,7 @@ class WorkerDetailScreen extends StatelessWidget {
                                 );
                               },
                             ),
+                          ],
                           if (canDelete)
                             IconButton(
                               icon: const Icon(Icons.delete, color: Colors.white),
@@ -191,22 +206,8 @@ class WorkerDetailScreen extends StatelessWidget {
                               color: isDark ? Colors.white : Colors.black87,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              // TODO: Show all transactions
-                            },
-                            child: Text(
-                              'View All',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
                         ],
                       ),
-
-                      const SizedBox(height: 12),
 
                       // Worker Transactions List
                       WorkerTransactionsList(workerId: workerId),
@@ -219,6 +220,8 @@ class WorkerDetailScreen extends StatelessWidget {
             ],
           );
         },
+      ),
+        ],
       ),
     );
   }
@@ -464,7 +467,7 @@ class WorkerDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.currentBalance.toStringAsFixed(2)}',
+            '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.currentBalance.formatted}',
             style: const TextStyle(
               color: Colors.white,
               fontSize: 32,
@@ -478,7 +481,7 @@ class WorkerDetailScreen extends StatelessWidget {
               Expanded(
                 child: _buildBalanceItem(
                   'Distributed',
-                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalDistributed.toStringAsFixed(0)}',
+                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalDistributed.formatted}',
                   Icons.arrow_downward,
                 ),
               ),
@@ -490,8 +493,38 @@ class WorkerDetailScreen extends StatelessWidget {
               Expanded(
                 child: _buildBalanceItem(
                   'Returned',
-                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalReturned.toStringAsFixed(0)}',
+                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalReturned.formatted}',
                   Icons.arrow_upward,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            width: double.infinity,
+            height: 1,
+            color: Colors.white24,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildBalanceItem(
+                  'Purchased',
+                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalCoffeePurchased.formatted}',
+                  Icons.local_cafe,
+                ),
+              ),
+              Container(
+                width: 1,
+                height: 40,
+                color: Colors.white24,
+              ),
+              Expanded(
+                child: _buildBalanceItem(
+                  'Commission',
+                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalCommissionEarned.formatted}',
+                  Icons.paid,
                 ),
               ),
             ],
@@ -558,48 +591,50 @@ class WorkerDetailScreen extends StatelessWidget {
                 },
               ),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionButton(
-                context,
-                'Record Purchase',
-                Icons.shopping_cart,
-                Colors.orange,
-                () async {
-                  final result = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => TransactionDialog(
-                      worker: worker,
-                      type: 'purchase',
-                    ),
-                  );
-                  if (result == true) {
-                    // Refresh worker data
-                  }
-                },
+            if (!worker.hasLoginAccess) ...[
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  context,
+                  'Record Purchase',
+                  Icons.shopping_cart,
+                  Colors.orange,
+                  () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => TransactionDialog(
+                        worker: worker,
+                        type: 'purchase',
+                      ),
+                    );
+                    if (result == true) {
+                      // Refresh worker data
+                    }
+                  },
+                ),
               ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: _buildActionButton(
-                context,
-                'Return',
-                Icons.remove_circle,
-                Colors.red,
-                () async {
-                  final result = await showDialog<bool>(
-                    context: context,
-                    builder: (context) => TransactionDialog(
-                      worker: worker,
-                      type: 'return',
-                    ),
-                  );
-                  if (result == true) {
-                    // Refresh worker data
-                  }
-                },
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionButton(
+                  context,
+                  'Return',
+                  Icons.remove_circle,
+                  Colors.red,
+                  () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => TransactionDialog(
+                        worker: worker,
+                        type: 'return',
+                      ),
+                    );
+                    if (result == true) {
+                      // Refresh worker data
+                    }
+                  },
+                ),
               ),
-            ),
+            ],
           ],
         );
       },
@@ -673,7 +708,7 @@ class WorkerDetailScreen extends StatelessWidget {
                 child: _buildStatItem(
                   context,
                   'Coffee Purchased',
-                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalCoffeePurchased.toStringAsFixed(0)}',
+                  '${AppLocalizations.of(context)?.currency ?? 'ETB'} ${worker.totalCoffeePurchased.formatted}',
                   Icons.local_cafe,
                   Colors.brown,
                 ),
@@ -780,5 +815,33 @@ class WorkerDetailScreen extends StatelessWidget {
       default:
         return Colors.grey;
     }
+  }
+
+  Future<void> _showPingDialog(BuildContext context, Worker worker, AuthProvider authProvider) async {
+    await showDialog(
+      context: context,
+      builder: (context) => PingDialog(
+        title: 'Ping ${worker.name}',
+        messageLabel: 'Message',
+        onSend: (message) async {
+          final notificationProvider =
+              Provider.of<NotificationProvider>(context, listen: false);
+          
+          await notificationProvider.sendPing(
+            targetUserId: worker.userId!,
+            title: 'Message from Admin',
+            body: message,
+            senderName: authProvider.user?.displayName ?? 'Admin',
+            senderId: authProvider.user?.uid ?? '',
+          );
+          
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Notification sent to ${worker.name}')),
+            );
+          }
+        },
+      ),
+    );
   }
 }

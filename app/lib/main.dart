@@ -4,6 +4,8 @@ import 'l10n/app_localizations.dart';
 import 'core/models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'core/services/fcm_service.dart';
+import 'core/services/area_service.dart';
 import 'core/providers/auth_provider.dart';
 import 'core/providers/theme_provider.dart';
 import 'core/providers/audit_provider.dart';
@@ -11,11 +13,13 @@ import 'core/providers/worker_provider.dart';
 import 'core/providers/settings_provider.dart';
 import 'core/services/offline_sync_service.dart';
 import 'core/services/notification_service.dart';
+import 'core/providers/notification_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'core/providers/transaction_provider.dart';
 import 'presentation/widgets/custom_bottom_nav.dart';
 import 'presentation/widgets/offline_indicator.dart';
 import 'presentation/screens/auth/login_screen.dart';
+import 'presentation/widgets/background_pattern.dart';
 import 'presentation/screens/reports/reports_screen.dart';
 import 'presentation/screens/settings/settings_screen.dart';
 import 'presentation/screens/dashboard/dashboard_screen.dart';
@@ -37,9 +41,16 @@ void main() async {
     }
   }
 
-  // Initialize notifications
+  // Initialize local notifications
   final notificationService = NotificationService();
   await notificationService.initialize();
+
+  // Initialize FCM for push notifications
+  final fcmService = FCMService();
+  await fcmService.initialize();
+
+  // Initialize default areas if none exist
+  await AreaService().initializeDefaultAreas();
 
   // Initialize offline services
   final offlineSyncService = OfflineSyncService();
@@ -72,6 +83,7 @@ class StitchWorkerApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => AuditProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: Consumer2<ThemeProvider, SettingsProvider>(
         builder: (context, themeProvider, settingsProvider, _) {
@@ -110,11 +122,19 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
       builder: (context, authProvider, _) {
-        print('DEBUG AuthGate: status = ${authProvider.status}, isAuthenticated = ${authProvider.isAuthenticated}');
-        
-        // Show loading while checking auth state or during sign out
-        if (authProvider.status == AuthStatus.uninitialized || 
-            authProvider.status == AuthStatus.loading) {
+        if (authProvider.isAuthenticated && authProvider.user != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Provider.of<NotificationProvider>(context, listen: false)
+                .init(authProvider.user!.uid);
+          });
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+             Provider.of<NotificationProvider>(context, listen: false)
+                 .disposeListener();
+          });
+        }
+        // Show loading while checking auth state
+        if (authProvider.status == AuthStatus.uninitialized) {
           return const Scaffold(
             body: Center(
               child: CircularProgressIndicator(),
@@ -122,85 +142,80 @@ class AuthGate extends StatelessWidget {
           );
         }
 
-        // Not authenticated - show login
-        if (!authProvider.isAuthenticated) {
-          print('DEBUG AuthGate: Not authenticated, showing LoginScreen');
-          return const LoginScreen();
-        }
-
-        // Check if user role is loaded
-        if (authProvider.userRole == null) {
-          // User authenticated but no Firestore document found
-          // This means user was not manually created by admin
-          return Scaffold(
-            body: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Account Not Set Up',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+        // Navigate based on auth status AND user role
+        if (authProvider.isAuthenticated) {
+          // Check if user role is loaded
+          if (authProvider.userRole == null) {
+            return Scaffold(
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.error_outline,
+                        size: 64,
+                        color: Colors.red,
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Your account has not been configured yet. Please contact an administrator to set up your account.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    const SizedBox(height: 32),
-                    ElevatedButton.icon(
-                      onPressed: () async {
-                        await authProvider.signOut();
-                      },
-                      icon: const Icon(Icons.logout),
-                      label: const Text('Sign Out'),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Account Not Set Up',
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      const Text(
+                        'Your account has not been configured yet. Please contact an administrator to set up your account.',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(height: 32),
+                      ElevatedButton.icon(
+                        onPressed: () async {
+                          await authProvider.signOut();
+                        },
+                        icon: const Icon(Icons.logout),
+                        label: const Text('Sign Out'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          }
+
+          // Route based on role
+          switch (authProvider.userRole!) {
+            case UserRole.admin:
+              return MainLayout(key: MainLayout.mainLayoutKey);
+            case UserRole.viewer:
+
+              // Admin and Viewer use MainLayout
+              // Viewer will have read-only restrictions in UI
+              return MainLayout(key: MainLayout.mainLayoutKey);
+              
+            case UserRole.worker:
+
+              // Workers go to their own dashboard
+              if (authProvider.workerId != null) {
+                return WorkerDashboardScreen(
+                  workerId: authProvider.workerId!,
+                );
+              } else {
+                return const Scaffold(
+                  body: Center(
+                    child: Text('Error: Worker account not properly configured'),
+                  ),
+                );
+              }
+          }
         }
 
-        // Route based on role
-        print('DEBUG ROUTING: userRole = ${authProvider.userRole}');
-        print('DEBUG ROUTING: workerId = ${authProvider.workerId}');
-        
-        switch (authProvider.userRole!) {
-          case UserRole.admin:
-            print('DEBUG ROUTING: Routing to MainLayout (admin)');
-            return const MainLayout();
-          case UserRole.viewer:
-            print('DEBUG ROUTING: Routing to MainLayout (viewer)');
-            return const MainLayout();
-            
-          case UserRole.worker:
-            print('DEBUG ROUTING: Routing to WorkerDashboardScreen');
-            // Workers go to their own dashboard
-            if (authProvider.workerId != null) {
-              return WorkerDashboardScreen(
-                workerId: authProvider.workerId!,
-              );
-            } else {
-              print('DEBUG ROUTING: ERROR - Worker has no workerId!');
-              return const Scaffold(
-                body: Center(
-                  child: Text('Error: Worker account not properly configured'),
-                ),
-              );
-            }
-        }
+        // Not authenticated - show login
+        return const LoginScreen();
       },
     );
   }
@@ -208,6 +223,12 @@ class AuthGate extends StatelessWidget {
 
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
+  
+  static final GlobalKey<_MainLayoutState> mainLayoutKey = GlobalKey<_MainLayoutState>();
+  
+  static void navigateTo(int index) {
+    mainLayoutKey.currentState?._onNavTap(index);
+  }
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
@@ -247,7 +268,7 @@ class _MainLayoutState extends State<MainLayout> {
       index,
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
-    );
+      );
   }
 
   @override
@@ -255,6 +276,7 @@ class _MainLayoutState extends State<MainLayout> {
     return Scaffold(
       body: Stack(
         children: [
+          const BackgroundPattern(),
           PageView(
             controller: _pageController,
             onPageChanged: _onPageChanged,

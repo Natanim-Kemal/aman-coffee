@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../main.dart';
+import '../../widgets/background_pattern.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -37,14 +38,6 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() => _isLoading = false);
 
       if (success) {
-        // Navigate to main layout on successful login
-        Navigator.of(context).pushReplacement(
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const MainLayout(),
-            transitionsBuilder: (_, a, __, c) => FadeTransition(opacity: a, child: c),
-            transitionDuration: const Duration(milliseconds: 400),
-          ),
-        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -153,19 +146,25 @@ class _LoginScreenState extends State<LoginScreen> {
     
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor, 
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 40.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
+      body: Stack(
+        children: [
+          const BackgroundPattern(),
+          Center(
+            child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 320),
+              child: Form(
+                key: _formKey,
+                child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Align(
                 alignment: Alignment.center,
                 child: Image.asset(
-                  'assets/logo.png',
+                  'assets/icon-bg.png',
                   width: 80,
                   height: 80,
                   fit: BoxFit.contain,
@@ -176,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Title
               Text(
-                'Welcome Back',
+                'Welcome',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.w600,
@@ -270,8 +269,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ).animate().fadeIn(delay: 700.ms),
             ],
           ),
-          ),
         ),
+      ),
+    ),
+  ),
+),
+        ],
       ),
     );
   }

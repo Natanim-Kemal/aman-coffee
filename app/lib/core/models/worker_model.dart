@@ -3,20 +3,22 @@ class Worker {
   final String name;
   final String phone;
   final String? email;
-  final String role; // 'Senior Tailor', 'Junior Tailor', etc.
+  final String role; 
   final int yearsOfExperience;
   final String status; // 'active', 'busy', 'offline'
   final double performanceRating; // 0-100
   final String? photoUrl;
-  final double currentBalance; // money currently held
-  final double totalDistributed; // lifetime total
+  final double currentBalance; 
+  final double totalDistributed;
   final double totalReturned; // lifetime total
   final double totalCoffeePurchased; // lifetime total
+  final double totalCommissionEarned; //
   final DateTime createdAt;
   final DateTime? lastActiveAt;
   final bool isActive;
   final String? userId; // Link to User account (null if no login)
   final bool hasLoginAccess; // Can this worker login?
+  final double commissionRate; // Amount given per kg of coffee purchased
 
   Worker({
     required this.id,
@@ -32,11 +34,13 @@ class Worker {
     this.totalDistributed = 0.0,
     this.totalReturned = 0.0,
     this.totalCoffeePurchased = 0.0,
+    this.totalCommissionEarned = 0.0,
     required this.createdAt,
     this.lastActiveAt,
     this.isActive = true,
     this.userId,
     this.hasLoginAccess = false,
+    this.commissionRate = 0.0,
   });
 
   /// Create Worker from Firestore document
@@ -55,6 +59,7 @@ class Worker {
       totalDistributed: (data['totalDistributed'] ?? 0.0).toDouble(),
       totalReturned: (data['totalReturned'] ?? 0.0).toDouble(),
       totalCoffeePurchased: (data['totalCoffeePurchased'] ?? 0.0).toDouble(),
+      totalCommissionEarned: (data['totalCommissionEarned'] ?? 0.0).toDouble(),
       createdAt: data['createdAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(data['createdAt'])
           : DateTime.now(),
@@ -64,6 +69,7 @@ class Worker {
       isActive: data['isActive'] ?? true,
       userId: data['userId'],
       hasLoginAccess: data['hasLoginAccess'] ?? false,
+      commissionRate: (data['commissionRate'] ?? 0.0).toDouble(),
     );
   }
 
@@ -82,11 +88,13 @@ class Worker {
       'totalDistributed': totalDistributed,
       'totalReturned': totalReturned,
       'totalCoffeePurchased': totalCoffeePurchased,
+      'totalCommissionEarned': totalCommissionEarned,
       'createdAt': createdAt.millisecondsSinceEpoch,
       'lastActiveAt': lastActiveAt?.millisecondsSinceEpoch,
       'isActive': isActive,
       'userId': userId,
       'hasLoginAccess': hasLoginAccess,
+      'commissionRate': commissionRate,
     };
   }
 
@@ -114,6 +122,7 @@ class Worker {
       totalDistributed: (json['totalDistributed'] ?? 0.0).toDouble(),
       totalReturned: (json['totalReturned'] ?? 0.0).toDouble(),
       totalCoffeePurchased: (json['totalCoffeePurchased'] ?? 0.0).toDouble(),
+      totalCommissionEarned: (json['totalCommissionEarned'] ?? 0.0).toDouble(),
       createdAt: json['createdAt'] != null
           ? DateTime.fromMillisecondsSinceEpoch(json['createdAt'])
           : DateTime.now(),
@@ -123,6 +132,7 @@ class Worker {
       isActive: json['isActive'] ?? true,
       userId: json['userId'],
       hasLoginAccess: json['hasLoginAccess'] ?? false,
+      commissionRate: (json['commissionRate'] ?? 0.0).toDouble(),
     );
   }
 
@@ -141,11 +151,13 @@ class Worker {
     double? totalDistributed,
     double? totalReturned,
     double? totalCoffeePurchased,
+    double? totalCommissionEarned,
     DateTime? createdAt,
     DateTime? lastActiveAt,
     bool? isActive,
     String? userId,
     bool? hasLoginAccess,
+    double? commissionRate,
   }) {
     return Worker(
       id: id ?? this.id,
@@ -161,11 +173,13 @@ class Worker {
       totalDistributed: totalDistributed ?? this.totalDistributed,
       totalReturned: totalReturned ?? this.totalReturned,
       totalCoffeePurchased: totalCoffeePurchased ?? this.totalCoffeePurchased,
+      totalCommissionEarned: totalCommissionEarned ?? this.totalCommissionEarned,
       createdAt: createdAt ?? this.createdAt,
       lastActiveAt: lastActiveAt ?? this.lastActiveAt,
       isActive: isActive ?? this.isActive,
       userId: userId ?? this.userId,
       hasLoginAccess: hasLoginAccess ?? this.hasLoginAccess,
+      commissionRate: commissionRate ?? this.commissionRate,
     );
   }
 

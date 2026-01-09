@@ -5,9 +5,15 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/providers/worker_provider.dart';
 import '../../../core/providers/transaction_provider.dart';
 import '../../../core/providers/auth_provider.dart';
+import '../../../core/providers/notification_provider.dart';
+import '../../../core/utils/number_formatter.dart';
+import '../../../main.dart';
+import '../../dialogs/ping_dialog.dart';
 import '../../widgets/stats_card.dart';
 import '../../widgets/activity_chart.dart';
 import '../../widgets/worker_item.dart';
+import '../../widgets/notification_badge.dart';
+import '../notifications/notifications_screen.dart';
 import '../worker_detail/worker_detail_screen.dart';
 import '../../widgets/custom_header.dart';
 import '../../../l10n/app_localizations.dart';
@@ -32,18 +38,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+
     final authProvider = Provider.of<AuthProvider>(context);
     final workerProvider = Provider.of<WorkerProvider>(context);
     final transactionProvider = Provider.of<TransactionProvider>(context);
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    final localizations = AppLocalizations.of(context)!;
+    
+    // Robust Localization: Allow null, use fallbacks
+    final AppLocalizations? localizations = AppLocalizations.of(context);
 
     final distributedData = _getLast7DaysData('distribution');
     final returnedData = _getLast7DaysData('return');
     final labels = _getLast7DaysLabels();
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: RefreshIndicator(
         onRefresh: () async {
           await workerProvider.refresh();
@@ -64,7 +74,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            localizations.welcomeBack,
+                            localizations?.welcomeBack ?? 'Welcome Back,',
                             style: const TextStyle(
                               fontSize: 14,
                               color: Colors.white70,
@@ -81,17 +91,48 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.notifications_outlined,
-                          color: Colors.white,
-                          size: 24,
-                        ),
+                      Row(
+                        children: [
+                          // Admin Ping All Button
+                          if (authProvider.isAdmin)
+                            Container(
+                              margin: const EdgeInsets.only(right: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: IconButton(
+                                icon: const Icon(Icons.campaign, color: Colors.white),
+                                tooltip: 'Ping All Workers',
+                                onPressed: () => _showPingAllDialog(context, authProvider),
+                              ),
+                            ),
+                          NotificationBadge(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const NotificationsScreen(),
+                                  ),
+                                );
+                              },
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.2),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.notifications_outlined,
+                                  color: Colors.white,
+                                  size: 24,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -119,6 +160,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       decoration: BoxDecoration(
                         color: theme.cardColor,
                         borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.primary.withOpacity(0.5)),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withOpacity(isDark ? 0.2 : 0.05),
@@ -130,13 +172,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildCompactStat(context, Icons.people, '${workerProvider.totalWorkers}', localizations.total, AppColors.primary),
+                          _buildCompactStat(context, Icons.people, '${workerProvider.totalWorkers}', localizations?.total ?? 'Total', AppColors.primary),
                           _buildContainerDivider(isDark),
-                          _buildCompactStat(context, Icons.check_circle, '${workerProvider.activeToday}', localizations.active, AppColors.primary),
+                          _buildCompactStat(context, Icons.check_circle, '${workerProvider.activeToday}', localizations?.active ?? 'Active', AppColors.primary),
                           _buildContainerDivider(isDark),
-                          _buildCompactStat(context, Icons.star, '${workerProvider.avgPerformance.toStringAsFixed(0)}%', localizations.perf, AppColors.primary),
+                          _buildCompactStat(context, Icons.star, '${workerProvider.avgPerformance.toStringAsFixed(0)}%', localizations?.perf ?? 'Perf', AppColors.primary),
                           _buildContainerDivider(isDark),
-                          _buildCompactStat(context, Icons.local_cafe, '${transactionProvider.todayPurchased.toStringAsFixed(0)}', localizations.sales, AppColors.primary),
+                          _buildCompactStat(context, Icons.local_cafe, '${transactionProvider.todayPurchased.formatted}', localizations?.sales ?? 'Sales', AppColors.primary),
                         ],
                       ),
                     ),
@@ -183,7 +225,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               const SizedBox(width: 12),
                               Text(
-                                localizations.todaysActivity,
+                                localizations?.todaysActivity ?? "Today's Activity",
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 16,
@@ -197,8 +239,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             children: [
                               Expanded(
                                 child: _buildTodayStatItem(
-                                  localizations.distributed,
-                                  '${localizations.currency} ${transactionProvider.todayDistributed.toStringAsFixed(0)}',
+                                  localizations?.distributed ?? 'Distributed',
+                                  '${localizations?.currency ?? "ETB"} ${transactionProvider.todayDistributed.formatted}',
                                   Icons.arrow_downward,
                                   Colors.white,
                                 ),
@@ -210,8 +252,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                               Expanded(
                                 child: _buildTodayStatItem(
-                                  localizations.returned,
-                                  '${localizations.currency} ${transactionProvider.todayReturned.toStringAsFixed(0)}',
+                                  localizations?.returned ?? 'Returned',
+                                  '${localizations?.currency ?? "ETB"} ${transactionProvider.todayReturned.formatted}',
                                   Icons.arrow_upward,
                                   Colors.white,
                                 ),
@@ -225,14 +267,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                localizations.netBalance,
+                                localizations?.netBalance ?? 'Net Balance',
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
                                 ),
                               ),
                               Text(
-                                '${localizations.currency} ${transactionProvider.todayNet.toStringAsFixed(2)}',
+                                '${localizations?.currency ?? "ETB"} ${transactionProvider.todayNet.formatted}',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 20,
@@ -262,7 +304,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            localizations.activeWorkers,
+                            localizations?.activeWorkers ?? 'Active Workers',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -271,14 +313,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           TextButton(
                             onPressed: () {
-                              DefaultTabController.of(context)?.animateTo(1);
+                              MainLayout.navigateTo(1); 
                             },
                             child: Text(
-                              localizations.viewAll,
+                              localizations?.viewAll ?? 'View All',
                               style: const TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
-                              ),
+                                ),
                             ),
                           ),
                         ],
@@ -297,6 +339,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 decoration: BoxDecoration(
                                   color: theme.cardColor,
                                   borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: AppColors.primary.withOpacity(0.5)),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withOpacity(isDark ? 0.2 : 0.03),
@@ -374,7 +417,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                           mainAxisSize: MainAxisSize.min,
                                           children: [
                                             Text(
-                                              'ETB ${worker.currentBalance.toStringAsFixed(0)}',
+                                              'ETB ${worker.currentBalance.formatted}',
                                               style: TextStyle(
                                                 color: balanceColor,
                                                 fontSize: 13,
@@ -405,7 +448,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 size: 48, color: Colors.grey.shade400),
                             const SizedBox(height: 12),
                             Text(
-                              localizations.noWorkersYet, // Localized
+                              localizations?.noWorkersYet ?? 'No workers yet',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Colors.grey.shade600,
@@ -413,7 +456,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              localizations.addWorkersToGetStarted, // Localized
+                              localizations?.addWorkersToGetStarted ?? 'Add workers to get started',
                               style: TextStyle(
                                 fontSize: 12,
                                 color: Colors.grey.shade400,
@@ -526,6 +569,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> _showPingAllDialog(BuildContext context, AuthProvider authProvider) async {
+    await showDialog(
+      context: context,
+      builder: (context) => PingDialog(
+        title: 'Ping All Workers',
+        messageLabel: 'Message to all workers',
+        onSend: (message) async {
+          final notificationProvider =
+              Provider.of<NotificationProvider>(context, listen: false);
+          
+          await notificationProvider.sendGlobalPing(
+            title: 'Announcement',
+            body: message,
+            senderName: authProvider.user?.displayName ?? 'Admin',
+            senderId: authProvider.user?.uid ?? '',
+          );
+          
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Notification sent to all workers')),
+            );
+          }
+        },
+      ),
     );
   }
 

@@ -10,11 +10,17 @@
 .svn/
 migrate_working_dir/
 
+# node_modules
+node_modules
+
 # IntelliJ related
 *.iml
 *.ipr
 *.iws
 .idea/
+
+# node_modules
+node_modules
 
 # Firebase config files
 **/google-services.json

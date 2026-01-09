@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../widgets/background_pattern.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -63,19 +64,18 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
         foregroundColor: Colors.white,
        iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: SingleChildScrollView(
+      body: Stack(
+        children: [
+          const BackgroundPattern(),
+          SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
             const SizedBox(height: 20),
-            Container(
+            Image.asset(
+              'assets/icon-bg.png',
               width: 100,
               height: 100,
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.local_cafe, size: 50, color: Colors.white),
             ),
             const SizedBox(height: 16),
             Text(
@@ -87,7 +87,7 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
             ),
             const SizedBox(height: 8),
             Text(
-              'Version 1.0.0',
+              'Version 1.1.9',
               style: TextStyle(
                 color: isDark ? Colors.grey.shade400 : Colors.grey.shade600,
               ),
@@ -133,6 +133,8 @@ Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
             ),
           ],
         ),
+      ),
+        ],
       ),
     );
   }

@@ -55,6 +55,11 @@ class TransactionProvider with ChangeNotifier {
     );
   }
 
+  /// Get all transactions as a Future (for export)
+  Future<List<MoneyTransaction>> getAllTransactionsFuture() async {
+    return await _transactionService.getAllTransactions();
+  }
+
   /// Add distribution transaction
   Future<bool> distributeMoneyToWorker({
     required String workerId,
@@ -153,6 +158,10 @@ class TransactionProvider with ChangeNotifier {
     required String createdBy,
     String? notes,
     String? receiptUrl,
+    String? coffeeType,
+    double? weight,
+    double? pricePerKg,
+    double? commission,
   }) async {
     if (amount <= 0) {
       _errorMessage = 'Amount must be greater than 0';
@@ -175,6 +184,10 @@ class TransactionProvider with ChangeNotifier {
         receiptUrl: receiptUrl,
         createdAt: DateTime.now(),
         createdBy: createdBy,
+        coffeeType: coffeeType,
+        coffeeWeight: weight,
+        pricePerKg: pricePerKg,
+        commissionAmount: commission,
       );
 
       await _transactionService.addTransaction(transaction);

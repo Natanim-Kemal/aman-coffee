@@ -5,6 +5,7 @@ import '../../../core/models/audit_log_model.dart';
 import '../../../core/services/audit_service.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../widgets/background_pattern.dart';
 
 class AuditLogScreen extends StatefulWidget {
   const AuditLogScreen({super.key});
@@ -31,7 +32,10 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
         ),
-        body: Center(
+        body: Stack(
+          children: [
+            const BackgroundPattern(),
+            Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -57,6 +61,8 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
               ),
             ],
           ),
+            ),
+          ],
         ),
       );
     }
@@ -97,7 +103,10 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
+        children: [
+          const BackgroundPattern(),
+          Column(
         children: [
           // Filter indicator
           if (_selectedFilter != null)
@@ -229,7 +238,9 @@ class _AuditLogScreenState extends State<AuditLogScreen> {
           ),
         ],
       ),
-    );
+    ],
+  ),
+);
   }
 
   Widget _buildLogTile(AuditLog log, bool isDark) {

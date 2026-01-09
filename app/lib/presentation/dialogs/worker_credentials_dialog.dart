@@ -35,16 +35,22 @@ class WorkerCredentialsDialog extends StatelessWidget {
           children: [
             Text(
               'Login credentials for $workerName:',
-              style: const TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: theme.textTheme.bodyLarge?.color,
+              ),
             ),
             const SizedBox(height: 16),
             _buildCredentialField(context, 'Email', email),
             const SizedBox(height: 12),
             _buildCredentialField(context, 'Password', password),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               'Send these credentials to the worker:',
-              style: TextStyle(fontSize: 12, color: Colors.grey),
+              style: TextStyle(
+                fontSize: 12, 
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+              ),
             ),
           ],
         ),
@@ -70,12 +76,17 @@ class WorkerCredentialsDialog extends StatelessWidget {
   }
 
   Widget _buildCredentialField(BuildContext context, String label, String value) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
+        color: isDark ? Colors.grey.shade800 : Colors.grey.shade100,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(
+          color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,16 +95,17 @@ class WorkerCredentialsDialog extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 12,
-              color: Colors.grey.shade600,
+              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
               fontWeight: FontWeight.w500,
             ),
           ),
           const SizedBox(height: 4),
-          Text(
+          SelectableText(
             value,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
+              color: theme.textTheme.bodyLarge?.color,
             ),
           ),
         ],

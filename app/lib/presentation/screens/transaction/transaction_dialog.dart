@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import '../../../core/models/worker_model.dart';
+import '../../../core/constants/coffee_types.dart';
 import '../../../core/providers/auth_provider.dart';
 import '../../../core/providers/transaction_provider.dart';
 import '../../../core/theme/app_theme.dart';
@@ -27,6 +28,11 @@ class _TransactionDialogState extends State<TransactionDialog> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   final _notesController = TextEditingController();
+  // Purchase specific
+  final _weightController = TextEditingController();
+  final _priceController = TextEditingController();
+  CoffeeType? _selectedCoffeeType;
+  
   bool _isLoading = false;
   File? _receiptImage;
 
@@ -34,6 +40,8 @@ class _TransactionDialogState extends State<TransactionDialog> {
   void dispose() {
     _amountController.dispose();
     _notesController.dispose();
+    _weightController.dispose();
+    _priceController.dispose();
     super.dispose();
   }
 
@@ -94,6 +102,30 @@ class _TransactionDialogState extends State<TransactionDialog> {
     }
   }
 
+  void _updateTotalCost() {
+    if (widget.type != 'purchase') return;
+    
+    final weight = double.tryParse(_weightController.text.trim()) ?? 0;
+    final price = double.tryParse(_priceController.text.trim()) ?? 0;
+    
+    if (weight > 0 && price > 0) {
+      final total = weight * price;
+      _amountController.text = total.toStringAsFixed(2);
+    } else {
+      _amountController.text = '';
+    }
+    setState(() {}); // Trigger rebuild for commission preview
+  }
+
+  String _calculateCommission() {
+    final weight = double.tryParse(_weightController.text.trim()) ?? 0;
+    if (weight <= 0) return '0.00 ETB';
+    
+    final commission = weight * widget.worker.commissionRate;
+    return '${commission.toStringAsFixed(2)} ETB';
+  }
+
+
   Future<void> _submitTransaction() async {
     if (!_formKey.currentState!.validate()) {
       return;
@@ -149,13 +181,25 @@ class _TransactionDialogState extends State<TransactionDialog> {
         );
         break;
       case 'purchase':
+        // For purchase, amount is calculated from weight * price (if provided) or strictly validation
+        // But for storage, we pass specific fields.
+        final weight = double.tryParse(_weightController.text.trim());
+        final price = double.tryParse(_priceController.text.trim());
+        
+        // Commission = Weight * Worker's Rate
+        final commission = (weight ?? 0) * widget.worker.commissionRate;
+        
         success = await transactionProvider.recordCoffeePurchase(
           workerId: widget.worker.id,
           workerName: widget.worker.name,
-          amount: amount,
+          amount: amount, // Total Cost (Weight * Price)
           createdBy: authProvider.user?.uid ?? 'unknown',
           notes: notes.isEmpty ? null : notes,
           receiptUrl: receiptUrl,
+          coffeeType: _selectedCoffeeType?.name,
+          weight: weight,
+          pricePerKg: price,
+          commission: commission,
         );
         break;
     }
@@ -235,38 +279,131 @@ class _TransactionDialogState extends State<TransactionDialog> {
 
                 const SizedBox(height: 24),
 
-                // Amount field
-                TextFormField(
-                  controller: _amountController,
-                  keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
-                  ],
-                  decoration: InputDecoration(
-                    labelText: 'Amount (${AppLocalizations.of(context)?.currency ?? 'ETB'})',
-                    prefixIcon: const Icon(Icons.attach_money),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                if (widget.type != 'purchase') ...[
+                  // Normal Amount Field for Distribution/Return
+                  TextFormField(
+                    controller: _amountController,
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}')),
+                    ],
+                    decoration: InputDecoration(
+                      labelText: 'Amount (${AppLocalizations.of(context)?.currency ?? 'ETB'})',
+                      prefixIcon: const Icon(Icons.attach_money),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
                     ),
-                    filled: true,
-                    fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) return 'Amount is required';
+                      final val = double.tryParse(value);
+                      if (val == null || val <= 0) return 'Invalid amount';
+                       if (widget.type == 'return' && val > widget.worker.currentBalance) {
+                        return 'Insufficient balance';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Amount is required';
-                    }
-                    final amount = double.tryParse(value.trim());
-                    if (amount == null || amount <= 0) {
-                      return 'Enter a valid amount';
-                    }
-                    // Check if worker has enough balance for return/purchase
-                    if (widget.type != 'distribution' && amount > widget.worker.currentBalance) {
-                      return 'Insufficient balance (${widget.worker.currentBalance.toStringAsFixed(2)})';
-                    }
-                    return null;
-                  },
-                  autofocus: true,
-                ),
+                ] else ...[
+                  // Purchase Fields: Coffee Type, Weight & Price
+                  DropdownButtonFormField<CoffeeType>(
+                    value: _selectedCoffeeType,
+                    decoration: InputDecoration(
+                      labelText: 'Coffee Type',
+                      prefixIcon: const Icon(Icons.category),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
+                    ),
+                    items: CoffeeType.values.map((type) {
+                      return DropdownMenuItem(
+                        value: type,
+                        child: Text(type.displayName),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _selectedCoffeeType = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Please select a coffee type';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _weightController,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            labelText: 'Weight (Kg)',
+                            suffixText: 'Kg',
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            filled: true,
+                            fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
+                          ),
+                          onChanged: (val) => _updateTotalCost(),
+                          validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _priceController,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            labelText: 'Price/Kg',
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                            filled: true,
+                            fillColor: isDark ? Colors.grey.shade800 : Colors.grey.shade50,
+                          ),
+                          onChanged: (val) => _updateTotalCost(),
+                          validator: (val) => (val == null || val.isEmpty) ? 'Required' : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Read-only Total Cost
+                  TextFormField(
+                    controller: _amountController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: 'Total Cost (Calculated)',
+                      prefixIcon: const Icon(Icons.calculate),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      filled: true,
+                      fillColor: isDark ? Colors.black26 : Colors.grey.shade200,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 8),
+                 // Commission Preview
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.green.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.green.withOpacity(0.3)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Worker Commission:', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold)),
+                        Text(
+                          _calculateCommission(),
+                          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
 
                 const SizedBox(height: 16),
 
