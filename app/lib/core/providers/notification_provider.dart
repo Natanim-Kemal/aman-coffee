@@ -16,6 +16,10 @@ class NotificationProvider with ChangeNotifier {
   int get unreadCount => _unreadCount;
 
   /// Initialize listener for a specific user
+  /// 
+  /// Note: Requires a composite Firestore index on (targetUserId, createdAt)
+  /// for optimal performance. Firestore will provide a link to create this
+  /// index on first query if it doesn't exist.
   void init(String userId) {
     if (_currentUserId == userId) return; 
     

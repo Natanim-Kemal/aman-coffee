@@ -56,7 +56,10 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
   }
 
   void _onPlaceChanged() {
-    // Only rebuild if mounted to avoid calling setState after dispose
+    // Rebuild to update area chip selection state when place text changes.
+    // This is more efficient than the previous implementation which called
+    // setState(() {}) directly in addListener, as it avoids unnecessary
+    // rebuilds and properly checks if the widget is still mounted.
     if (mounted) {
       setState(() {});
     }

@@ -29,7 +29,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
   
   // Cache for filtered transactions
   List<MoneyTransaction>? _cachedFilteredTransactions;
-  String? _lastFilterKey;
+  int? _lastFilterKey; // Use int for hash-based cache key
 
   @override
   void didChangeDependencies() {
@@ -120,7 +120,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
       _typeFilter,
       _selectedDate?.millisecondsSinceEpoch,
       allTransactions.length,
-    ).toString();
+    );
     
     // Return cached results if filters haven't changed
     if (_lastFilterKey == filterKey && _cachedFilteredTransactions != null) {

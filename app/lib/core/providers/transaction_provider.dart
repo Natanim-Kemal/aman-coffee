@@ -44,19 +44,21 @@ class TransactionProvider with ChangeNotifier {
     return _last7DaysCache!;
   }
 
-  /// Calculate chart data for last 7 days (optimized)
+  /// Calculate chart data for last 7 days (optimized with O(1) lookups)
   Map<String, List<double>> _calculateLast7DaysData() {
     final now = DateTime.now();
     final distributionData = List<double>.filled(7, 0.0);
     final returnData = List<double>.filled(7, 0.0);
     
-    // Pre-calculate day boundaries once (O(7) operation)
-    final dayBoundaries = List.generate(7, (i) {
+    // Pre-calculate day boundaries and create a map for O(1) lookups
+    final dayToIndexMap = <DateTime, int>{};
+    for (int i = 0; i < 7; i++) {
       final day = now.subtract(Duration(days: 6 - i));
-      return DateTime(day.year, day.month, day.day);
-    });
+      final dayBoundary = DateTime(day.year, day.month, day.day);
+      dayToIndexMap[dayBoundary] = i;
+    }
     
-    // Single pass through transactions (O(n) operation)
+    // Single pass through transactions with O(1) day lookup
     for (final transaction in _allTransactions) {
       final transactionDay = DateTime(
         transaction.createdAt.year,
@@ -64,15 +66,13 @@ class TransactionProvider with ChangeNotifier {
         transaction.createdAt.day,
       );
       
-      // Find matching day bucket (O(7) worst case, but typically much faster)
-      for (int i = 0; i < 7; i++) {
-        if (transactionDay.isAtSameMomentAs(dayBoundaries[i])) {
-          if (transaction.type == 'distribution') {
-            distributionData[i] += transaction.amount;
-          } else if (transaction.type == 'return') {
-            returnData[i] += transaction.amount;
-          }
-          break;
+      // O(1) lookup to find the day index
+      final index = dayToIndexMap[transactionDay];
+      if (index != null) {
+        if (transaction.type == 'distribution') {
+          distributionData[index] += transaction.amount;
+        } else if (transaction.type == 'return') {
+          returnData[index] += transaction.amount;
         }
       }
     }
