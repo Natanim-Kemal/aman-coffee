@@ -26,6 +26,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
   
   late List<String> _dateOptions;
   late List<String> _typeOptions;
+  
+  // Cache for filtered transactions
+  List<MoneyTransaction>? _cachedFilteredTransactions;
+  String? _lastFilterKey;
 
   @override
   void didChangeDependencies() {
@@ -110,6 +114,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   List<MoneyTransaction> _getFilteredTransactions(List<MoneyTransaction> allTransactions, AppLocalizations l10n) {
+    // Create a cache key from filter settings
+    final filterKey = '$_dateFilter:$_typeFilter:${_selectedDate?.toString()}:${allTransactions.length}';
+    
+    // Return cached results if filters haven't changed
+    if (_lastFilterKey == filterKey && _cachedFilteredTransactions != null) {
+      return _cachedFilteredTransactions!;
+    }
+    
     DateTime now = DateTime.now();
     DateTime? startDate;
     DateTime? endDate;
@@ -130,7 +142,14 @@ class _ReportsScreenState extends State<ReportsScreen> {
       }
     }
 
-    return allTransactions.where((t) {
+    // Pre-compute type filter once instead of in the loop
+    final filterAllTypes = _typeFilter == l10n.all;
+    final filterDistribution = _typeFilter == l10n.distribute;
+    final filterReturn = _typeFilter == l10n.returnMoney;
+    final filterPurchase = _typeFilter == l10n.coffeePurchase;
+
+    final filtered = allTransactions.where((t) {
+      // Date filtering
       bool dateMatch;
       if (_dateFilter == l10n.chooseDate && startDate != null && endDate != null) {
         // For specific date, check if transaction is within that day
@@ -140,23 +159,23 @@ class _ReportsScreenState extends State<ReportsScreen> {
         dateMatch = startDate == null || t.createdAt.isAfter(startDate);
       }
       
-      // Determine type match based on localized string mapping or internal type
-      // Internal types: 'Distribution', 'Return', 'Purchase'
-      bool typeMatch = false;
-      String typeLower = t.type.toLowerCase();
+      if (!dateMatch) return false;
       
-      if (_typeFilter == l10n.all) {
-        typeMatch = true;
-      } else if (_typeFilter == l10n.distribute && typeLower == 'distribution') {
-        typeMatch = true;
-      } else if (_typeFilter == l10n.returnMoney && typeLower == 'return') {
-        typeMatch = true;
-      } else if (_typeFilter == l10n.coffeePurchase && typeLower == 'purchase') {
-        typeMatch = true;
-      }
+      // Type filtering - optimize string comparisons
+      if (filterAllTypes) return true;
       
-      return dateMatch && typeMatch;
+      // Use toLowerCase once and compare with pre-computed flags
+      final typeLower = t.type.toLowerCase();
+      return (filterDistribution && typeLower == 'distribution') ||
+             (filterReturn && typeLower == 'return') ||
+             (filterPurchase && typeLower == 'purchase');
     }).toList();
+    
+    // Cache the result
+    _cachedFilteredTransactions = filtered;
+    _lastFilterKey = filterKey;
+    
+    return filtered;
   }
 
   @override

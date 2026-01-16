@@ -51,7 +51,15 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
   void initState() {
     super.initState();
     _loadAreas();
-    placeController.addListener(() => setState(() {}));
+    // Only rebuild for area chips when place text changes
+    placeController.addListener(_onPlaceChanged);
+  }
+
+  void _onPlaceChanged() {
+    // Only rebuild if mounted to avoid calling setState after dispose
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   Future<void> _loadAreas() async {
@@ -65,6 +73,7 @@ class _RecordPurchaseDialogState extends State<RecordPurchaseDialog> {
 
   @override
   void dispose() {
+    placeController.removeListener(_onPlaceChanged);
     quantityController.dispose();
     priceController.dispose();
     placeController.dispose();

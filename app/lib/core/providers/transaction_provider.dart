@@ -15,6 +15,10 @@ class TransactionProvider with ChangeNotifier {
   double _todayReturned = 0.0;
   double _todayPurchased = 0.0;
 
+  // Cached chart data for dashboard
+  Map<String, List<double>>? _last7DaysCache;
+  DateTime? _cacheTimestamp;
+
   List<MoneyTransaction> get allTransactions => _allTransactions;
   List<MoneyTransaction> get workerTransactions => _workerTransactions;
   bool get isLoading => _isLoading;
@@ -24,6 +28,59 @@ class TransactionProvider with ChangeNotifier {
   double get todayReturned => _todayReturned;
   double get todayPurchased => _todayPurchased;
   double get todayNet => _todayDistributed - _todayReturned - _todayPurchased;
+
+  /// Get cached chart data for last 7 days
+  Map<String, List<double>> getLast7DaysChartData() {
+    // Return cached data if it's less than 5 minutes old
+    if (_last7DaysCache != null && 
+        _cacheTimestamp != null && 
+        DateTime.now().difference(_cacheTimestamp!) < const Duration(minutes: 5)) {
+      return _last7DaysCache!;
+    }
+    
+    // Recalculate and cache
+    _last7DaysCache = _calculateLast7DaysData();
+    _cacheTimestamp = DateTime.now();
+    return _last7DaysCache!;
+  }
+
+  /// Calculate chart data for last 7 days (optimized single pass)
+  Map<String, List<double>> _calculateLast7DaysData() {
+    final now = DateTime.now();
+    final distributionData = List<double>.filled(7, 0.0);
+    final returnData = List<double>.filled(7, 0.0);
+    
+    // Single pass through transactions
+    for (final transaction in _allTransactions) {
+      // Find which day bucket this transaction belongs to
+      for (int i = 0; i < 7; i++) {
+        final day = now.subtract(Duration(days: 6 - i));
+        final startOfDay = DateTime(day.year, day.month, day.day);
+        final endOfDay = DateTime(day.year, day.month, day.day, 23, 59, 59);
+        
+        if (transaction.createdAt.isAfter(startOfDay) && 
+            transaction.createdAt.isBefore(endOfDay)) {
+          if (transaction.type == 'distribution') {
+            distributionData[i] += transaction.amount;
+          } else if (transaction.type == 'return') {
+            returnData[i] += transaction.amount;
+          }
+          break; // Move to next transaction once we find the day
+        }
+      }
+    }
+    
+    return {
+      'distribution': distributionData,
+      'return': returnData,
+    };
+  }
+
+  /// Invalidate cache when transactions change
+  void _invalidateCache() {
+    _last7DaysCache = null;
+    _cacheTimestamp = null;
+  }
 
   /// Load worker transactions
   void loadWorkerTransactions(String workerId) {
@@ -45,6 +102,7 @@ class TransactionProvider with ChangeNotifier {
     _transactionService.getAllTransactionsStream().listen(
       (transactions) {
         _allTransactions = transactions;
+        _invalidateCache(); // Invalidate cache when transactions change
         notifyListeners();
       },
       onError: (error) {

@@ -25,6 +25,7 @@ class NotificationProvider with ChangeNotifier {
     _subscription = _firestore
         .collection('notifications')
         .where('targetUserId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true) // Sort by createdAt for stable ordering
         .limit(10) // Limit to last 10 notifications
         .snapshots()
         .listen((snapshot) {
@@ -32,8 +33,7 @@ class NotificationProvider with ChangeNotifier {
           .map((doc) => AppNotification.fromFirestore(doc.data(), doc.id))
           .toList();
       
-      // Sort in memory instead
-      _notifications.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      // No need to sort in memory since we're ordering in the query
       
       _unreadCount = _notifications.where((n) => !n.isRead).length;
       notifyListeners();
