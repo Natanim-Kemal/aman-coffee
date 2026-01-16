@@ -44,28 +44,35 @@ class TransactionProvider with ChangeNotifier {
     return _last7DaysCache!;
   }
 
-  /// Calculate chart data for last 7 days (optimized single pass)
+  /// Calculate chart data for last 7 days (optimized)
   Map<String, List<double>> _calculateLast7DaysData() {
     final now = DateTime.now();
     final distributionData = List<double>.filled(7, 0.0);
     final returnData = List<double>.filled(7, 0.0);
     
-    // Single pass through transactions
+    // Pre-calculate day boundaries once (O(7) operation)
+    final dayBoundaries = List.generate(7, (i) {
+      final day = now.subtract(Duration(days: 6 - i));
+      return DateTime(day.year, day.month, day.day);
+    });
+    
+    // Single pass through transactions (O(n) operation)
     for (final transaction in _allTransactions) {
-      // Find which day bucket this transaction belongs to
+      final transactionDay = DateTime(
+        transaction.createdAt.year,
+        transaction.createdAt.month,
+        transaction.createdAt.day,
+      );
+      
+      // Find matching day bucket (O(7) worst case, but typically much faster)
       for (int i = 0; i < 7; i++) {
-        final day = now.subtract(Duration(days: 6 - i));
-        final startOfDay = DateTime(day.year, day.month, day.day);
-        final endOfDay = DateTime(day.year, day.month, day.day, 23, 59, 59);
-        
-        if (transaction.createdAt.isAfter(startOfDay) && 
-            transaction.createdAt.isBefore(endOfDay)) {
+        if (transactionDay.isAtSameMomentAs(dayBoundaries[i])) {
           if (transaction.type == 'distribution') {
             distributionData[i] += transaction.amount;
           } else if (transaction.type == 'return') {
             returnData[i] += transaction.amount;
           }
-          break; // Move to next transaction once we find the day
+          break;
         }
       }
     }

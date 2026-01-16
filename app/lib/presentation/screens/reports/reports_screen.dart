@@ -114,8 +114,13 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   List<MoneyTransaction> _getFilteredTransactions(List<MoneyTransaction> allTransactions, AppLocalizations l10n) {
-    // Create a cache key from filter settings
-    final filterKey = '$_dateFilter:$_typeFilter:${_selectedDate?.toString()}:${allTransactions.length}';
+    // Create a cache key using hashCode for better performance
+    final filterKey = Object.hash(
+      _dateFilter,
+      _typeFilter,
+      _selectedDate?.millisecondsSinceEpoch,
+      allTransactions.length,
+    ).toString();
     
     // Return cached results if filters haven't changed
     if (_lastFilterKey == filterKey && _cachedFilteredTransactions != null) {
