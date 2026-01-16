@@ -7,6 +7,11 @@ admin.initializeApp();
 const db = admin.firestore();
 const messaging = admin.messaging();
 
+// Configuration constants
+const MESSAGING_TIMEOUT_MS = 10000; // 10 seconds timeout for FCM messaging
+const NOTIFICATION_CLEANUP_DAYS = 30; // Days after which notifications are cleaned up
+const NOTIFICATION_CLEANUP_BATCH_SIZE = 500; // Max notifications to delete per cleanup run
+
 /**
  * Triggered when a new notification is created in the 'notifications' collection.
  * Sends a push notification to the target user if they have an FCM token.
@@ -77,11 +82,11 @@ exports.sendPushNotification = functions.firestore
             // Send the push notification with timeout
             let response;
             try {
-                // Set a timeout for the messaging send operation (10 seconds)
+                // Set a timeout for the messaging send operation
                 response = await Promise.race([
                     messaging.send(message),
                     new Promise((_, reject) =>
-                        setTimeout(() => reject(new Error("messaging-timeout")), 10000)
+                        setTimeout(() => reject(new Error("messaging-timeout")), MESSAGING_TIMEOUT_MS)
                     ),
                 ]);
                 console.log(`Push notification sent successfully: ${response}`);
@@ -126,7 +131,7 @@ exports.sendPushNotification = functions.firestore
     });
 
 /**
- * Optional: Clean up old notifications (older than 30 days)
+ * Optional: Clean up old notifications (older than configurable days)
  * Run daily via Cloud Scheduler
  * 
  * NOTE: Requires composite index on 'notifications' collection:
@@ -138,7 +143,7 @@ exports.cleanupOldNotifications = functions.pubsub
     .schedule("every 24 hours")
     .onRun(async (context) => {
         const cutoffDate = new Date();
-        cutoffDate.setDate(cutoffDate.getDate() - 30);
+        cutoffDate.setDate(cutoffDate.getDate() - NOTIFICATION_CLEANUP_DAYS);
         
         // Use Firestore Timestamp for proper comparison
         const cutoffTimestamp = admin.firestore.Timestamp.fromDate(cutoffDate);
@@ -147,7 +152,7 @@ exports.cleanupOldNotifications = functions.pubsub
             const oldNotifications = await db
                 .collection("notifications")
                 .where("createdAt", "<", cutoffTimestamp)
-                .limit(500) // Process in batches to avoid memory issues
+                .limit(NOTIFICATION_CLEANUP_BATCH_SIZE) // Process in batches to avoid memory issues
                 .get();
 
             if (oldNotifications.empty) {

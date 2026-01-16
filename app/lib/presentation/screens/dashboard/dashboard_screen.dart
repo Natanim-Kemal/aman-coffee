@@ -33,6 +33,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   List<dynamic>? _cachedActiveWorkers;
   int _lastTransactionCount = -1;
   int _lastWorkerCount = -1;
+  int _lastLabelDay = -1; // Track current day for label caching
 
   @override
   void initState() {
@@ -60,8 +61,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_lastTransactionCount != transactionProvider.allTransactions.length) {
       _cachedDistributedData = _getLast7DaysData('distribution', transactionProvider.allTransactions);
       _cachedReturnedData = _getLast7DaysData('return', transactionProvider.allTransactions);
-      _cachedLabels = _getLast7DaysLabels();
       _lastTransactionCount = transactionProvider.allTransactions.length;
+    }
+
+    // Cache labels separately - only recalculate when day changes
+    final currentDay = DateTime.now().day;
+    if (_lastLabelDay != currentDay) {
+      _cachedLabels = _getLast7DaysLabels();
+      _lastLabelDay = currentDay;
     }
 
     if (_lastWorkerCount != workerProvider.workers.length) {
@@ -515,11 +522,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
         // Calculate index (6 = today, 0 = 6 days ago)
         final index = 6 - daysDifference;
         
-        // Verify it's the same calendar day (not just within 24 hours)
-        final targetDay = now.subtract(Duration(days: daysDifference));
-        if (transactionDate.year == targetDay.year &&
-            transactionDate.month == targetDay.month &&
-            transactionDate.day == targetDay.day) {
+        // Verify it's the same calendar day using normalized date comparison
+        final normalizedNow = DateTime(now.year, now.month, now.day);
+        final normalizedTransaction = DateTime(transactionDate.year, transactionDate.month, transactionDate.day);
+        final normalizedTarget = normalizedNow.subtract(Duration(days: daysDifference));
+        
+        if (normalizedTransaction.isAtSameMomentAs(normalizedTarget)) {
           data[index] += t.amount;
         }
       }
